@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('shipments', function (Blueprint $table) {
             $table->id();
+            $table->enum('status', ['dikemas', 'menunggu kurir', 'dalam pengantaran', 'selesai']);
+            $table->timestamp('assigned_at')->nullable();
+            $table->timestamp('picked_up_at')->nullable();
+            $table->timestamp('delivered_at')->nullable();
+            $table->string('image', 255)->nullable();
             $table->timestamps();
         });
     }

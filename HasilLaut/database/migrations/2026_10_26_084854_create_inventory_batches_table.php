@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('inventory_batches', function (Blueprint $table) {
             $table->id();
+            $table->date('receive_date');
+            $table->integer('stock');
+            $table->decimal('purchase_price', 12, 2);
             $table->timestamps();
         });
     }

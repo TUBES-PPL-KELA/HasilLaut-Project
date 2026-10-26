@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('flash_sale_items', function (Blueprint $table) {
             $table->id();
+            $table->decimal('flash_sale_price', 12, 2);
+            $table->integer('stock');
             $table->timestamps();
         });
     }
