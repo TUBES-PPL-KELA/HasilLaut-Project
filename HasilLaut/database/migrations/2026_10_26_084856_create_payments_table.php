@@ -13,6 +13,10 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
+            $table->string('payment_gateway_trx_id', 100)->nullable();
+            $table->string('payment_method', 50);
+            $table->decimal('amount', 12, 2);
+            $table->enum('status', ['pending', 'success', 'failed']);
             $table->timestamps();
         });
     }
