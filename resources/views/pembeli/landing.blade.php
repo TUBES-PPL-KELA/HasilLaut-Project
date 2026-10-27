@@ -50,6 +50,7 @@
             </div>
         </section>
 
+        
         <section aria-label="Statistik HasilLaut" class="mt-4 grid gap-3 sm:grid-cols-3">
             <article class="flex min-h-28 gap-3 rounded-lg border border-slate-200 border-l-4 border-l-ocean-teal bg-white p-3">
                 <div class="min-w-0">
