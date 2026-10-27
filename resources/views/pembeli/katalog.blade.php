@@ -38,6 +38,7 @@
             <img src="https://images.unsplash.com/photo-1559737558-2f5a35f4523b?auto=format&amp;fit=crop&amp;w=520&amp;q=85" alt="Hidangan hasil laut segar" class="h-32 w-full rounded-xl object-cover shadow-lg sm:h-36 md:w-56">
         </div>
     </section>
+    
 
     <nav aria-label="Filter kategori produk" class="mt-4 flex gap-2 overflow-x-auto pb-1">
         <button type="button" data-category-filter="all" aria-pressed="true" class="shrink-0 rounded-full bg-ocean-teal px-4 py-2 text-[11px] font-semibold text-white">Semua Ikan</button>

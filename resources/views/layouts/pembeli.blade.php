@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'HasilLaut | Pembeli')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
 </head>
 <body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased">
     <aside class="fixed inset-y-0 left-0 z-30 hidden w-56 flex-col border-r border-slate-100 bg-white lg:flex">
