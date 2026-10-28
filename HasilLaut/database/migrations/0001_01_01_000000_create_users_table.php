@@ -12,11 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('username')->unique();
+            // Menyesuaikan primary key dari $table->id() menjadi id_users sesuai ERD
+            $table->id('id_users');
+            $table->string('name', 100);
+            $table->string('username', 100)->unique();
             $table->string('password');
-            $table->rememberToken();
+            // Menambahkan kolom role dari ERD (misal: admin, pembeli, kurir)
+            $table->enum('role', ['admin', 'pembeli', 'kurir']); 
+            $table->rememberToken(); // Tetap dipertahankan agar fitur bawaan Laravel aman
             $table->timestamps();
         });
 
@@ -28,6 +31,7 @@ return new class extends Migration
 
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
+            // Menyesuaikan foreignId agar merujuk ke id_users pada tabel users
             $table->foreignId('user_id')->nullable()->index();
             $table->string('ip_address', 45)->nullable();
             $table->text('user_agent')->nullable();
