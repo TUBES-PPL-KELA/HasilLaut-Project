@@ -9,17 +9,18 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::create('product', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->text('description'); 
-            $table->decimal('price', 12, 2); 
-            $table->string('image', 255)->nullable();
-            $table->timestamps();
-        });
-    }
+ public function up(): void
+{
+    Schema::create('product', function (Blueprint $table) {
+        $table->id();
+        $table->string('name', 255);
+        $table->text('description')->nullable();
+        $table->decimal('price', 12, 2);
+        $table->string('image', 255)->nullable();
+        $table->integer('max_storage_days')->nullable();
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.
