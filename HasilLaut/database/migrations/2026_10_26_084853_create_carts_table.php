@@ -12,8 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('carts', function (Blueprint $table) {
-            $table->id();
+            $table->id('id_carts');
+            $table->unsignedBigInteger('users_id_users');
             $table->timestamps();
+            $table->foreign('users_id_users')->references('id_users')->on('users')->onDelete('cascade');
         });
     }
 
