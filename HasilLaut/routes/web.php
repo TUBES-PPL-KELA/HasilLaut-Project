@@ -1,8 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\StockAdjustmentController;
 
+Route::get('/keranjang', [CartController::class, 'index'])->name('pembeli.cart');
+Route::put('/keranjang/update/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/keranjang/hapus/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
 Route::get('/', function () {
     return view('welcome');
 });
