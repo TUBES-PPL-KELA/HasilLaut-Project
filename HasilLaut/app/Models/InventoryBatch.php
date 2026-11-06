@@ -7,17 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class InventoryBatch extends Model
 {
-    use HasFactory;
-
     protected $table = 'inventory_batches';
     protected $primaryKey = 'id_inventory_batches';
 
     protected $fillable = [
-        'received_date',
-        'stock',
-        'purchase_price',
-        'users_id_users',
-        'product_id_product',
+        'received_date', 'stock', 'purchase_price', 'users_id_users', 'product_id_product'
     ];
 
     public function product()
