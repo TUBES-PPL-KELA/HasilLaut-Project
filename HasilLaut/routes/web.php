@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\CheckoutController;
 
@@ -9,7 +9,9 @@ Route::get('/admin/product', [ProductController::class, 'index'])->name('admin.p
 Route::get('/admin/product/create', [ProductController::class, 'create'])->name('admin.product.create');
 Route::post('/admin/product', [ProductController::class, 'store'])->name('admin.product.store');
 
-
+Route::get('/keranjang', [CartController::class, 'index'])->name('pembeli.cart');
+Route::put('/keranjang/update/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/keranjang/hapus/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
 Route::get('/', function () {
     return view('welcome');
 });
