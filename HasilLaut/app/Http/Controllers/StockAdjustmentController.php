@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * PBI-02: Modul Penyesuaian Stok Defect & Logika Pemotongan FIFO
+ * Issue Jira: HAS-2
+ * Developer: Fadly
+ */
+
+
 namespace App\Http\Controllers;
 
 use App\Models\Product;
