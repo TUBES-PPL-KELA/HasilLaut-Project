@@ -29,3 +29,6 @@ Route::prefix('admin/stok')->group(function () {
     Route::post('/penyesuaian', [StockAdjustmentController::class, 'store'])->name('admin.stok.penyesuaian.store');
 });
 
+// Route Webhook Midtrans (PBI-15 & PBI-02 FIFO)
+Route::post('/midtrans/webhook', [CheckoutController::class, 'webhook'])->name('midtrans.webhook');
+
