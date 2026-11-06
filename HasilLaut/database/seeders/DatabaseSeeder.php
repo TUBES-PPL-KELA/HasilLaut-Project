@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use App\Models\Categories;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\InventoryBatch;
 use Illuminate\Support\Facades\Hash;
@@ -22,8 +22,8 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // 2. Buat Kategori
-       $kategoriIkan = Categories::create(['name' => 'Ikan Segar']);
-       $kategoriUdang = Categories::create(['name' => 'Udang & Kepiting']);
+       $kategoriIkan = Category::create(['name' => 'Ikan Segar']);
+       $kategoriUdang = Category::create(['name' => 'Udang & Kepiting']);
 
         // 3. Buat Produk
         $produk1 = Product::create([
