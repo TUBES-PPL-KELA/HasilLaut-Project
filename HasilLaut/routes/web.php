@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ProductController;
 
 Route::get('/admin/product', [ProductController::class, 'index'])->name('admin.product.index');
 Route::get('/admin/product/create', [ProductController::class, 'create'])->name('admin.product.create');
