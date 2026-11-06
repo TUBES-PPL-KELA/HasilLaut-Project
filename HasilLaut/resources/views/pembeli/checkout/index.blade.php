@@ -23,7 +23,8 @@
         <div class="alert alert-success rounded-3">{{ session('success') }}</div>
     @endif
 
-    <form action="{{ route('pembeli.checkout.store') }}" method="POST">
+    <!-- Ubah form action menjadi id agar bisa dicegat oleh JavaScript -->
+    <form id="checkout-form">
         @csrf
         <div class="row g-4">
             
@@ -162,8 +163,8 @@
                         <h4 class="fw-bold text-success mb-0">Rp {{ number_format(($totalAmount ?? 0) + 2500, 0, ',', '.') }}</h4>
                     </div>
 
-                    <!-- Tombol Buat Pesanan Sekarang -->
-                    <button type="submit" class="btn text-white w-100 py-3 fw-bold rounded-pill shadow-sm mb-3 {{ (!$cart || !$cart->cartItems || count($cart->cartItems) == 0) ? 'disabled' : '' }}" style="background-color: #1b4d3e;">
+                    <!-- Ubah type="submit" menjadi type="button" dan tambahkan id="pay-button" -->
+                    <button type="button" id="pay-button" class="btn text-white w-100 py-3 fw-bold rounded-pill shadow-sm mb-3 {{ (!$cart || !$cart->cartItems || count($cart->cartItems) == 0) ? 'disabled' : '' }}" style="background-color: #1b4d3e;">
                         <i class="bi bi-lock-fill me-2"></i> Buat Pesanan Sekarang
                     </button>
 
@@ -178,4 +179,78 @@
         </div>
     </form>
 </div>
+
+<!-- ========================================== -->
+<!-- INTEGRASI JAVASCRIPT MIDTRANS SNAP         -->
+<!-- ========================================== -->
+
+{{-- 1. Script Midtrans Sandbox --}}
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
+
+{{-- 2. Logika AJAX & Trigger Pop-up --}}
+<script>
+    document.getElementById('pay-button').addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        const payButton = this;
+        const originalText = payButton.innerHTML;
+
+        // Ubah tampilan tombol saat loading
+        payButton.innerHTML = '<i class="bi bi-hourglass-split me-2"></i> Memproses...';
+        payButton.disabled = true;
+
+        const form = document.getElementById('checkout-form');
+        const formData = new FormData(form);
+
+        try {
+            // Minta Snap Token ke CheckoutController@store
+            const response = await fetch("{{ route('pembeli.checkout.store') }}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok && data.snap_token) {
+                // Panggil pop-up Midtrans
+                window.snap.pay(data.snap_token, {
+                    onSuccess: function(result) {
+                        console.log('Pembayaran Sukses!', result);
+                        // Redirect ke halaman detail pesanan atau status (Sesuaikan route)
+                        window.location.href = "/pesanan/status"; 
+                    },
+                    onPending: function(result) {
+                        console.log('Menunggu Pembayaran!', result);
+                        window.location.href = "/pesanan/status"; 
+                    },
+                    onError: function(result) {
+                        console.log('Pembayaran Gagal!', result);
+                        alert('Pembayaran gagal atau dibatalkan.');
+                        payButton.innerHTML = originalText;
+                        payButton.disabled = false;
+                    },
+                    onClose: function() {
+                        console.log('Pop-up ditutup pelanggan');
+                        // Opsional: Redirect ke riwayat pesanan karena data sudah tersimpan berstatus 'Pending'
+                        alert('Anda menutup jendela pembayaran. Pesanan tersimpan di menu Riwayat.');
+                        window.location.href = "/pesanan/status";
+                    }
+                });
+            } else {
+                alert(data.error || 'Gagal memproses pesanan. Silakan coba lagi.');
+                payButton.innerHTML = originalText;
+                payButton.disabled = false;
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            alert('Terjadi kesalahan pada sistem jaringan.');
+            payButton.innerHTML = originalText;
+            payButton.disabled = false;
+        }
+    });
+</script>
 @endsection
