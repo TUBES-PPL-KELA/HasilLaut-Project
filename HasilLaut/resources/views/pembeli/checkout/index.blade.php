@@ -1,178 +1,188 @@
-
-@extends('layouts.app')
+@extends('layouts.pembeli')
 
 @section('content')
-<div class="container py-4">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    
     <!-- Breadcrumb -->
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb mb-0" style="font-size: 0.9rem;">
-            <li class="breadcrumb-item"><a href="#" class="text-decoration-none text-muted">Keranjang</a></li>
-            <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">Checkout Pesanan</li>
+    <nav class="mb-4 text-xs text-gray-500">
+        <ol class="flex items-center space-x-2">
+            <li><a href="{{ route('pembeli.cart') }}" class="hover:text-gray-700">Keranjang</a></li>
+            <li><span>/</span></li>
+            <li class="font-semibold text-gray-900">Checkout Pesanan</li>
         </ol>
     </nav>
 
     <!-- Judul Halaman -->
-    <div class="mb-4">
-        <h3 class="fw-bold text-dark">Konfirmasi Pesanan & Pembayaran</h3>
+    <div class="mb-6">
+        <h3 class="font-bold text-gray-900 text-xl">Konfirmasi Pesanan & Pembayaran</h3>
     </div>
 
     @if(session('error'))
-        <div class="alert alert-danger rounded-3">{{ session('error') }}</div>
+        <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm font-medium">
+            {{ session('error') }}
+        </div>
     @endif
 
     @if(session('success'))
-        <div class="alert alert-success rounded-3">{{ session('success') }}</div>
+        <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-sm font-medium">
+            {{ session('success') }}
+        </div>
     @endif
 
-    <!-- Ubah form action menjadi id agar bisa dicegat oleh JavaScript -->
+    <!-- Form Checkout -->
     <form id="checkout-form">
         @csrf
-        <div class="row g-4">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
-            <!-- Kolom Kiri: Alamat, Produk, dan Metode Pembayaran -->
-            <div class="col-lg-7">
+            <!-- Kolom Kiri: Alamat, Produk, dan Metode Pembayaran (Span 7) -->
+            <div class="lg:col-span-7 space-y-6">
                 
                 <!-- 1. Alamat Pengiriman Tujuan -->
-                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="bi bi-geo-alt-fill text-dark fs-5 me-2"></i>
-                        <h5 class="fw-bold mb-0 text-dark">Alamat Pengiriman Tujuan</h5>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="bi bi-geo-alt-fill text-gray-700 text-lg"></i>
+                        <h5 class="font-bold text-gray-900 text-base">Alamat Pengiriman Tujuan</h5>
                     </div>
+                    <hr class="border-gray-100 mb-4">
 
-                    <div class="p-3 border rounded-3 bg-light position-relative">
-                        <div class="d-flex justify-content-between align-items-start mb-2">
-                            <span class="fw-bold text-dark">
+                    <div class="p-4 border border-gray-200 rounded-xl bg-gray-50 relative">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                            <span class="font-bold text-gray-900 text-sm">
                                 {{ $pembeliDetail->name ?? 'Hilya Shafwa Najla Abadi' }} 
-                                <span class="text-muted fw-normal">({{ $pembeliDetail->phone_number ?? '+62 812-3456-7890' }})</span>
+                                <span class="text-gray-500 font-normal">({{ $pembeliDetail->phone_number ?? '+62 812-3456-7890' }})</span>
                             </span>
-                            <span class="badge bg-success bg-opacity-10 text-success px-2 py-1" style="font-size: 0.75rem;">
-                                <i class="bi bi-check-circle me-1"></i> Dalam Wilayah Pangandaran
+                            <span class="inline-flex items-center gap-1 bg-emerald-50 border border-emerald-200 text-emerald-700 px-2.5 py-1 rounded-full text-[11px] font-semibold self-start">
+                                <i class="bi bi-check-circle"></i> Dalam Wilayah Pangandaran
                             </span>
                         </div>
-                        <p class="text-secondary small mb-2">
+                        <p class="text-xs text-gray-600 leading-relaxed mb-3">
                             {{ $pembeliDetail->address ?? 'Jl. Pantai Pangandaran No. 12, RT 02 / RW 05, Kecamatan Pangandaran, Kabupaten Pangandaran, Jawa Barat (Titik GPS Terverifikasi dekat HasilLaut Hub).' }}
                         </p>
-                        <a href="#" class="text-success text-decoration-none small fw-semibold">
-                            <i class="bi bi-pencil-square me-1"></i> Ubah / Geser Titik Alamat di Peta
+                        <a href="{{ route('pembeli.profile.edit') }}" class="text-[#1b4d3e] hover:underline text-xs font-semibold inline-flex items-center gap-1">
+                            <i class="bi bi-pencil-square"></i> Ubah / Geser Titik Alamat di Peta
                         </a>
                     </div>
                 </div>
 
                 <!-- 2. Ringkasan Produk Dipesan -->
-                <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="bi bi-box-seam text-dark fs-5 me-2"></i>
-                        <h5 class="fw-bold mb-0 text-dark">Ringkasan Produk Dipesan</h5>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="bi bi-box-seam text-gray-700 text-lg"></i>
+                        <h5 class="font-bold text-gray-900 text-base">Ringkasan Produk Dipesan</h5>
                     </div>
+                    <hr class="border-gray-100 mb-4">
 
                     @if($cart && $cart->cartItems && count($cart->cartItems) > 0)
-                        <div class="d-flex flex-column gap-3">
+                        <div class="space-y-4">
                             @foreach($cart->cartItems as $item)
-                                <div class="d-flex align-items-center justify-content-between pb-3 border-bottom">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <div class="bg-light rounded-3 d-flex align-items-center justify-content-center text-muted" style="width: 60px; height: 60px;">
-                                            <i class="bi bi-image fs-4"></i>
+                                <div class="flex items-center justify-between pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 flex-shrink-0">
+                                            <i class="bi bi-image text-xl"></i>
                                         </div>
                                         <div>
-                                            <h6 class="fw-bold text-dark mb-1">{{ $item->product->name ?? 'Produk Hasil Laut' }}</h6>
-                                            <small class="text-muted">{{ $item->quantity }} kg • Hub Pangandaran</small>
+                                            <h6 class="font-bold text-gray-900 text-sm mb-1">{{ $item->product->name ?? 'Produk Hasil Laut' }}</h6>
+                                            <p class="text-xs text-gray-500">{{ $item->quantity }} kg • Hub Pangandaran</p>
                                         </div>
                                     </div>
-                                    <span class="fw-bold text-dark">Rp {{ number_format($item->quantity * ($item->product->price ?? 0), 0, ',', '.') }}</span>
+                                    <span class="font-bold text-gray-900 text-sm">Rp {{ number_format($item->quantity * ($item->product->price ?? 0), 0, ',', '.') }}</span>
                                 </div>
                             @endforeach
                         </div>
                     @else
-                        <p class="text-muted fst-italic mb-0">Keranjang belanja kosong.</p>
+                        <p class="text-gray-400 text-xs italic mb-0">Keranjang belanja kosong.</p>
                     @endif
                 </div>
 
                 <!-- 3. Pilih Metode Pembayaran -->
-                <div class="card border-0 shadow-sm rounded-4 p-4">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="bi bi-wallet2 text-dark fs-5 me-2"></i>
-                        <h5 class="fw-bold mb-0 text-dark">Pilih Metode Pembayaran</h5>
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="bi bi-wallet2 text-gray-700 text-lg"></i>
+                        <h5 class="font-bold text-gray-900 text-base">Pilih Metode Pembayaran</h5>
                     </div>
+                    <hr class="border-gray-100 mb-4">
 
-                    <div class="d-flex flex-column gap-3">
+                    <div class="space-y-3">
                         <!-- Opsi COD -->
-                        <label class="p-3 border rounded-3 d-flex align-items-center justify-content-between cursor-pointer shadow-sm bg-white" style="cursor: pointer;">
-                            <div class="d-flex align-items-center gap-3">
-                                <i class="bi bi-cash-stack text-success fs-4"></i>
+                        <label class="p-4 border border-gray-200 rounded-xl flex items-center justify-between cursor-pointer bg-white hover:border-[#1b4d3e] transition duration-200">
+                            <div class="flex items-center gap-3">
+                                <i class="bi bi-cash-stack text-emerald-600 text-xl"></i>
                                 <div>
-                                    <h6 class="fw-bold mb-1 text-dark">Cash on Delivery (COD)</h6>
-                                    <small class="text-muted">Bayar tunai ke kurir saat ikan tiba di rumah</small>
+                                    <h6 class="font-bold text-gray-900 text-sm mb-0.5">Cash on Delivery (COD)</h6>
+                                    <p class="text-xs text-gray-500">Bayar tunai ke kurir saat ikan tiba di rumah</p>
                                 </div>
                             </div>
-                            <input class="form-check-input mt-0" type="radio" name="payment_method" value="cod" checked>
+                            <input class="w-4 h-4 text-[#1b4d3e] focus:ring-[#1b4d3e]" type="radio" name="payment_method" value="cod" checked>
                         </label>
 
                         <!-- Opsi QRIS -->
-                        <label class="p-3 border rounded-3 d-flex align-items-center justify-content-between cursor-pointer bg-white" style="cursor: pointer;">
-                            <div class="d-flex align-items-center gap-3">
-                                <i class="bi bi-qr-code text-primary fs-4"></i>
+                        <label class="p-4 border border-gray-200 rounded-xl flex items-center justify-between cursor-pointer bg-white hover:border-[#1b4d3e] transition duration-200">
+                            <div class="flex items-center gap-3">
+                                <i class="bi bi-qr-code text-blue-600 text-xl"></i>
                                 <div>
-                                    <h6 class="fw-bold mb-1 text-dark">QRIS (Instant Payment)</h6>
-                                    <small class="text-muted">Scan via GoPay, OVO, Dana, ShopeePay, m-BCA.</small>
+                                    <h6 class="font-bold text-gray-900 text-sm mb-0.5">QRIS (Instant Payment)</h6>
+                                    <p class="text-xs text-gray-500">Scan via GoPay, OVO, Dana, ShopeePay, m-BCA.</p>
                                 </div>
                             </div>
-                            <input class="form-check-input mt-0" type="radio" name="payment_method" value="qris">
+                            <input class="w-4 h-4 text-[#1b4d3e] focus:ring-[#1b4d3e]" type="radio" name="payment_method" value="qris">
                         </label>
 
                         <!-- Opsi Virtual Account -->
-                        <label class="p-3 border rounded-3 d-flex align-items-center justify-content-between cursor-pointer bg-white" style="cursor: pointer;">
-                            <div class="d-flex align-items-center gap-3">
-                                <i class="bi bi-bank text-secondary fs-4"></i>
+                        <label class="p-4 border border-gray-200 rounded-xl flex items-center justify-between cursor-pointer bg-white hover:border-[#1b4d3e] transition duration-200">
+                            <div class="flex items-center gap-3">
+                                <i class="bi bi-bank text-gray-600 text-xl"></i>
                                 <div>
-                                    <h6 class="fw-bold mb-1 text-dark">Virtual Account Bank (BCA / Mandiri / BRI)</h6>
-                                    <small class="text-muted">Otomatis terverifikasi oleh sistem</small>
+                                    <h6 class="font-bold text-gray-900 text-sm mb-0.5">Virtual Account Bank (BCA / Mandiri / BRI)</h6>
+                                    <p class="text-xs text-gray-500">Otomatis terverifikasi oleh sistem</p>
                                 </div>
                             </div>
-                            <input class="form-check-input mt-0" type="radio" name="payment_method" value="va">
+                            <input class="w-4 h-4 text-[#1b4d3e] focus:ring-[#1b4d3e]" type="radio" name="payment_method" value="va">
                         </label>
                     </div>
                 </div>
 
             </div>
 
-            <!-- Kolom Kanan: Rincian Pembayaran & Tombol Eksekusi -->
-            <div class="col-lg-5">
-                <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 20px;">
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="bi bi-receipt text-dark fs-5 me-2"></i>
-                        <h5 class="fw-bold mb-0 text-dark">Rincian Pembayaran</h5>
+            <!-- Kolom Kanan: Rincian Pembayaran & Tombol Eksekusi (Span 5) -->
+            <div class="lg:col-span-5">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-6">
+                    <div class="flex items-center gap-2 mb-4">
+                        <i class="bi bi-receipt text-gray-700 text-lg"></i>
+                        <h5 class="font-bold text-gray-900 text-base">Rincian Pembayaran</h5>
                     </div>
-                    <hr class="text-muted opacity-25">
+                    <hr class="border-gray-100 mb-4">
 
-                    <div class="d-flex justify-content-between mb-3 text-secondary">
-                        <span>Subtotal Harga Barang</span>
-                        <span class="fw-semibold text-dark">Rp {{ number_format($subtotal ?? 0, 0, ',', '.') }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between mb-3 text-secondary">
-                        <span>Ongkos Kirim Kurir Internal (Cold Chain)</span>
-                        <span class="fw-semibold text-dark">Rp {{ number_format($shippingCost ?? 15000, 0, ',', '.') }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between mb-4 text-secondary">
-                        <span>Biaya Layanan & Penanganan</span>
-                        <span class="fw-semibold text-dark">Rp 2.500</span>
-                    </div>
-
-                    <hr class="text-muted opacity-25">
-
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h5 class="fw-bold text-dark mb-0">Total Pembayaran</h5>
-                        <h4 class="fw-bold text-success mb-0">Rp {{ number_format(($totalAmount ?? 0) + 2500, 0, ',', '.') }}</h4>
+                    <div class="space-y-3 text-xs text-gray-600 mb-6">
+                        <div class="flex justify-between">
+                            <span>Subtotal Harga Barang</span>
+                            <span class="font-semibold text-gray-900">Rp {{ number_format($subtotal ?? 0, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Ongkos Kirim Kurir Internal (Cold Chain)</span>
+                            <span class="font-semibold text-gray-900">Rp {{ number_format($shippingCost ?? 15000, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Biaya Layanan & Penanganan</span>
+                            <span class="font-semibold text-gray-900">Rp 2.500</span>
+                        </div>
                     </div>
 
-                    <!-- Ubah type="submit" menjadi type="button" dan tambahkan id="pay-button" -->
-                    <button type="button" id="pay-button" class="btn text-white w-100 py-3 fw-bold rounded-pill shadow-sm mb-3 {{ (!$cart || !$cart->cartItems || count($cart->cartItems) == 0) ? 'disabled' : '' }}" style="background-color: #1b4d3e;">
-                        <i class="bi bi-lock-fill me-2"></i> Buat Pesanan Sekarang
+                    <hr class="border-gray-100 mb-4">
+
+                    <div class="flex items-center justify-between mb-6">
+                        <h5 class="font-bold text-gray-900 text-base mb-0">Total Pembayaran</h5>
+                        <h4 class="font-bold text-emerald-600 text-lg mb-0">Rp {{ number_format(($totalAmount ?? 0) + 2500, 0, ',', '.') }}</h4>
+                    </div>
+
+                    <!-- Tombol Eksekusi -->
+                    <button type="button" id="pay-button" class="w-full py-3.5 bg-[#1b4d3e] hover:bg-[#153b30] text-white font-semibold rounded-xl text-sm shadow-sm transition duration-200 flex items-center justify-center gap-2 mb-4 {{ (!$cart || !$cart->cartItems || count($cart->cartItems) == 0) ? 'opacity-50 cursor-not-allowed' : '' }}" {{ (!$cart || !$cart->cartItems || count($cart->cartItems) == 0) ? 'disabled' : '' }}>
+                        <i class="bi bi-lock-fill"></i> Buat Pesanan Sekarang
                     </button>
 
                     <div class="text-center">
-                        <small class="text-muted" style="font-size: 0.8rem;">
-                            <i class="bi bi-shield-check text-success me-1"></i> Transaksi dijamin aman & bergaransi kesegaran
-                        </small>
+                        <span class="text-xs text-gray-400 inline-flex items-center gap-1">
+                            <i class="bi bi-shield-check text-emerald-600"></i> Transaksi dijamin aman & bergaransi kesegaran
+                        </span>
                     </div>
                 </div>
             </div>
@@ -221,7 +231,6 @@
                 window.snap.pay(data.snap_token, {
                     onSuccess: function(result) {
                         console.log('Pembayaran Sukses!', result);
-                        // Redirect ke halaman detail pesanan atau status (Sesuaikan route)
                         window.location.href = "/pesanan/status"; 
                     },
                     onPending: function(result) {
@@ -236,7 +245,6 @@
                     },
                     onClose: function() {
                         console.log('Pop-up ditutup pelanggan');
-                        // Opsional: Redirect ke riwayat pesanan karena data sudah tersimpan berstatus 'Pending'
                         alert('Anda menutup jendela pembayaran. Pesanan tersimpan di menu Riwayat.');
                         window.location.href = "/pesanan/status";
                     }
