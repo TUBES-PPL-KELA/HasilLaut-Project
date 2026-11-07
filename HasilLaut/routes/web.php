@@ -33,3 +33,5 @@ Route::prefix('admin/stok')->group(function () {
 // Route Webhook Midtrans (PBI-15 & PBI-02 FIFO)
 Route::post('/midtrans/webhook', [CheckoutController::class, 'webhook'])->name('midtrans.webhook');
 
+Route::get('/katalog/{id}', [ProductController::class, 'show'])->name('pembeli.produk.detail');
+

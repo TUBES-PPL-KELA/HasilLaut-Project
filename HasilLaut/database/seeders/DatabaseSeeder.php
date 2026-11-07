@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // 1. Buat User Admin
+        // **Buat User Admin**
         $admin = User::create([
             'name' => 'Andi M. (Admin)',
             'username' => 'admin_pangandaran',
@@ -21,30 +21,31 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        // 2. Buat Kategori
-       $kategoriIkan = Category::create(['name' => 'Ikan Segar']);
-       $kategoriUdang = Category::create(['name' => 'Udang & Kepiting']);
+        // **Buat Kategori**
+        $kategoriIkan = Category::create(['name' => 'Ikan Segar']);
+        $kategoriUdang = Category::create(['name' => 'Udang & Kepiting']);
 
-        // 3. Buat Produk
+        // **Buat Produk Ikan Kakap dengan Link Gambar Pilihan Anda**
         $produk1 = Product::create([
             'name' => 'Ikan Kakap Merah Segar (Loin)',
             'description' => 'Ikan kakap segar kualitas ekspor',
             'price' => 85000,
-            'image' => 'kakap.jpg',
+            'image' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ7NBMvNbyUibW3UfWL_rkX7E1DnRHD0Ns2Km2VsGlYvw&s=10',
             'max_storage_days' => 5,
             'categories_id_categories' => $kategoriIkan->id_categories,
         ]);
 
+        // **Buat Produk Udang Windu dengan Link Gambar Pilihan Anda**
         $produk2 = Product::create([
             'name' => 'Udang Windu Laut Segar',
             'description' => 'Udang windu segar tangkapan nelayan',
             'price' => 120000,
-            'image' => 'udang.jpg',
+            'image' => 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQOpbSpoOvc-zfa8EXN0lKGZQjDQW6Dtanb79vprfSmog&s=10',
             'max_storage_days' => 3,
             'categories_id_categories' => $kategoriUdang->id_categories,
         ]);
 
-        // 4. Buat Batch Inventaris untuk Produk 1
+        // **Buat Batch Inventaris untuk Produk 1**
         InventoryBatch::create([
             'received_date' => '2026-10-10',
             'stock' => 45.0,
@@ -61,7 +62,7 @@ class DatabaseSeeder extends Seeder
             'product_id_product' => $produk1->id_product,
         ]);
 
-        // 5. Buat Batch Inventaris untuk Produk 2
+        // **Buat Batch Inventaris untuk Produk 2**
         InventoryBatch::create([
             'received_date' => '2026-10-12',
             'stock' => 20.0,

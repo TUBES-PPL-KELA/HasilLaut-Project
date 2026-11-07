@@ -9,7 +9,7 @@
 <body class="bg-slate-50 font-sans text-slate-800 min-h-screen flex flex-col justify-between">
 
     <div class="flex flex-1">
-        <aside class="w-64 bg-white border-r border-slate-200 flex flex-col justify-between p-6 hidden lg:flex">
+        <aside class="w-64 bg-white border-r border-slate-200 flex flex-col justify-between p-6 hidden; lg:flex">
             <div>
                 <div class="flex items-center gap-2 mb-10">
                     <span class="text-xl font-bold tracking-tight text-[#013137]">HASILLAUT</span>
@@ -80,26 +80,15 @@
                                     </div>
 
                                     <div class="flex items-center gap-6">
-                                        <form action="{{ route('cart.update', $item->id_cart_items) }}" method="POST" class="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+                                    <form action="{{ route('cart.update', $item->id_cart_items) }}" method="POST" class="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
                                             @csrf
                                             @method('PUT')
                                             <input type="number" name="quantity" value="{{ $item->quantity }}" min="0" 
-                                                onchange="if(this.value == 0) { 
-                                                    if(confirm('Apakah Anda ingin menghapus produk ini dari keranjang?')) {
-                                                        this.form.action = '{{ route('cart.destroy', $item->id_cart_items) }}';
-                                                        let methodInput = this.form.querySelector('input[name=&quot;_method&quot;]');
-                                                        if(methodInput) methodInput.value = 'DELETE';
-                                                        this.form.submit();
-                                                    } else {
-                                                        this.value = 1;
-                                                    }
-                                                } else {
-                                                    this.form.submit();
-                                                }" 
+                                                data-destroy-route="{{ route('cart.destroy', $item->id_cart_items) }}"
+                                                onchange="updateQuantity(this)" 
                                                 class="w-14 text-center text-xs bg-transparent py-1.5 focus:outline-none font-medium">
                                             <span class="text-xs text-slate-500 pr-2">kg</span>
                                         </form>
-
                                         <span class="font-bold text-sm text-slate-800 w-28 text-right">
                                             Rp {{ number_format($item->product->price * $item->quantity, 0, ',', '.') }}
                                         </span>
@@ -203,6 +192,24 @@
             </footer>
         </main>
     </div>
-
+    <script>
+function updateQuantity(input) {
+    let form = input.form;
+    let destroyRoute = input.getAttribute('data-destroy-route');
+    
+    if (input.value == 0) {
+        if (confirm('Apakah Anda ingin menghapus produk ini dari keranjang?')) {
+            form.action = destroyRoute;
+            let methodInput = form.querySelector('input[name="_method"]');
+            if (methodInput) methodInput.value = 'DELETE';
+            form.submit();
+        } else {
+            input.value = 1;
+        }
+    } else {
+        form.submit();
+    }
+}
+</script>
 </body>
 </html>

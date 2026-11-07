@@ -74,4 +74,15 @@ class ProductController extends Controller
                          ->withErrors(['error' => 'Gagal menyimpan: ' . $e->getMessage()]);
         }
     }
+
+    public function show($id)
+    {
+        // Ambil data produk saja tanpa with('reviews')
+        $product = Product::findOrFail($id);
+
+        // Ambil produk lainnya untuk rekomendasi di bagian bawah (maksimal 4 produk)
+        $relatedProducts = Product::where('id_product', '!=', $id)->take(4)->get();
+
+        return view('pembeli.detail-produk', compact('product', 'relatedProducts'));
+    }
 }
