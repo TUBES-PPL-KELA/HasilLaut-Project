@@ -28,7 +28,6 @@
     <!-- SIDEBAR KIRI -->
     <aside class="w-72 bg-white border-r border-gray-100 flex flex-col h-full shrink-0 shadow-sm z-20">
         <div class="h-24 flex items-center px-8 border-b border-gray-50 mt-2">
-            <!-- Panggilan gambar logo diperbaiki ukurannya agar besar -->
             <img src="{{ asset('images/hasillaut-logo.png') }}" alt="HasilLaut Logo" class="h-14 w-auto object-contain">
         </div>
 
@@ -68,7 +67,7 @@
     </aside>
 
     <!-- KONTEN UTAMA KANAN -->
-    <main class="flex-1 flex flex-col h-full overflow-hidden bg-white z-10">
+    <main class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 z-10">
         
         <div class="flex-1 overflow-y-auto p-10 lg:p-14">
             
@@ -79,8 +78,18 @@
                     <span class="text-gray-400">Tambah Hasil Laut Baru</span>
                 </nav>
                 <h2 class="text-3xl font-extrabold text-gray-900 mb-2 tracking-tight">Tambah Hasil Laut Baru</h2>
-                <p class="text-gray-500 font-medium">Formulir penambahan master produk baru yang terhubung ke basis data ERD product, categories, dan inventory_logs.</p>
+                <p class="text-gray-500 font-medium">Formulir penambahan master produk baru yang terhubung ke basis data ERD product dan inventory_logs.</p>
             </div>
+
+            @if($errors->any())
+                <div class="max-w-5xl mx-auto mb-6 p-4 bg-red-50 text-red-700 rounded-xl border border-red-200 text-sm font-bold shadow-sm">
+                    <ul class="list-disc pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <div class="max-w-5xl mx-auto bg-white rounded-3xl shadow-sm border border-gray-200 p-10">
                 <form action="{{ route('admin.product.store') }}" method="POST" enctype="multipart/form-data">
@@ -91,19 +100,16 @@
                         <div class="lg:col-span-5 space-y-8">
                             <div>
                                 <label class="block text-sm font-extrabold text-gray-900 mb-3">Unggah Foto Produk</label>
-                                <div class="mt-1 flex justify-center px-6 py-28 border-2 border-gray-300 border-dashed rounded-2xl bg-white hover:bg-gray-50 transition cursor-pointer">
-                                    <div class="space-y-2 text-center">
-                                        <label for="image" class="cursor-pointer font-extrabold text-teal-700 hover:text-teal-900">
-                                            <span>Klik untuk memilih file foto</span>
-                                            <input id="image" name="image" type="file" class="sr-only" accept="image/jpeg, image/png, image/jpg" required>
-                                        </label>
+                                <div class="mt-1 relative flex flex-col justify-center items-center w-full h-[300px] border-2 border-gray-300 border-dashed rounded-2xl bg-white hover:bg-gray-50 transition overflow-hidden group">
+                                    <div id="upload-hint" class="space-y-2 text-center flex flex-col items-center pointer-events-none z-0">
+                                        <span class="font-extrabold text-teal-700">Klik untuk memilih file foto</span>
                                         <p class="text-xs text-gray-400 font-bold mt-2">Format: JPG, PNG (Maks. 2MB)</p>
                                     </div>
+                                    <img id="image-preview" class="hidden absolute inset-0 w-full h-full object-cover z-10" />
+                                    <input id="image" name="image" type="file" accept="image/jpeg, image/png, image/jpg" required onchange="previewImage(event)"
+                                        class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20">
                                 </div>
-                                @error('image') <span class="text-red-500 text-xs mt-2 block font-bold">{{ $message }}</span> @enderror
                             </div>
-
-                          
                         </div>
 
                         <!-- Kanan: Form -->
@@ -111,44 +117,46 @@
                             <div>
                                 <label for="name" class="block text-sm font-extrabold text-gray-900 mb-2">Nama Produk</label>
                                 <input type="text" name="name" id="name" value="{{ old('name') }}" placeholder="Contoh: Ikan Kerapu Segar Pesisir" required 
-                                    class="w-full px-5 py-4 bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-teal-700 focus:border-teal-700 outline-none font-medium">
-                                @error('name') <span class="text-red-500 text-xs mt-1 block font-bold">{{ $message }}</span> @enderror
+                                    class="w-full px-5 py-4 bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-teal-700 focus:border-teal-700 outline-none font-medium transition">
+                            </div>
+
+                            <!-- INPUT KATEGORI DIKEMBALIKAN -->
+                            <div>
+                                <label for="categories_id_categories" class="block text-sm font-extrabold text-gray-900 mb-2">Kategori</label>
+                                <select name="categories_id_categories" id="categories_id_categories" required 
+                                    class="w-full px-5 py-4 bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-xl focus:ring-teal-700 focus:border-teal-700 outline-none font-medium transition">
+                                    <option value="">Pilih Kategori Produk</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id_categories }}" {{ old('categories_id_categories') == $category->id_categories ? 'selected' : '' }}>
+                                            {{ $category->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-7">
                                 <div>
-                                    <label for="categories_id_categories" class="block text-sm font-extrabold text-gray-900 mb-2">Kategori</label>
-                                    <select name="categories_id_categories" id="categories_id_categories" required 
-                                        class="w-full px-5 py-4 bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-xl focus:ring-teal-700 focus:border-teal-700 outline-none font-medium">
-                                        <option value="">Pilih Kategori Produk</option>
-                                        @foreach($categories as $category)
-                                            <option value="{{ $category->id_categories }}" {{ old('categories_id_categories') == $category->id_categories ? 'selected' : '' }}>
-                                                {{ $category->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                    @error('categories_id_categories') <span class="text-red-500 text-xs mt-1 block font-bold">{{ $message }}</span> @enderror
+                                    <label for="purchase_price" class="block text-sm font-extrabold text-gray-900 mb-2">Harga Beli per Kg (Modal)</label>
+                                    <input type="number" name="purchase_price" id="purchase_price" value="{{ old('purchase_price') }}" placeholder="Contoh: 80000" required min="0" step="100"
+                                        class="w-full px-5 py-4 bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-teal-700 focus:border-teal-700 outline-none font-medium transition">
                                 </div>
                                 <div>
-                                    <label for="purchase_price" class="block text-sm font-extrabold text-gray-900 mb-2">Harga beli per Kg</label>
-                                    <input type="number" name="purchase_price" id="purchase_price" value="{{ old('purchase_price') }}" placeholder="Contoh: 95000.00" required min="0" step="100"
-                                        class="w-full px-5 py-4 bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-teal-700 focus:border-teal-700 outline-none font-medium">
-                                    @error('purchase_price') <span class="text-red-500 text-xs mt-1 block font-bold">{{ $message }}</span> @enderror
+                                    <label for="price" class="block text-sm font-extrabold text-gray-900 mb-2">Harga Jual per Kg (Etalase)</label>
+                                    <input type="number" name="price" id="price" value="{{ old('price') }}" placeholder="Contoh: 95000" required min="0" step="100"
+                                        class="w-full px-5 py-4 bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-teal-700 focus:border-teal-700 outline-none font-medium transition">
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-7">
                                 <div>
-                                    <label for="stock" class="block text-sm font-extrabold text-gray-900 mb-2">Stok gudang (Kg)</label>
+                                    <label for="stock" class="block text-sm font-extrabold text-gray-900 mb-2">Stok gudang awal (Kg)</label>
                                     <input type="number" name="stock" id="stock" value="{{ old('stock', 1) }}" required min="1"
-                                        class="w-full px-5 py-4 bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-teal-700 focus:border-teal-700 outline-none font-medium">
-                                    @error('stock') <span class="text-red-500 text-xs mt-1 block font-bold">{{ $message }}</span> @enderror
+                                        class="w-full px-5 py-4 bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-teal-700 focus:border-teal-700 outline-none font-medium transition">
                                 </div>
                                 <div>
                                     <label for="received_date" class="block text-sm font-extrabold text-gray-900 mb-2">Tanggal masuk</label>
                                     <input type="date" name="received_date" id="received_date" value="{{ old('received_date', date('Y-m-d')) }}" required
-                                        class="w-full px-5 py-4 bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-xl focus:ring-teal-700 focus:border-teal-700 outline-none font-medium">
-                                    @error('received_date') <span class="text-red-500 text-xs mt-1 block font-bold">{{ $message }}</span> @enderror
+                                        class="w-full px-5 py-4 bg-gray-50 border border-gray-200 text-gray-600 text-sm rounded-xl focus:ring-teal-700 focus:border-teal-700 outline-none font-medium transition">
                                 </div>
                             </div>
 
@@ -156,19 +164,16 @@
                                 <div>
                                     <label for="max_storage_days" class="block text-sm font-extrabold text-gray-900 mb-2">Ambang batas segar (Hari)</label>
                                     <input type="number" name="max_storage_days" id="max_storage_days" value="{{ old('max_storage_days', 7) }}" required min="1"
-                                        class="w-full px-5 py-4 bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-teal-700 focus:border-teal-700 outline-none font-medium">
-                                    @error('max_storage_days') <span class="text-red-500 text-xs mt-1 block font-bold">{{ $message }}</span> @enderror
+                                        class="w-full px-5 py-4 bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-teal-700 focus:border-teal-700 outline-none font-medium transition">
                                 </div>
                             </div>
 
                             <div>
                                 <label for="description" class="block text-sm font-extrabold text-gray-900 mb-2">Deskripsi Produk</label>
                                 <textarea name="description" id="description" rows="5" placeholder="Tuliskan deskripsi singkat kesegaran, asal nelayan, dan kualitas rantai dingin..." required
-                                    class="w-full px-5 py-4 bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-teal-700 focus:border-teal-700 outline-none resize-none font-medium">{{ old('description') }}</textarea>
-                                @error('description') <span class="text-red-500 text-xs mt-1 block font-bold">{{ $message }}</span> @enderror
+                                    class="w-full px-5 py-4 bg-gray-50 border border-gray-200 text-gray-900 text-sm rounded-xl focus:ring-teal-700 focus:border-teal-700 outline-none resize-none font-medium transition">{{ old('description') }}</textarea>
                             </div>
 
-                            <!-- Tombol Submit -->
                             <div class="flex justify-end space-x-4 pt-4">
                                 <a href="{{ route('admin.product.index') }}" class="px-10 py-4 bg-white border border-gray-200 text-gray-700 font-extrabold rounded-xl hover:bg-gray-50 transition text-sm">
                                     Batal
@@ -186,5 +191,22 @@
         </div>
     </main>
 
+    <script>
+        function previewImage(event) {
+            const input = event.target;
+            const preview = document.getElementById('image-preview');
+            const hint = document.getElementById('upload-hint');
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    hint.classList.add('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
 </body>
 </html>
