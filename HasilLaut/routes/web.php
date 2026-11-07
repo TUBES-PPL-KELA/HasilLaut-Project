@@ -5,6 +5,7 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PembeliProfileController;
 
 Route::get('/admin/product', [ProductController::class, 'index'])->name('admin.product.index');
 Route::get('/admin/product/create', [ProductController::class, 'create'])->name('admin.product.create');
@@ -21,6 +22,8 @@ Route::get('/', function () {
 Route::prefix('pembeli')->name('pembeli.')->group(function () {
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/process', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/profile/edit', [PembeliProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile/update', [PembeliProfileController::class, 'update'])->name('profile.update');
 });
 
 // Route Modul PBI-02: Penyesuaian Stok Defect / Rusak
