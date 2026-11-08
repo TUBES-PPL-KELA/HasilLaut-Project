@@ -134,9 +134,9 @@
                 </div>
             @endforelse
         </div>
-        <div class="mt-6">
-            {{ $activeFlashSales->links() }}
-        </div>
+            <div class="mt-6">
+                {{ $activeFlashSales->links() }}
+            </div>
     </div>
 </div>
 @endsection

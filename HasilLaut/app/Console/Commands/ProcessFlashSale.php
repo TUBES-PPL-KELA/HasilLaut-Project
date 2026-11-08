@@ -16,7 +16,7 @@ class ProcessFlashSale extends Command
     // Deskripsi perintah
     protected $description = 'Otomatis memindahkan stok batch yang melampaui max_storage_days ke etalase Flash Sale';
 
-    public function handle()
+     public function handle()
     {
         $discount = Discount::first();
         if (!$discount) {
@@ -34,11 +34,11 @@ class ProcessFlashSale extends Command
 
         $processedCount = 0;
 
-        foreach ($batches as $batch) {
+         foreach ($batches as $batch) {
             // Lewati jika produk tidak memiliki batas hari simpan
             if (!$batch->product || !$batch->product->max_storage_days) {
                 continue; 
-            }
+            }  
 
             $receivedDate = Carbon::parse($batch->received_date);
             // Rumus: Tanggal Masuk + Batas Hari = Tanggal Basi

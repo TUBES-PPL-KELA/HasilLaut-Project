@@ -34,7 +34,7 @@ Route::prefix('admin/stok')->group(function () {
 });
 
 // Route Modul PBI-03: Flash Sale Otomatis Stok Lama
-Route::prefix('admin/flash-sale')->group(function () {
+ Route::prefix('admin/flash-sale')->group(function () {
     Route::get('/', [App\Http\Controllers\FlashSaleController::class, 'index'])->name('admin.flash_sale.index');
     Route::post('/discount', [App\Http\Controllers\FlashSaleController::class, 'updateGlobalDiscount'])->name('admin.flash_sale.discount.store');
     Route::delete('/hentikan/{id}', [App\Http\Controllers\FlashSaleController::class, 'destroy'])->name('admin.flash_sale.destroy');

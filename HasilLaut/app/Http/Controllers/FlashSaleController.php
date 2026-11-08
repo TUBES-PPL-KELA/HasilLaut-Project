@@ -11,7 +11,7 @@ use Carbon\Carbon;
 class FlashSaleController extends Controller
 {
     // Menampilkan Halaman Dasbor Flash Sale
-    public function index()
+     public function index()
     {
         // Ambil diskon global (karena disamaratakan, kita ambil data diskon pertama)
         $discount = Discount::first();

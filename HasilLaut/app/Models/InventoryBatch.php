@@ -29,7 +29,7 @@ class InventoryBatch extends Model
         return $this->hasMany(StockAdjustment::class, 'inventory_batches_id_inventory_batches', 'id_inventory_batches');
     }
 
-    public function flashSaleItem()
+     public function flashSaleItem()
     {
         return $this->hasOne(FlashSaleItem::class, 'inventory_batches_id_inventory_batches', 'id_inventory_batches');
     }
