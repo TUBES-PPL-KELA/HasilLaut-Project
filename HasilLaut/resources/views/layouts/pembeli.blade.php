@@ -16,13 +16,12 @@
 </head>
 <body class="bg-slate-50 text-gray-800 antialiased flex h-screen overflow-hidden">
 
-    <!-- 1. KOLOM KIRI: Sidebar Pembeli -->
+    <!-- 1. KOLOM KIRI: Sidebar Pembeli (Tetap diam/fixed di kiri) -->
     <aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0 h-screen">
         
         <!-- BAGIAN LOGO -->
         <div class="p-6 border-b border-gray-100 flex items-center justify-center">
             <a href="#" class="flex items-center gap-2">
-                <!-- Ubah path asset('images/logo-hasillaut.png') sesuai nama file logo kamu -->
                 <img src="{{ asset('images/hasillaut-logo.png') }}" alt="HASILLAUT Logo" style="max-width: 140px; height: auto;">
             </a>
         </div>
@@ -57,7 +56,7 @@
         </div>
     </aside>
 
-    <!-- 2. KOLOM KANAN: Berisi Navbar Atas & Konten Utama -->
+    
     <div class="flex-1 flex flex-col h-screen overflow-hidden">
         
         <!-- Navbar Atas -->
@@ -75,17 +74,18 @@
             </div>
         </header>
 
-        <!-- Area Konten Utama (Scrollable) -->
-        <main class="flex-1 overflow-y-auto bg-slate-50 p-8">
-            <div class="max-w-[1400px] mx-auto w-full">
-                @yield('content')
-            </div>
-        </main>
+        <div class="flex-1 overflow-y-auto flex flex-col justify-between bg-slate-50">
+            
+            <!-- Konten Utama -->
+            <main class="p-8">
+                <div class="max-w-[1400px] mx-auto w-full">
+                    @yield('content')
+                </div>
+            </main>
 
-        <!-- Footer -->
-        <footer class="bg-white border-t border-gray-200 py-4 px-8 text-center text-xs text-gray-500 flex-shrink-0">
-            &copy; 2026 HasilLaut. Seluruh hak cipta dilindungi.
-        </footer>
+            @include('partials.footer-pembeli')
+            
+        </div>
     </div>
 
 </body>
