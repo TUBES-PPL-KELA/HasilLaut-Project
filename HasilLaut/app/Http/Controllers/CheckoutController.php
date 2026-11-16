@@ -199,29 +199,9 @@ class CheckoutController extends Controller
                         // LOGIKA PBI-02: PEMOTONGAN STOK FIFO
                         // ==========================================
                         $orderItems = OrderItem::where('orders_id_orders', $order->id_orders)->get();
-                        
+
                         foreach ($orderItems as $item) {
-                            $qtyToDeduct = $item->quantity;
-                            
-                            // Ambil batch stok dari yang paling lama (ASC)
-                            $batches = \App\Models\InventoryBatch::where('product_id_product', $item->product_id_product)
-                                ->where('stock_qty', '>', 0)
-                                ->orderBy('received_date', 'asc')
-                                ->get();
-                                
-                            foreach ($batches as $batch) {
-                                if ($qtyToDeduct <= 0) break; // Berhenti jika kebutuhan stok sudah terpenuhi
-                                
-                                if ($batch->stock_qty >= $qtyToDeduct) {
-                                    $batch->stock_qty -= $qtyToDeduct;
-                                    $batch->save();
-                                    $qtyToDeduct = 0;
-                                } else {
-                                    $qtyToDeduct -= $batch->stock_qty;
-                                    $batch->stock_qty = 0;
-                                    $batch->save();
-                                }
-                            }
+                            \App\Services\StockService::deductFifo($item->product_id_product, $item->quantity);
                         }
                         // ==========================================
                     }

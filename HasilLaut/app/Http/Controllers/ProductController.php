@@ -74,4 +74,38 @@ class ProductController extends Controller
                          ->withErrors(['error' => 'Gagal menyimpan: ' . $e->getMessage()]);
         }
     }
+
+    public function katalog(Request $request)
+    {
+        $query = Product::with('category')
+            ->withSum('inventoryBatches as total_stock', 'stock'); // total stok semua batch
+
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($w) use ($q) {
+                $w->where('name', 'like', "%{$q}%")
+                ->orWhere('description', 'like', "%{$q}%");
+            });
+        }
+
+        if ($request->filled('kategori')) {
+            $query->where('categories_id_categories', $request->kategori);
+        }
+
+        if ($request->boolean('tersedia')) {
+            $query->whereHas('inventoryBatches', fn ($b) => $b->where('stock', '>', 0));
+        }
+
+        match ($request->sort) {
+            'harga_asc'  => $query->orderBy('price'),
+            'harga_desc' => $query->orderByDesc('price'),
+            'nama'       => $query->orderBy('name'),
+            default      => $query->orderByDesc('id_product'),
+        };
+
+        $products   = $query->paginate(8)->withQueryString();
+        $categories = Category::withCount('products')->get();
+
+        return view('pembeli.katalog', compact('products', 'categories'));
+    }
 }
