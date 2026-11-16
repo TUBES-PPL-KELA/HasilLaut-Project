@@ -17,7 +17,7 @@
             </a>
 
             <!-- Katalog Ikan -->
-            <a href="#" class="flex items-center px-4 py-3 rounded-lg transition-colors group {{ request()->routeIs('pembeli.katalog*') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-gray-600 hover:bg-teal-50 hover:text-teal-800 font-medium' }}">
+            <a href="" class="flex items-center px-4 py-3 rounded-lg transition-colors group {{ request()->routeIs('pembeli.katalog*') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-gray-600 hover:bg-teal-50 hover:text-teal-800 font-medium' }}">
                 <i class="fas fa-store w-5 h-5 {{ request()->routeIs('pembeli.katalog*') ? 'text-teal-600' : 'text-gray-400 group-hover:text-teal-600' }} mr-3"></i>
                 <span>Katalog Ikan</span>
             </a>

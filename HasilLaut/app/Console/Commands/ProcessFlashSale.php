@@ -10,13 +10,10 @@ use Carbon\Carbon;
 
 class ProcessFlashSale extends Command
 {
-    // Nama perintah untuk dijalankan di terminal: php artisan flashsale:process
     protected $signature = 'flashsale:process';
-
-    // Deskripsi perintah
     protected $description = 'Otomatis memindahkan stok batch yang melampaui max_storage_days ke etalase Flash Sale';
 
-     public function handle()
+    public function handle()
     {
         $discount = Discount::first();
         if (!$discount) {
@@ -26,36 +23,32 @@ class ProcessFlashSale extends Command
 
         $today = Carbon::today();
         
-        // Cari batch yang ada stoknya dan BELUM masuk ke flash sale
+        // Cari batch yang ada stoknya, belum masuk flash sale, dan tidak dikecualikan admin
         $batches = InventoryBatch::with('product')
             ->doesntHave('flashSaleItem')
             ->where('stock', '>', 0)
+            ->where('is_flash_sale_excluded', false)
             ->get();
 
         $processedCount = 0;
 
-         foreach ($batches as $batch) {
-            // Lewati jika produk tidak memiliki batas hari simpan
+        foreach ($batches as $batch) {
             if (!$batch->product || !$batch->product->max_storage_days) {
                 continue; 
             }  
 
-            $receivedDate = Carbon::parse($batch->received_date);
-            // Rumus: Tanggal Masuk + Batas Hari = Tanggal Basi
+            // Reset jam ke 00:00:00 agar perbandingan hari akurat
+            $receivedDate = Carbon::parse($batch->received_date)->startOfDay();
             $expiryDate = $receivedDate->copy()->addDays($batch->product->max_storage_days);
 
-            // Jika Hari Ini sudah melewati atau tepat pada Tanggal Basi
             if ($today->greaterThanOrEqualTo($expiryDate)) {
-                
-                // Kalkulasi Harga Coret otomatis
                 $normalPrice = $batch->product->price;
                 $discountAmount = $normalPrice * ($discount->percent / 100);
                 $flashSalePrice = $normalPrice - $discountAmount;
 
-                // Masukkan ke etalase Flash Sale
                 FlashSaleItem::create([
                     'flash_sale_price' => $flashSalePrice,
-                    'stock' => $batch->stock, // Tarik semua sisa stok batch ini
+                    'stock' => $batch->stock,
                     'inventory_batches_id_inventory_batches' => $batch->id_inventory_batches,
                     'discount_id_discount' => $discount->id_discount
                 ]);

@@ -11,7 +11,7 @@ class InventoryBatch extends Model
     protected $primaryKey = 'id_inventory_batches';
 
     protected $fillable = [
-        'received_date', 'stock', 'purchase_price', 'users_id_users', 'product_id_product'
+        'received_date', 'stock', 'purchase_price', 'users_id_users', 'product_id_product', 'is_flash_sale_excluded'
     ];
 
     public function product()
@@ -32,5 +32,18 @@ class InventoryBatch extends Model
      public function flashSaleItem()
     {
         return $this->hasOne(FlashSaleItem::class, 'inventory_batches_id_inventory_batches', 'id_inventory_batches');
+    }
+
+    protected static function booted(): void
+    {
+        static::updated(function (InventoryBatch $batch) {
+            if ($batch->wasChanged('stock')) {
+                $newStock = max(0, (float) $batch->stock);
+
+                FlashSaleItem::where('inventory_batches_id_inventory_batches', $batch->id_inventory_batches)
+                    ->where('stock', '>', $newStock)
+                    ->update(['stock' => $newStock]);
+            }
+        });
     }
 }
