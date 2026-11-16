@@ -24,6 +24,7 @@ Route::prefix('pembeli')->name('pembeli.')->group(function () {
     Route::post('/checkout/process', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/profile/edit', [PembeliProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/update', [PembeliProfileController::class, 'update'])->name('profile.update');
+    Route::get('/produk/{id}', [KatalogController::class, 'show'])->name('produk.detail');
 });
 
 // Route Modul PBI-02: Penyesuaian Stok Defect / Rusak
