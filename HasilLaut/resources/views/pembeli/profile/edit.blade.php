@@ -3,18 +3,18 @@
 @section('content')
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
     
-    @if(session('success'))
-        <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-sm font-medium flex items-center gap-2">
-            <i class="bi bi-check-circle-fill text-lg"></i>
-            <span>{{ session('success') }}</span>
-        </div>
-    @endif
+    <!-- 1. Notifikasi Sukses & Error setelah klik Simpan -->
+        @if(session('success'))
+            <div class="mb-4 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-sm font-medium">
+                {{ session('success') }}
+            </div>
+        @endif
 
-    <!-- Status Geofencing Banner -->
-    <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl text-sm flex items-center gap-3">
-        <i class="bi bi-check-circle-fill text-emerald-600 text-lg"></i>
-        <span>Status Geofencing: Titik koordinat valid dalam wilayah jangkauan operasional HasilLaut Hub Pangandaran. Akun memenuhi syarat transaksi.</span>
-    </div>
+        @if(session('error'))
+            <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm font-medium">
+                {{ session('error') }}
+            </div>
+        @endif
 
     <!-- Tombol Navigasi / Tab Atas -->
     <div class="flex flex-wrap gap-3 mb-6">

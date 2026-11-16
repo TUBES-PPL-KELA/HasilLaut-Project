@@ -82,10 +82,14 @@
                                         </div>
                                         <div>
                                             <h6 class="font-bold text-gray-900 text-sm mb-1">{{ $item->product->name ?? 'Produk Hasil Laut' }}</h6>
-                                            <p class="text-xs text-gray-500">{{ $item->quantity }} kg • Hub Pangandaran</p>
+                                            <p class="text-xs text-gray-500">
+                                                {{ $item->quantity }} kg × Rp {{ number_format($item->effective_price ?? 0, 0, ',', '.') }} • Hub Pangandaran
+                                            </p>
                                         </div>
                                     </div>
-                                    <span class="font-bold text-gray-900 text-sm">Rp {{ number_format($item->quantity * ($item->product->price ?? 0), 0, ',', '.') }}</span>
+                                    <span class="font-bold text-gray-900 text-sm">
+                                        Rp {{ number_format($item->quantity * ($item->effective_price ?? 0), 0, ',', '.') }}
+                                    </span>
                                 </div>
                             @endforeach
                         </div>
@@ -266,4 +270,4 @@
         }
     });
 </script>
-@endsection
+@endsection 
