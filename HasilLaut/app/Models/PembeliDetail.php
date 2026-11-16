@@ -9,7 +9,17 @@ class PembeliDetail extends Model
 {
     use HasFactory;
 
-    protected $table = 'pembeli_detail'; // Menyesuaikan dengan nama tabel di database
+    protected $table = 'pembeli_detail';
     
-    // ... kode lainnya
+    // Sesuaikan dengan nama kolom primary key asli di tabel pembeli_detail
+    protected $primaryKey = 'id_pembeli_detail'; 
+
+    protected $fillable = [
+        'users_id_users',
+        'phone_number',
+        'address',
+        'latitude',
+        'longitude',
+        'is_valid_geofencing',
+    ];
 }
