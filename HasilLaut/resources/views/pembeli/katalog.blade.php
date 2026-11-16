@@ -71,30 +71,33 @@
             </span>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             @forelse($products as $product)
                 @php
                     $imgUrl = $product->image
                         ? (\Illuminate\Support\Str::startsWith($product->image, 'http') ? $product->image : asset('storage/' . $product->image))
                         : 'https://images.unsplash.com/photo-1534482498418-fef13c323f46?auto=format&fit=crop&w=500&q=80';
+                    $detailUrl = route('pembeli.produk.detail', $product->id_product);
                 @endphp
-                <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
+                <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group">
                     <div>
-                        <!-- Gambar & Badge Kategori -->
-                        <div class="relative h-44 bg-gray-100">
-                            <img src="{{ $imgUrl }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                        <!-- Gambar & Badge Kategori (Klik ke Detail Reguler) -->
+                        <a href="{{ $detailUrl }}" class="block relative h-44 bg-gray-100 overflow-hidden">
+                            <img src="{{ $imgUrl }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                             
                             <span class="absolute bottom-3 left-3 bg-black/65 backdrop-blur-sm text-white text-[11px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
                                 <i class="bi bi-tag-fill text-teal-300 text-[10px]"></i>
                                 {{ $product->category->name ?? 'Hasil Laut' }}
                             </span>
-                        </div>
+                        </a>
 
                         <!-- Info Produk -->
                         <div class="p-4">
-                            <h3 class="font-bold text-gray-900 text-base truncate" title="{{ $product->name }}">
-                                {{ $product->name }}
-                            </h3>
+                            <a href="{{ $detailUrl }}" class="block">
+                                <h3 class="font-bold text-gray-900 text-base truncate group-hover:text-[#164E56] transition" title="{{ $product->name }}">
+                                    {{ $product->name }}
+                                </h3>
+                            </a>
                             <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
                                 <i class="bi bi-box-seam"></i>
                                 @if($product->available_stock > 0)

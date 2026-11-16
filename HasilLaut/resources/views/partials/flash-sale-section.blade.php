@@ -17,12 +17,13 @@
                 $imgUrl = ($product && $product->image)
                     ? (\Illuminate\Support\Str::startsWith($product->image, 'http') ? $product->image : asset('storage/' . $product->image))
                     : 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=500&q=80';
+                $detailUrl = route('pembeli.produk.detail', ['id' => $product->id_product, 'flash_sale_item_id' => $item->id_flash_sale_item]);
             @endphp
-            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between">
+            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group">
                 <div>
-                    <!-- Gambar & Badge -->
-                    <div class="relative h-44 bg-gray-100">
-                        <img src="{{ $imgUrl }}" alt="{{ $product->name }}" class="w-full h-full object-cover">
+                    <!-- Gambar & Badge (Klik ke Detail Flash Sale) -->
+                    <a href="{{ $detailUrl }}" class="block relative h-44 bg-gray-100 overflow-hidden">
+                        <img src="{{ $imgUrl }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                         
                         <!-- Badge Diskon Kiri Atas -->
                         <span class="absolute top-3 left-3 bg-red-600 text-white text-xs font-extrabold px-2.5 py-1 rounded-lg shadow">
@@ -34,13 +35,15 @@
                             <i class="bi bi-tag-fill text-teal-300 text-[10px]"></i>
                             {{ $product->category->name ?? 'Hasil Laut' }}
                         </span>
-                    </div>
+                    </a>
 
                     <!-- Info Produk -->
                     <div class="p-4">
-                        <h3 class="font-bold text-gray-900 text-base truncate" title="{{ $product->name }}">
-                            {{ $product->name }}
-                        </h3>
+                        <a href="{{ $detailUrl }}" class="block">
+                            <h3 class="font-bold text-gray-900 text-base truncate group-hover:text-[#164E56] transition" title="{{ $product->name }}">
+                                {{ $product->name }}
+                            </h3>
+                        </a>
                         <p class="text-xs text-amber-700 font-medium mt-1 flex items-center gap-1">
                             <i class="bi bi-box-seam"></i> Sisa stok promo: {{ $item->stock }} kg
                         </p>
