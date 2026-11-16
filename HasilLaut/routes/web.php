@@ -12,14 +12,16 @@ Route::get('/admin/product/create', [ProductController::class, 'create'])->name(
 Route::post('/admin/product', [ProductController::class, 'store'])->name('admin.product.store');
 
 Route::get('/keranjang', [CartController::class, 'index'])->name('pembeli.cart');
+Route::post('/keranjang/tambah', [CartController::class, 'store'])->name('cart.store');
 Route::put('/keranjang/update/{id}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/keranjang/hapus/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('beranda');
 
 // Pastikan dibungkus middleware auth jika memerlukan login pembeli
 Route::prefix('pembeli')->name('pembeli.')->group(function () {
+    Route::get('/', [ProductController::class, 'katalog'])->name('katalog');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/process', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/profile/edit', [PembeliProfileController::class, 'edit'])->name('profile.edit');
