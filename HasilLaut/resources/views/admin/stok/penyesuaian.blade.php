@@ -83,6 +83,7 @@
                 <div>
                     <label class="block text-[13px] font-bold text-gray-800 mb-2">Alasan Pengurangan / Defect</label>
                     <select name="reason" required class="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm shadow-sm focus:outline-none focus:border-gray-500 focus:ring-1 focus:ring-gray-500 transition">
+                        <option value="">-- Pilih Alasan Penyesuaian --</option>
                         <option value="Busuk / Rusak">Ikan Busuk atau Rusak Fisik</option>
                         <option value="Penyusutan Timbangan">Penyusutan Timbangan</option>
                         <option value="Kesalahan Input">Kesalahan Input Data</option>
