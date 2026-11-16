@@ -16,13 +16,15 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // **Buat User Admin**
-        $admin = User::create([
-            'name' => 'Andi M. (Admin)',
-            'username' => 'admin_pangandaran',
-            'password' => Hash::make('password123'),
-            'role' => 'admin',
-        ]);
+        // 1. Buat User Admin
+        $admin = User::updateOrCreate(
+            ['username' => 'admin_pangandaran'],
+            [
+                'name' => 'Andi M. (Admin)',
+                'password' => Hash::make('password123'),
+                'role' => 'admin',
+            ]
+        );
 
         // **Buat Kategori**
         $kategoriIkan = Category::create(['name' => 'Ikan Segar']);
