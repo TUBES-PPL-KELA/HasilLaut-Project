@@ -19,7 +19,7 @@ Route::delete('/keranjang/hapus/{id}', [CartController::class, 'destroy'])->name
 
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('beranda');
 
 Route::prefix('pembeli')->name('pembeli.')->group(function () {
     Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog');

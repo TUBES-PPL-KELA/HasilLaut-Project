@@ -171,7 +171,7 @@
 
                     <div class="flex items-center justify-between mb-6">
                         <h5 class="font-bold text-gray-900 text-base mb-0">Total Pembayaran</h5>
-                        <h4 class="font-bold text-emerald-600 text-lg mb-0">Rp {{ number_format(($totalAmount ?? 0) + 2500, 0, ',', '.') }}</h4>
+                        <h4 class="font-bold text-emerald-600 text-lg mb-0">Rp {{ number_format($totalAmount ?? 0, 0, ',', '.') }}</h4>
                     </div>
 
                     <!-- Tombol Eksekusi -->

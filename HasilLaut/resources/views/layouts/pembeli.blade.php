@@ -34,7 +34,8 @@
            <a href="{{ route('pembeli.katalog') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium {{ request()->routeIs('pembeli.katalog*') ? 'bg-emerald-50 text-[#1b4d3e] font-bold' : 'text-gray-600 hover:bg-gray-50' }}">
                 <i class="bi bi-grid text-lg"></i> Katalog Ikan
             </a>
-            <a href="{{ route('pembeli.checkout.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium bg-emerald-50 text-[#1b4d3e]">
+            <a href="{{ route('pembeli.checkout.index') }}"
+            class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium {{ request()->routeIs('pembeli.checkout*') ? 'bg-emerald-50 text-[#1b4d3e]' : 'text-gray-600 hover:bg-gray-50' }}">
                 <i class="bi bi-box-seam text-lg"></i> Pesanan Saya
             </a>
             <a href="{{ route('pembeli.profile.edit') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">
