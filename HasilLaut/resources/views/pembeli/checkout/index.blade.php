@@ -266,4 +266,4 @@
         }
     });
 </script>
-@endsection
+@endsection 
