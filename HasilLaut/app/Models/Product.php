@@ -32,4 +32,5 @@ class Product extends Model
     {
         return $this->hasMany(InventoryBatch::class, 'product_id_product', 'id_product');
     }
+
 }

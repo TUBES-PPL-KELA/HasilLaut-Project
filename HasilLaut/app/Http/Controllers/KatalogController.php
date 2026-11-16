@@ -67,4 +67,57 @@ class KatalogController extends Controller
             'categoryId'
         ));
     }
+
+    public function show(Request $request, $id)
+    {
+        // Ambil detail produk beserta kategori dan batch stok yang masih tersedia (urut FIFO)
+        $product = Product::with([
+            'category',
+            'inventoryBatches' => function ($query) {
+                $query->where('stock', '>', 0)->orderBy('received_date', 'asc');
+            }
+        ])->findOrFail($id);
+
+        // Cek apakah halaman dibuka dari kartu Flash Sale (?flash_sale_item_id=...)
+        $flashSaleItem = null;
+        if ($request->filled('flash_sale_item_id')) {
+            $flashSaleItem = FlashSaleItem::with(['inventoryBatch', 'discount'])
+                ->where('id_flash_sale_item', $request->query('flash_sale_item_id'))
+                ->where('stock', '>', 0)
+                ->whereHas('inventoryBatch', function ($q) use ($product) {
+                    $q->where('product_id_product', $product->id_product)
+                      ->where('stock', '>', 0);
+                })
+                ->first();
+        }
+
+        // Hitung stok tersedia dan tanggal masuk gudang (FIFO / Batch Flash Sale)
+        if ($flashSaleItem) {
+            $availableStock = (float) $flashSaleItem->stock;
+            $receivedDate = $flashSaleItem->inventoryBatch->received_date ?? null;
+        } else {
+            $availableStock = (float) $product->inventoryBatches->sum('stock');
+            $oldestBatch = $product->inventoryBatches->first();
+            $receivedDate = $oldestBatch ? $oldestBatch->received_date : null;
+        }
+
+        // Ambil 4 produk rekomendasi lainnya beserta stoknya
+        $relatedProducts = Product::with('inventoryBatches')
+            ->where('id_product', '!=', $product->id_product)
+            ->latest()
+            ->take(4)
+            ->get()
+            ->map(function ($rel) {
+                $rel->available_stock = (float) $rel->inventoryBatches->sum('stock');
+                return $rel;
+            });
+
+        return view('pembeli.detail-produk', compact(
+            'product',
+            'flashSaleItem',
+            'availableStock',
+            'receivedDate',
+            'relatedProducts'
+        ));
+    }
 }

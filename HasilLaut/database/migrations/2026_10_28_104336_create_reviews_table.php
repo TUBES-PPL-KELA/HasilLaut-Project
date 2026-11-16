@@ -12,8 +12,10 @@ return new class extends Migration
             $table->id('id_reviews');
             $table->tinyInteger('rating');
             $table->text('comment')->nullable();
+
             $table->foreignId('orders_id_orders')->constrained('orders', 'id_orders')->onDelete('cascade');
             $table->foreignId('users_id_users')->constrained('users', 'id_users')->onDelete('cascade');
+           
             $table->timestamps();
         });
     }
