@@ -6,20 +6,22 @@ use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PembeliProfileController;
+use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\PencarianProdukController;
 
 Route::get('/admin/product', [ProductController::class, 'index'])->name('admin.product.index');
 Route::get('/admin/product/create', [ProductController::class, 'create'])->name('admin.product.create');
 Route::post('/admin/product', [ProductController::class, 'store'])->name('admin.product.store');
 
 Route::get('/keranjang', [CartController::class, 'index'])->name('pembeli.cart');
+Route::post('/keranjang/tambah', [CartController::class, 'store'])->name('cart.store');
 Route::put('/keranjang/update/{id}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/keranjang/hapus/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', WelcomeController::class)->name('welcome');
+Route::get('/pembeli/pencarian-ikan', PencarianProdukController::class)->name('pembeli.pencarian-ikan');
 
-// Pastikan dibungkus middleware auth jika memerlukan login pembeli
 Route::prefix('pembeli')->name('pembeli.')->group(function () {
+    Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/process', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/profile/edit', [PembeliProfileController::class, 'edit'])->name('profile.edit');
@@ -36,6 +38,3 @@ Route::prefix('admin/stok')->group(function () {
 
 // Route Webhook Midtrans (PBI-15 & PBI-02 FIFO)
 Route::post('/midtrans/webhook', [CheckoutController::class, 'webhook'])->name('midtrans.webhook');
-
-Route::get('/katalog/{id}', [ProductController::class, 'show'])->name('pembeli.produk.detail');
-

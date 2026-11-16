@@ -51,6 +51,8 @@ class ProductController extends Controller
                 'description'              => $request->description,
                 'price'                    => $request->price,
                 'image'                    => $imagePath,
+                'is_top_tren'              => $request->boolean('is_top_tren'),
+                'hub_name'                 => $request->input('hub_name'),
             ]);
 
             
@@ -75,14 +77,37 @@ class ProductController extends Controller
         }
     }
 
-    public function show($id)
+    public function katalog(Request $request)
     {
-        // Ambil data produk saja tanpa with('reviews')
-        $product = Product::findOrFail($id);
+        $query = Product::with('category')
+            ->withSum('inventoryBatches as total_stock', 'stock'); // total stok semua batch
 
-        // Ambil produk lainnya untuk rekomendasi di bagian bawah (maksimal 4 produk)
-        $relatedProducts = Product::where('id_product', '!=', $id)->take(4)->get();
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($w) use ($q) {
+                $w->where('name', 'like', "%{$q}%")
+                ->orWhere('description', 'like', "%{$q}%");
+            });
+        }
 
-        return view('pembeli.detail-produk', compact('product', 'relatedProducts'));
+        if ($request->filled('kategori')) {
+            $query->where('categories_id_categories', $request->kategori);
+        }
+
+        if ($request->boolean('tersedia')) {
+            $query->whereHas('inventoryBatches', fn ($b) => $b->where('stock', '>', 0));
+        }
+
+        match ($request->sort) {
+            'harga_asc'  => $query->orderBy('price'),
+            'harga_desc' => $query->orderByDesc('price'),
+            'nama'       => $query->orderBy('name'),
+            default      => $query->orderByDesc('id_product'),
+        };
+
+        $products   = $query->paginate(8)->withQueryString();
+        $categories = Category::withCount('products')->get();
+
+        return view('pembeli.katalog', compact('products', 'categories'));
     }
 }

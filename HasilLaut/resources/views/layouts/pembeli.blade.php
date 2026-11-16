@@ -1,92 +1,79 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HasilLaut - Ikan Segar Langsung dari Nelayan</title>
-    <!-- CDN Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-    </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>@yield('title', 'HasilLaut | Pembeli')</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
 </head>
-<body class="bg-slate-50 text-gray-800 antialiased flex h-screen overflow-hidden">
-
-    <!-- 1. KOLOM KIRI: Sidebar Pembeli -->
-    <aside class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0 h-screen">
-        
-        <!-- BAGIAN LOGO -->
-        <div class="p-6 border-b border-gray-100 flex items-center justify-center">
-            <a href="#" class="flex items-center gap-2">
-                <!-- Ubah path asset('images/logo-hasillaut.png') sesuai nama file logo kamu -->
-                <img src="{{ asset('images/hasillaut-logo.png') }}" alt="HASILLAUT Logo" style="max-width: 140px; height: auto;">
-            </a>
-        </div>
-        
-        <!-- Menu Navigasi Sidebar -->
-        <nav class="flex-1 p-4 space-y-1 overflow-y-auto">
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">
-                <i class="bi bi-house-door text-lg"></i> Beranda
-            </a>
-            <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">
-                <i class="bi bi-grid text-lg"></i> Katalog Ikan
-            </a>
-            <a href="{{ route('pembeli.checkout.index') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium bg-emerald-50 text-[#1b4d3e]">
-                <i class="bi bi-box-seam text-lg"></i> Pesanan Saya
-            </a>
-            <a href="{{ route('pembeli.profile.edit') }}" class="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50">
-                <i class="bi bi-gear text-lg"></i> Pengaturan
-            </a>
+<body class="min-h-screen bg-slate-50 font-sans text-slate-800 antialiased">
+    <aside class="fixed inset-y-0 left-0 z-30 hidden w-56 flex-col border-r border-slate-100 bg-white lg:flex">
+        <a href="/" class="flex h-16 items-center border-b border-slate-100 px-6" aria-label="HasilLaut beranda">
+            <img src="{{ asset('images/logo.png') }}" alt="HasilLaut" class="h-10 w-auto object-contain">
+        </a>
+        <nav aria-label="Navigasi utama" class="space-y-1 px-3 py-5 text-sm font-medium">
+            <a href="/" class="flex items-center gap-3 rounded-lg bg-ocean-teal/10 px-3 py-2.5 text-ocean-teal">Beranda</a>
+            <a href="#katalog" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-midnight-teal">Katalog Ikan</a>
+            <a href="#flash-sale" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-midnight-teal">Pesanan Saya</a>
+            <a href="#footer" class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-600 hover:bg-slate-50 hover:text-midnight-teal">Pengaturan</a>
         </nav>
-
-        <!-- Bagian Profil User di Bawah Sidebar -->
-        <div class="p-4 border-t border-gray-100">
-            <div class="flex items-center gap-3 p-2.5 bg-gray-50 rounded-xl">
-                <div class="w-9 h-9 rounded-full bg-[#1b4d3e] text-white flex items-center justify-center font-bold text-xs">
-                    HS
-                </div>
-                <div class="overflow-hidden">
-                    <h6 class="font-bold text-xs text-gray-900 truncate">Hilya Shafwa</h6>
-                    <span class="text-[10px] text-gray-500 truncate block">Pembeli B2C</span>
+        <div class="mt-auto border-t border-slate-100 p-4">
+            <div class="flex items-center gap-3 rounded-lg bg-slate-50 p-3">
+                <span class="grid size-9 place-items-center rounded-full bg-ocean-teal/15 text-xs font-bold text-ocean-teal">HS</span>
+                <div class="min-w-0">
+                    <p class="truncate text-xs font-semibold text-midnight-teal">Hiya Shafwa</p>
+                    <p class="text-[11px] text-slate-500">Pembeli B2C</p>
                 </div>
             </div>
         </div>
     </aside>
 
-    <!-- 2. KOLOM KANAN: Berisi Navbar Atas & Konten Utama -->
-    <div class="flex-1 flex flex-col h-screen overflow-hidden">
-        
-        <!-- Navbar Atas -->
-        <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between flex-shrink-0 z-10">
-            <div class="flex items-center gap-2">
-                <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Area Pelanggan</span>
-            </div>
-            <div class="flex items-center gap-6">
-                <a href="#" class="text-sm font-medium text-gray-600 hover:text-[#1b4d3e]">Beranda</a>
-                <a href="#" class="text-sm font-medium text-gray-600 hover:text-[#1b4d3e]">Katalog</a>
-                <a href="{{ route('pembeli.cart') }}" class="relative text-gray-600 hover:text-[#1b4d3e]">
-                    <i class="bi bi-cart3 text-xl"></i>
-                    <span class="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">3</span>
-                </a>
-            </div>
+    <div class="min-h-screen lg:pl-56">
+        <header class="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-slate-100 bg-white/95 px-4 backdrop-blur sm:px-7">
+            <a href="/" class="flex h-10 shrink-0 items-center lg:hidden" aria-label="HasilLaut beranda">
+                <img src="{{ asset('images/logo.png') }}" alt="HasilLaut" class="h-10 w-auto max-w-[140px] object-contain">
+            </a>
+            <label class="relative ml-auto flex w-full max-w-xl items-center">
+                <span class="sr-only">Cari produk</span>
+                <svg class="absolute left-3 size-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+                <input type="search" placeholder="Cari ikan segar, udang, kepiting, atau lokasi hub pesisir..." class="h-10 w-full rounded-full border border-slate-200 bg-slate-50 pl-10 pr-4 text-xs outline-none transition placeholder:text-slate-400 focus:border-ocean-teal focus:bg-white focus:ring-2 focus:ring-ocean-teal/10">
+            </label>
+            <button type="button" class="relative grid size-9 shrink-0 place-items-center rounded-full border border-slate-200 text-midnight-teal" aria-label="Keranjang">
+                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 4h2l2.2 10.1a2 2 0 0 0 2 1.6h8.5a2 2 0 0 0 1.9-1.4L21 8H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
+                <span data-cart-count class="absolute -right-1 -top-1 grid size-4 place-items-center rounded-full bg-ocean-teal text-[9px] font-bold text-white">0</span>
+            </button>
+            <button type="button" class="hidden size-9 shrink-0 place-items-center rounded-full border border-slate-200 text-midnight-teal sm:grid" aria-label="Notifikasi">
+                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
+            </button>
         </header>
 
-        <!-- Area Konten Utama (Scrollable) -->
-        <main class="flex-1 overflow-y-auto bg-slate-50 p-8">
-            <div class="max-w-[1400px] mx-auto w-full">
-                @yield('content')
-            </div>
+        <main class="mx-auto w-full max-w-[1440px] px-4 py-5 sm:px-7 lg:px-8">
+            @yield('content')
         </main>
 
-        <!-- Footer -->
-        <footer class="bg-white border-t border-gray-200 py-4 px-8 text-center text-xs text-gray-500 flex-shrink-0">
-            &copy; 2026 HasilLaut. Seluruh hak cipta dilindungi.
+        <footer id="footer" class="mt-8 border-t border-slate-200 bg-white px-4 py-8 sm:px-7 lg:px-8">
+            <div class="mx-auto grid max-w-[1440px] gap-7 text-xs text-slate-500 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="sm:col-span-2">
+                    <img src="{{ asset('images/logo.png') }}" alt="HasilLaut" loading="lazy" class="h-10 w-auto object-contain">
+                    <p class="mt-2 max-w-sm leading-5">Platform B2C penyedia hasil laut segar langsung dari nelayan pesisir Indonesia dengan jaminan kualitas rantai dingin.</p>
+                </div>
+                <div>
+                    <p class="font-semibold text-midnight-teal">Navigasi</p>
+                    <a href="#flash-sale" class="mt-3 block hover:text-ocean-teal">Promo Hari Ini</a>
+                    <a href="#katalog" class="mt-2 block hover:text-ocean-teal">Katalog Ikan</a>
+                </div>
+                <div>
+                    <p class="font-semibold text-midnight-teal">Layanan</p>
+                    <a href="#footer" class="mt-3 block hover:text-ocean-teal">Lacak Pengiriman</a>
+                    <a href="#footer" class="mt-2 block hover:text-ocean-teal">Bantuan & FAQ</a>
+                </div>
+            </div>
+            <p class="mx-auto mt-7 max-w-[1440px] border-t border-slate-100 pt-4 text-[11px] text-slate-400">© 2026 HASILLAUT. Seluruh hak cipta dilindungi.</p>
         </footer>
     </div>
 
+    @stack('scripts')
 </body>
 </html>

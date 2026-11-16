@@ -7,6 +7,9 @@ use App\Models\User;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\InventoryBatch;
+use App\Models\PembeliDetail;
+use App\Models\Cart;
+use App\Models\CartItem;
 use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
@@ -69,6 +72,30 @@ class DatabaseSeeder extends Seeder
             'purchase_price' => 95000,
             'users_id_users' => $admin->id_users,
             'product_id_product' => $produk2->id_product,
+        ]);
+
+        PembeliDetail::create([
+            'name' => 'Hilya Shafwa Najla Abadi',
+            'phone_number' => '081234567890',
+            'address' => 'Jl. Pantai Pangandaran No. 12, Kec. Pangandaran',
+            'users_id_users' => $admin->id_users,
+        ]);
+
+        // 7. Buat Keranjang & Item Keranjang untuk pengujian Checkout Midtrans
+        $cart = Cart::create([
+            'users_id_users' => $admin->id_users,
+        ]);
+
+        CartItem::create([
+            'carts_id_carts' => $cart->id_carts,
+            'product_id_product' => $produk1->id_product,
+            'quantity' => 2,
+        ]);
+
+        CartItem::create([
+            'carts_id_carts' => $cart->id_carts,
+            'product_id_product' => $produk2->id_product,
+            'quantity' => 1,
         ]);
     }
 }
