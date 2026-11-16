@@ -1,154 +1,78 @@
 @extends('layouts.pembeli')
 
-@section('title', 'Beranda Pembeli | HasilLaut')
+@section('title', 'Cari Produk | HasilLaut')
 
 @section('content')
-    @php
-        $flashProducts = [
-            ['name' => 'Ikan Kakap Merah Segar', 'hub' => 'Hub Pangandaran', 'arrived' => 'Masuk 2 jam lalu', 'oldPrice' => 'Rp 90.000', 'price' => 'Rp 67.500', 'discount' => '-25%', 'category' => 'ikan', 'image' => 'https://images.unsplash.com/photo-1753537358141-a72fbfea529c?auto=format&fit=crop&w=600&q=80'],
-            ['name' => 'Udang Windu Laut', 'hub' => 'Hub Jepara', 'arrived' => 'Masuk 3 jam lalu', 'oldPrice' => 'Rp 120.000', 'price' => 'Rp 84.000', 'discount' => '-30%', 'category' => 'udang', 'image' => 'https://images.unsplash.com/photo-1548587468-971ebe4c8c3b?auto=format&fit=crop&w=600&q=80'],
-            ['name' => 'Tuna Loin Fillet Segar', 'hub' => 'Hub Makassar', 'arrived' => 'Masuk 1 jam lalu', 'oldPrice' => 'Rp 110.000', 'price' => 'Rp 93.500', 'discount' => '-15%', 'category' => 'frozen', 'image' => 'https://images.unsplash.com/photo-1682457569891-53e4f6ef9271?auto=format&fit=crop&w=600&q=80'],
-            ['name' => 'Ikan Kerapu Bintang', 'hub' => 'Hub Tual', 'arrived' => 'Masuk 4 jam lalu', 'oldPrice' => 'Rp 95.000', 'price' => 'Rp 76.000', 'discount' => '-20%', 'category' => 'today', 'image' => 'https://images.unsplash.com/photo-1762509255765-bbd5903bba00?auto=format&fit=crop&w=600&q=80'],
-        ];
+    <section class="rounded-2xl bg-midnight-teal px-6 py-8 text-white sm:px-8" aria-labelledby="search-title">
+        <p class="text-xs font-semibold uppercase tracking-wider text-pale-ice">Katalog Hasil Laut</p>
+        <h1 id="search-title" class="mt-2 text-2xl font-bold sm:text-3xl">Cari Produk Segar</h1>
+        <p class="mt-2 max-w-2xl text-sm leading-6 text-white/75">Temukan ikan favorit berdasarkan nama produk atau Hub Pesisir.</p>
 
-        $latestProducts = [
-            ['name' => 'Gurame Pesisir', 'hub' => 'Hub Jepara', 'supplier' => 'Penyuplai Pak Dedi', 'price' => 'Rp 55.000', 'category' => 'ikan', 'image' => 'https://images.unsplash.com/photo-1763048890512-2c2d5105e776?auto=format&fit=crop&w=600&q=80'],
-            ['name' => 'Cumi-Cumi Sero Segar', 'hub' => 'Hub Pangandaran', 'supplier' => 'Penyuplai Pak Donang', 'price' => 'Rp 78.000', 'category' => 'today', 'image' => 'https://images.unsplash.com/photo-1758448786233-2051ecd150c8?auto=format&fit=crop&w=600&q=80'],
-            ['name' => 'Kepiting Bakau Super', 'hub' => 'Hub Makassar', 'supplier' => 'Penyuplai Pak Andi', 'price' => 'Rp 135.000', 'category' => 'udang', 'image' => 'https://images.unsplash.com/photo-1509415173911-37ff7a1aa29c?auto=format&fit=crop&w=600&q=80'],
-            ['name' => 'Ikan Tenggiri Batang', 'hub' => 'Hub Bengkulu', 'supplier' => 'Penyuplai Pak Wahid', 'price' => 'Rp 88.000', 'category' => 'frozen', 'image' => 'https://images.unsplash.com/photo-1722798485956-1950607bc177?auto=format&fit=crop&w=600&q=80'],
-        ];
-    @endphp
+        <form id="product-search-form" action="{{ route('pembeli.pencarian-ikan') }}" method="GET" class="mt-6 flex flex-col gap-2 sm:flex-row">
+            <label class="sr-only" for="search-query">Nama ikan atau Hub Pesisir</label>
+            <input
+                id="search-query"
+                data-testid="product-search-input"
+                type="search"
+                name="q"
+                value="{{ $search }}"
+                placeholder="Contoh: Kakap Merah atau Pangandaran"
+                autocomplete="off"
+                class="min-h-12 flex-1 rounded-lg border border-white/30 bg-white px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:border-pale-ice focus:outline-none focus:ring-2 focus:ring-pale-ice"
+            >
+            <button type="submit" class="min-h-12 rounded-lg bg-soft-seafoam px-6 text-sm font-bold text-white transition hover:bg-ocean-teal">
+                <i class="bi bi-search mr-2" aria-hidden="true"></i>Cari Produk
+            </button>
+        </form>
+    </section>
 
-    <section aria-labelledby="hero-title" class="relative isolate overflow-hidden rounded-2xl bg-midnight-teal px-5 py-6 text-white sm:px-8 sm:py-7 lg:px-9">
-        <div class="absolute -right-12 -top-20 size-64 rounded-full border border-white/10" aria-hidden="true"></div>
-        <div class="relative grid items-center gap-6 md:grid-cols-[1fr_auto]">
+    <section id="search-results" data-testid="search-results" class="mt-8" aria-labelledby="results-title">
+        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
             <div>
-                <span class="inline-flex items-center gap-2 rounded-full bg-rose-500 px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white">
-                    <span class="size-1.5 rounded-full bg-white"></span> Flash Sale Tangkapan Pagi
-                </span>
-                <h1 id="hero-title" class="mt-3 max-w-2xl text-2xl font-bold leading-tight sm:text-3xl">Diskon Hingga 35% Ikan Kakap &amp;<br class="hidden sm:block"> Udang Gerung Segar</h1>
-                <p class="mt-2 max-w-xl text-xs leading-5 text-white/65">Tangkapan pilihan dari Hub Pesisir Pangandaran &amp; Jepara. Jaminan kesegaran rantai dingin tiba di depan Anda.</p>
-                <div class="mt-4 flex items-center gap-2 text-[10px] text-white/75">
-                    <span>Berakhir dalam:</span>
-                    <span data-countdown-part class="grid h-8 min-w-9 place-items-center rounded-md bg-white/15 px-2 font-bold text-white">02</span><span>:</span>
-                    <span data-countdown-part class="grid h-8 min-w-9 place-items-center rounded-md bg-white/15 px-2 font-bold text-white">45</span><span>:</span>
-                    <span data-countdown-part class="grid h-8 min-w-9 place-items-center rounded-md bg-white/15 px-2 font-bold text-white">12</span>
-                </div>
+                <h2 id="results-title" class="text-xl font-bold text-midnight-teal">
+                    {{ $search === '' ? 'Semua Produk' : 'Hasil Pencarian' }}
+                </h2>
+                <p class="mt-1 text-sm text-slate-500">
+                    {{ $search === '' ? 'Jelajahi produk hasil laut yang tersedia.' : 'Kata kunci: ' . $search }}
+                </p>
             </div>
-            <img src="https://images.unsplash.com/photo-1559737558-2f5a35f4523b?auto=format&amp;fit=crop&amp;w=520&amp;q=85" alt="Hidangan hasil laut segar" class="h-32 w-full rounded-xl object-cover shadow-lg sm:h-36 md:w-56">
+            @if($search !== '')
+                <a href="{{ route('pembeli.pencarian-ikan') }}" class="text-sm font-semibold text-ocean-teal hover:text-midnight-teal">
+                    Hapus pencarian
+                </a>
+            @endif
         </div>
-    </section>
-    
 
-    <nav aria-label="Filter kategori produk" class="mt-4 flex gap-2 overflow-x-auto pb-1">
-        <button type="button" data-category-filter="all" aria-pressed="true" class="shrink-0 rounded-full bg-ocean-teal px-4 py-2 text-[11px] font-semibold text-white">Semua Ikan</button>
-        <button type="button" data-category-filter="udang" aria-pressed="false" class="shrink-0 rounded-full border border-slate-200 bg-white px-4 py-2 text-[11px] font-medium text-slate-600 hover:border-ocean-teal hover:text-ocean-teal">Udang &amp; Lobster</button>
-        <button type="button" data-category-filter="frozen" aria-pressed="false" class="shrink-0 rounded-full border border-slate-200 bg-white px-4 py-2 text-[11px] font-medium text-slate-600 hover:border-ocean-teal hover:text-ocean-teal">Ikan Beku/Loin</button>
-        <button type="button" data-category-filter="today" aria-pressed="false" class="shrink-0 rounded-full border border-slate-200 bg-white px-4 py-2 text-[11px] font-medium text-slate-600 hover:border-ocean-teal hover:text-ocean-teal">Tangkapan Hari Ini</button>
-    </nav>
-
-    <section id="flash-sale" class="mt-6" aria-labelledby="flash-title">
-        <div class="mb-3 flex items-center justify-between">
-            <h2 id="flash-title" class="text-lg font-bold text-midnight-teal">Promo Flash Sale Hari Ini</h2>
-            <a href="#katalog" class="text-[11px] font-semibold text-ocean-teal hover:text-midnight-teal">Lihat Semua <span aria-hidden="true">›</span></a>
-        </div>
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            @foreach ($flashProducts as $product)
-                <article data-product-category="{{ $product['category'] }}" class="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:shadow-md">
-                    <div class="relative h-36 overflow-hidden bg-slate-100">
-                        <img src="{{ $product['image'] }}" alt="{{ $product['name'] }}" loading="lazy" class="size-full object-cover transition duration-300 group-hover:scale-105">
-                        <span class="absolute left-2 top-2 rounded-full bg-rose-500 px-2 py-1 text-[10px] font-bold text-white">{{ $product['discount'] }}</span>
-                        <span class="absolute bottom-2 left-2 rounded-full bg-midnight-teal/90 px-2 py-1 text-[9px] font-medium text-white">⌖ {{ $product['hub'] }}</span>
-                    </div>
-                    <div class="p-3">
-                        <h3 class="truncate text-xs font-bold text-midnight-teal">{{ $product['name'] }}</h3>
-                        <p class="mt-1 text-[10px] text-slate-500">{{ $product['arrived'] }}</p>
-                        <p class="mt-2 text-[10px] text-slate-400 line-through">{{ $product['oldPrice'] }}</p>
-                        <p class="text-sm font-extrabold text-ocean-teal">{{ $product['price'] }}<span class="text-[10px] font-medium text-slate-500"> / kg</span></p>
-                        <button type="button" data-add-to-cart class="mt-2.5 flex h-9 w-full items-center justify-center gap-2 rounded-lg bg-ocean-teal px-3 text-[10px] font-semibold text-white transition hover:bg-midnight-teal focus:outline-none focus:ring-2 focus:ring-ocean-teal focus:ring-offset-2">
-                            <span aria-hidden="true">+</span> Tambah ke Keranjang
-                        </button>
-                    </div>
-                </article>
-            @endforeach
-        </div>
-    </section>
-
-    <section id="katalog" class="mt-7" aria-labelledby="catalog-title">
-        <div class="mb-3 flex items-center justify-between">
-            <h2 id="catalog-title" class="text-lg font-bold text-midnight-teal">Katalog Hasil Laut Terbaru</h2>
-            <a href="#katalog" class="text-[11px] font-semibold text-ocean-teal hover:text-midnight-teal">Lihat Semua <span aria-hidden="true">›</span></a>
-        </div>
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            @foreach ($latestProducts as $product)
-                <article data-product-category="{{ $product['category'] }}" class="group overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:-translate-y-0.5 hover:shadow-md">
-                    <div class="relative h-36 overflow-hidden bg-slate-100">
-                        <img src="{{ $product['image'] }}" alt="{{ $product['name'] }}" loading="lazy" class="size-full object-cover transition duration-300 group-hover:scale-105">
-                        <span class="absolute bottom-2 left-2 rounded-full bg-midnight-teal/90 px-2 py-1 text-[9px] font-medium text-white">⌖ {{ $product['hub'] }}</span>
-                    </div>
-                    <div class="p-3">
-                        <h3 class="truncate text-xs font-bold text-midnight-teal">{{ $product['name'] }}</h3>
-                        <p class="mt-1 text-[10px] text-slate-500">♙ {{ $product['supplier'] }}</p>
-                        <p class="mt-2 text-sm font-extrabold text-ocean-teal">{{ $product['price'] }}<span class="text-[10px] font-medium text-slate-500"> / kg</span></p>
-                        <button type="button" data-add-to-cart class="mt-2.5 flex h-9 w-full items-center justify-center gap-2 rounded-lg bg-ocean-teal px-3 text-[10px] font-semibold text-white transition hover:bg-midnight-teal focus:outline-none focus:ring-2 focus:ring-ocean-teal focus:ring-offset-2">
-                            <span aria-hidden="true">+</span> Tambah ke Keranjang
-                        </button>
-                    </div>
-                </article>
-            @endforeach
-        </div>
+        @if($products->isEmpty())
+            <div data-testid="search-empty-state" class="rounded-xl border border-slate-200 bg-white px-6 py-12 text-center">
+                <i class="bi bi-search text-3xl text-slate-300" aria-hidden="true"></i>
+                <p class="mt-3 font-semibold text-slate-700">Produk tidak ditemukan</p>
+                <p class="mt-1 text-sm text-slate-500">Coba kata kunci nama ikan atau Hub Pesisir lainnya.</p>
+            </div>
+        @else
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+                @foreach($products as $product)
+                    <article data-testid="search-result-card" class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+                        <div class="h-44 overflow-hidden bg-slate-100">
+                            @if($product->image)
+                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" loading="lazy" class="h-full w-full object-cover">
+                            @else
+                                <div class="grid h-full place-items-center text-sm text-slate-400">Foto produk belum tersedia</div>
+                            @endif
+                        </div>
+                        <div class="p-4">
+                            <h3 data-testid="search-result-name" class="font-bold text-midnight-teal">{{ $product->name }}</h3>
+                            <p data-testid="search-result-hub" class="mt-2 text-sm text-slate-500">
+                                <i class="bi bi-geo-alt-fill mr-1 text-ocean-teal" aria-hidden="true"></i>{{ $product->hub_name ?: 'Hub belum ditentukan' }}
+                            </p>
+                            <div class="mt-4 flex items-center justify-between gap-3">
+                                <span class="font-extrabold text-ocean-teal">Rp {{ number_format($product->price, 0, ',', '.') }} / kg</span>
+                                <span class="text-xs text-slate-500">Stok {{ number_format($product->available_stock ?? 0, 0, ',', '.') }} kg</span>
+                            </div>
+                        </div>
+                    </article>
+                @endforeach
+            </div>
+        @endif
     </section>
 @endsection
-
-@push('scripts')
-    <script>
-        const categoryButtons = document.querySelectorAll('[data-category-filter]');
-        const productCards = document.querySelectorAll('[data-product-category]');
-
-        categoryButtons.forEach((button) => {
-            button.addEventListener('click', () => {
-                const selectedCategory = button.dataset.categoryFilter;
-
-                categoryButtons.forEach((categoryButton) => {
-                    const isSelected = categoryButton === button;
-                    categoryButton.setAttribute('aria-pressed', String(isSelected));
-                    categoryButton.classList.toggle('bg-ocean-teal', isSelected);
-                    categoryButton.classList.toggle('text-white', isSelected);
-                    categoryButton.classList.toggle('border', !isSelected);
-                    categoryButton.classList.toggle('border-slate-200', !isSelected);
-                    categoryButton.classList.toggle('bg-white', !isSelected);
-                    categoryButton.classList.toggle('text-slate-600', !isSelected);
-                });
-
-                productCards.forEach((card) => {
-                    card.hidden = selectedCategory !== 'all' && card.dataset.productCategory !== selectedCategory;
-                });
-            });
-        });
-
-        let cartCount = 0;
-        document.querySelectorAll('[data-add-to-cart]').forEach((button) => {
-            button.addEventListener('click', () => {
-                cartCount += 1;
-                document.querySelector('[data-cart-count]').textContent = cartCount;
-                button.innerHTML = '<span aria-hidden="true">✓</span> Ditambahkan';
-                window.setTimeout(() => {
-                    button.innerHTML = '<span aria-hidden="true">+</span> Tambah ke Keranjang';
-                }, 1200);
-            });
-        });
-
-        const countdownParts = document.querySelectorAll('[data-countdown-part]');
-        let remainingSeconds = (2 * 60 * 60) + (45 * 60) + 12;
-
-        window.setInterval(() => {
-            if (remainingSeconds > 0) remainingSeconds -= 1;
-            const hours = Math.floor(remainingSeconds / 3600);
-            const minutes = Math.floor((remainingSeconds % 3600) / 60);
-            const seconds = remainingSeconds % 60;
-            [hours, minutes, seconds].forEach((value, index) => {
-                countdownParts[index].textContent = String(value).padStart(2, '0');
-            });
-        }, 1000);
-    </script>
-@endpush

@@ -23,6 +23,8 @@ class StoreProductRequest extends FormRequest
             'stock'                    => 'required|integer|min:1', // Validasi cegah minus sesuai proposal
             'received_date'            => 'required|date',
             'image'                    => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'is_top_tren'              => 'sometimes|boolean',
+            'hub_name'                 => 'nullable|string|max:100',
         ];
     }
 }

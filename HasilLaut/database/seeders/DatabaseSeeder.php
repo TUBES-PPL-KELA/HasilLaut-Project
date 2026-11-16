@@ -17,12 +17,14 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // 1. Buat User Admin
-        $admin = User::create([
-            'name' => 'Andi M. (Admin)',
-            'username' => 'admin_pangandaran',
-            'password' => Hash::make('password123'),
-            'role' => 'admin',
-        ]);
+        $admin = User::updateOrCreate(
+            ['username' => 'admin_pangandaran'],
+            [
+                'name' => 'Andi M. (Admin)',
+                'password' => Hash::make('password123'),
+                'role' => 'admin',
+            ]
+        );
 
         // 2. Buat Kategori
        $kategoriIkan = Category::create(['name' => 'Ikan Segar']);
