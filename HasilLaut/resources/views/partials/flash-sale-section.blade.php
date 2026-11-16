@@ -17,7 +17,7 @@
                 $imgUrl = ($product && $product->image)
                     ? (\Illuminate\Support\Str::startsWith($product->image, 'http') ? $product->image : asset('storage/' . $product->image))
                     : 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=500&q=80';
-                $detailUrl = route('pembeli.produk.detail', ['id' => $product->id_product, 'flash_sale_item_id' => $item->id_flash_sale_item]);
+                
             @endphp
             <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group">
                 <div>
@@ -39,7 +39,7 @@
 
                     <!-- Info Produk -->
                     <div class="p-4">
-                        <a href="{{ $detailUrl }}" class="block">
+                        <a href=""class="block">
                             <h3 class="font-bold text-gray-900 text-base truncate group-hover:text-[#164E56] transition" title="{{ $product->name }}">
                                 {{ $product->name }}
                             </h3>

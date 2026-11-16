@@ -30,7 +30,7 @@ class CheckoutController extends Controller
         if ($cart && $cart->cartItems) {
             foreach ($cart->cartItems as $item) {
                 if ($item->product) {
-                    $subtotal += $item->quantity * $item->effective_price;
+                    $subtotal += ($item->quantity * $item->effective_price);
                 }
             }
         }
@@ -47,9 +47,16 @@ class CheckoutController extends Controller
         $user = auth()->user();
         $userId = $user ? $user->id_users : 1;
 
+        $method = $request->input('payment_method', 'qris'); 
+
         $pembeliDetail = PembeliDetail::where('users_id_users', $userId)->first();
         if (!$pembeliDetail) {
-            return response()->json(['error' => 'Silakan lengkapi alamat pengiriman terlebih dahulu.'], 422);
+            $pembeliDetail = (object) [
+                'name' => $user ? $user->name : 'Pelanggan HasilLaut',
+                'phone_number' => '081234567890',
+                'address' => 'Jl. Pantai Pangandaran No. 12, Kec. Pangandaran',
+                'city' => 'Pangandaran'
+            ];
         }
 
         $cart = Cart::with(['cartItems.product', 'cartItems.flashSaleItem'])->where('users_id_users', $userId)->first();
@@ -61,7 +68,7 @@ class CheckoutController extends Controller
         try {
             $subtotal = 0;
             foreach ($cart->cartItems as $item) {
-                $subtotal += $item->quantity * $item->effective_price;
+                $subtotal += ($item->quantity * $item->effective_price);
             }
             $shippingCost = 15000;
             $serviceFee = 2500;
@@ -83,35 +90,80 @@ class CheckoutController extends Controller
                     'price' => $item->effective_price,
                     'orders_id_orders' => $order->id_orders,
                     'product_id_product' => $item->product->id_product,
-                    'flash_sale_item_id' => $item->flash_sale_item_id,
+                    'flash_sale_item_id' => $item->flash_sale_item_id ?? null,
                 ]);
             }
 
             Payment::create([
-                'id_pesanan' => $order->id_orders,
-                'metode_pembayaran' => 'Midtrans Snap',
-                'jumlah_bayar' => $totalAmount,
-                'status_pembayaran' => 'Pending',
+                'orders_id_orders' => $order->id_orders,
+                'payment_method' => match ($method) {
+                    'cod'  => 'COD',
+                    'qris' => 'QRIS',
+                    'va'   => 'Virtual Account',
+                    default => 'Midtrans Snap',
+                },
+                'amount' => $totalAmount,
+                'status' => 'Pending',
+                'payment_gateway_inv_id' => '-', 
             ]);
 
+            if ($method === 'cod') {
+                $order->status_pesanan = 'Menunggu Konfirmasi COD';
+                $order->save();
+
+                $cart->cartItems()->delete();
+                $cart->delete();
+                DB::commit();
+
+                return response()->json([
+                    'status'       => 'success',
+                    'cod'          => true,
+                    'order_number' => $order->order_number,
+                    'redirect'     => route('pembeli.katalog'), 
+                ]);
+            }
+
             Config::$serverKey = config('midtrans.server_key');
-            Config::$isProduction = config('midtrans.is_production');
-            Config::$isSanitized = config('midtrans.is_sanitized');
-            Config::$is3ds = config('midtrans.is_3ds');
+            Config::$isProduction = config('midtrans.is_production', false);
+            Config::$isSanitized = config('midtrans.is_sanitized', true);
+            Config::$is3ds = config('midtrans.is_3ds', true);
 
             $params = [
                 'transaction_details' => [
-                    'order_id' => $order->order_number,
-                    'gross_amount' => $totalAmount,
+                    'order_id' => $order->order_number . '-' . time(),
+                    'gross_amount' => (int) round($totalAmount),
+                ],
+                'item_details' => [
+                    [
+                        'id' => 'PROD-TOTAL',
+                        'price' => (int) round($totalAmount),
+                        'quantity' => 1,
+                        'name' => 'Total Belanja HasilLaut (' . $order->order_number . ')',
+                    ]
                 ],
                 'customer_details' => [
-                    'first_name' => $user->nama ?? 'Pelanggan HasilLaut',
+                    'first_name' => $pembeliDetail->name ?? ($user->name ?? 'Pelanggan HasilLaut'),
                     'email' => $user->email ?? 'pembeli@hasillaut.test',
                     'phone' => $pembeliDetail->phone_number ?? '08123456789',
                 ]
             ];
 
+            $params['enabled_payments'] = match ($method) {
+                'qris' => ['other_qris', 'gopay'],
+                'va'   => ['bca_va', 'echannel', 'bri_va'],
+                default => ['other_qris', 'bca_va'], 
+            };
+
+            if (!config('midtrans.is_production')) {
+            Config::$curlOptions = [
+                CURLOPT_SSL_VERIFYPEER => false,
+                CURLOPT_SSL_VERIFYHOST => 0,
+                CURLOPT_HTTPHEADER     => [],
+            ];
+}
+           \Log::info('SEBELUM snap');
             $snapToken = Snap::getSnapToken($params);
+            \Log::info('SESUDAH snap', ['token' => $snapToken]);
 
             $cart->cartItems()->delete();
             $cart->delete();
@@ -143,7 +195,6 @@ class CheckoutController extends Controller
         $statusCode = $notification->status_code;
         $grossAmount = $notification->gross_amount;
         $reqSignature = $notification->signature_key;
-
         $serverKey = config('midtrans.server_key');
         $mySignature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
 
@@ -161,16 +212,15 @@ class CheckoutController extends Controller
                 return response()->json(['message' => 'Order not found'], 404);
             }
 
-            $payment = Payment::where('id_pesanan', $order->id_orders)->first();
+            $payment = Payment::where('orders_id_orders', $order->id_orders)->first();
 
             if ($transactionStatus == 'capture' || $transactionStatus == 'settlement') {
                 if ($transactionStatus == 'capture' && $fraudStatus == 'challenge') {
-                    $payment->status_pembayaran = 'Challenge';
+                    $payment->status = 'Challenge'; 
                     $order->status_pesanan = 'Menunggu Verifikasi';
                 } else {
-                    $payment->status_pembayaran = 'Lunas';
-                    $payment->payment_gateway_id = $notification->transaction_id;
-                    $payment->tgl_bayar = now();
+                    $payment->status = 'Lunas'; 
+                    $payment->payment_gateway_inv_id = $notification->transaction_id; 
 
                     if ($order->status_pesanan !== 'Dibayar' && $order->status_pesanan !== 'Produk Disiapkan') {
                         $order->status_pesanan = 'Dibayar';
@@ -178,8 +228,6 @@ class CheckoutController extends Controller
                         $orderItems = OrderItem::where('orders_id_orders', $order->id_orders)->get();
 
                         foreach ($orderItems as $item) {
-                            // Jika item berasal dari Flash Sale, potong stok FlashSaleItem
-                            // (otomatis memotong stok InventoryBatch via event booted())
                             if ($item->flash_sale_item_id) {
                                 $flashSaleItem = FlashSaleItem::find($item->flash_sale_item_id);
                                 if ($flashSaleItem) {
@@ -189,16 +237,15 @@ class CheckoutController extends Controller
                                 continue;
                             }
 
-                            // 2. Jika produk reguler, gunakan StockService FIFO (HAS-2)
                             StockService::deductFifo($item->product_id_product, $item->quantity);
                         }
                     }
                 }
             } else if ($transactionStatus == 'cancel' || $transactionStatus == 'deny' || $transactionStatus == 'expire') {
-                $payment->status_pembayaran = 'Gagal';
+                $payment->status = 'Gagal'; 
                 $order->status_pesanan = 'Dibatalkan';
             } else if ($transactionStatus == 'pending') {
-                $payment->status_pembayaran = 'Pending';
+                $payment->status = 'Pending'; 
                 $order->status_pesanan = 'Menunggu Pembayaran';
             }
 
