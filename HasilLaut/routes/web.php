@@ -7,9 +7,13 @@ use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PembeliProfileController;
+use App\Http\Controllers\PencarianIkanController;
 use App\Http\Controllers\WelcomeController;
-use App\Http\Controllers\PencarianProdukController;
+use App\Http\Controllers\CategoryController;
 
+Route::get('/admin/kategori', [CategoryController::class, 'index'])->name('admin.category.index');
+Route::get('/admin/kategori/create', [CategoryController::class, 'create'])->name('admin.category.create');
+Route::post('/admin/kategori', [CategoryController::class, 'store'])->name('admin.category.store');
 
 Route::get('/admin/product', [ProductController::class, 'index'])->name('admin.product.index');
 Route::get('/admin/product/create', [ProductController::class, 'create'])->name('admin.product.create');
@@ -18,9 +22,13 @@ Route::get('/admin/product/{id}/edit', [ProductController::class, 'edit'])->name
 Route::put('/admin/product/{id}', [ProductController::class, 'update'])->name('admin.product.update');
 Route::delete('/admin/product/{id}', [ProductController::class, 'destroy'])->name('admin.product.destroy');
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/keranjang', [CartController::class, 'index'])->name('pembeli.cart');
+Route::put('/keranjang/update/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/keranjang/hapus/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+Route::get('/', WelcomeController::class)->name('welcome');
+
+Route::get('/pembeli/pencarian-ikan', [PencarianIkanController::class, 'index'])
+    ->name('pembeli.pencarian-ikan');
 
 // Rute Keranjang Belanja (Dikeluarkan dari prefix pembeli agar namanya pas: cart, cart.store, dll)
 Route::get('/pembeli/keranjang', [CartController::class, 'index'])->name('pembeli.cart');
@@ -31,12 +39,18 @@ Route::delete('/keranjang/hapus/{id}', [CartController::class, 'destroy'])->name
 
 Route::prefix('pembeli')->name('pembeli.')->group(function () {
     Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog');
+    Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/process', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/profile/edit', [PembeliProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/update', [PembeliProfileController::class, 'update'])->name('profile.update');
     Route::get('/produk/{id}', [KatalogController::class, 'show'])->name('produk.detail');
 });
+
+// Route Keranjang Belanja (dipanggil oleh partials/flash-sale-section.blade.php)
+Route::post('/pembeli/cart', [CartController::class, 'store'])->name('cart.store');
+Route::patch('/pembeli/cart/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/pembeli/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
 
 
 Route::prefix('admin/stok')->group(function () {

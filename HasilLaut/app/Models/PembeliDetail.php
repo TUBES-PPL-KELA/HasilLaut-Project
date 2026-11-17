@@ -14,6 +14,7 @@ class PembeliDetail extends Model
     protected $primaryKey = 'id_pembeli_detail'; 
 
     protected $fillable = [
+        'users_id_users',
         'name',
         'phone_number',
         'address',

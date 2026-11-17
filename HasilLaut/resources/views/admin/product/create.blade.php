@@ -130,7 +130,12 @@
                             </div>
 
                             <div>
-                                <label for="categories_id_categories" class="block text-[13px] font-extrabold text-[#0f172a] mb-2">Kategori</label>
+                                <div class="mb-2 flex items-center justify-between gap-3">
+                                    <label for="categories_id_categories" class="block text-[13px] font-extrabold text-[#0f172a]">Kategori</label>
+                                    <a href="{{ route('admin.category.create') }}" class="text-[11px] font-bold text-teal-700 hover:text-teal-900">
+                                        + Tambah kategori
+                                    </a>
+                                </div>
                                 <select name="categories_id_categories" id="categories_id_categories" required 
                                     class="w-full px-5 py-3.5 bg-[#f8fafc] border border-gray-200 text-gray-600 text-sm rounded-[10px] focus:bg-white focus:ring-1 focus:ring-[#0f766e] focus:border-[#0f766e] outline-none font-medium transition appearance-none bg-no-repeat bg-[right_1rem_center] bg-[length:1em]" style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E');">
                                     <option value="">Pilih Kategori Produk</option>
