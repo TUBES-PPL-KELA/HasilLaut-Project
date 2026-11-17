@@ -17,12 +17,13 @@
                 $imgUrl = ($product && $product->image)
                     ? (\Illuminate\Support\Str::startsWith($product->image, 'http') ? $product->image : asset('storage/' . $product->image))
                     : 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=500&q=80';
+                $detailUrl = route('pembeli.produk.detail', ['id' => $product->id_product, 'flash_sale_item_id' => $item->id_flash_sale_item]);
             @endphp
             <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group">
                 <div>
                     <!-- Gambar & Badge (Klik ke Detail Flash Sale) -->
-                    <a href="" class="block relative h-44 bg-gray-100 overflow-hidden">
-                        <img src="{{ $imgUrl }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                    <a href="{{ $detailUrl }}" class="block relative h-44 bg-gray-100 overflow-hidden">
+                        <img src="{{ $imgUrl }}" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22500%22 height=%22350%22 viewBox=%220 0 500 350%22%3E%3Crect width=%22500%22 height=%22350%22 fill=%22%23e2e8f0%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2222%22 font-weight=%22bold%22 fill=%22%23475569%22%3EProduk Hasil Laut%3C/text%3E%3C/svg%3E';" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                         
                         <!-- Badge Diskon Kiri Atas -->
                         <span class="absolute top-3 left-3 bg-red-600 text-white text-xs font-extrabold px-2.5 py-1 rounded-lg shadow">
@@ -38,7 +39,7 @@
 
                     <!-- Info Produk -->
                     <div class="p-4">
-                        <a href="" class="block">
+                        <a href="{{ $detailUrl }}" class="block">
                             <h3 class="font-bold text-gray-900 text-base truncate group-hover:text-[#164E56] transition" title="{{ $product->name }}">
                                 {{ $product->name }}
                             </h3>

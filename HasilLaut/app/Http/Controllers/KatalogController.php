@@ -52,8 +52,16 @@ class KatalogController extends Controller
             $productQuery->where('name', 'like', '%' . $search . '%');
         }
 
-        $products = $productQuery->latest()->get()->map(function ($product) {
-            $product->available_stock = (float) $product->inventoryBatches->sum('stock');
+        $activeFlashSaleStockByBatch = FlashSaleItem::where('stock', '>', 0)
+            ->pluck('stock', 'inventory_batches_id_inventory_batches');
+
+        $products = $productQuery->latest()->get()->map(function ($product) use ($activeFlashSaleStockByBatch) {
+            $totalBatchStock = (float) $product->inventoryBatches->sum('stock');
+            $promoStock = (float) $product->inventoryBatches->sum(function ($batch) use ($activeFlashSaleStockByBatch) {
+                return (float) ($activeFlashSaleStockByBatch[$batch->id_inventory_batches] ?? 0);
+            });
+
+            $product->available_stock = max(0, $totalBatchStock - $promoStock);
             return $product;
         });
 
@@ -96,9 +104,21 @@ class KatalogController extends Controller
             $availableStock = (float) $flashSaleItem->stock;
             $receivedDate = $flashSaleItem->inventoryBatch->received_date ?? null;
         } else {
-            $availableStock = (float) $product->inventoryBatches->sum('stock');
-            $oldestBatch = $product->inventoryBatches->first();
-            $receivedDate = $oldestBatch ? $oldestBatch->received_date : null;
+            $activeFlashSaleStockByBatch = FlashSaleItem::whereIn(
+                'inventory_batches_id_inventory_batches',
+                $product->inventoryBatches->pluck('id_inventory_batches')
+            )->where('stock', '>', 0)->pluck('stock', 'inventory_batches_id_inventory_batches');
+
+            $availableStock = (float) $product->inventoryBatches->sum(function ($batch) use ($activeFlashSaleStockByBatch) {
+                $promoQty = (float) ($activeFlashSaleStockByBatch[$batch->id_inventory_batches] ?? 0);
+                return max(0, (float) $batch->stock - $promoQty);
+            });
+
+            $regularBatch = $product->inventoryBatches->first(function ($batch) use ($activeFlashSaleStockByBatch) {
+                $promoQty = (float) ($activeFlashSaleStockByBatch[$batch->id_inventory_batches] ?? 0);
+                return ((float) $batch->stock - $promoQty) > 0;
+            });
+            $receivedDate = $regularBatch ? $regularBatch->received_date : null;
         }
 
         // Ambil 4 produk rekomendasi lainnya beserta stoknya
