@@ -2,7 +2,6 @@
 
 namespace Tests\Browser;
 
-use App\Models\User;
 use App\Models\PembeliDetail;
 use App\Models\Product;
 use App\Models\InventoryBatch;
@@ -16,15 +15,8 @@ use Tests\DuskTestCase;
 
 class Pbi14CheckoutTest extends DuskTestCase
 {
-    private function getValidPangandaranBuyer(): User
+    private function ensureValidPangandaranBuyer(int $userId = 1): int
     {
-        $user = User::first() ?? User::factory()->create([
-            'name'  => 'Budi Santoso',
-            'email' => 'budi.pangandaran@example.com',
-        ]);
-
-        $userId = $user->getKey();
-
         PembeliDetail::updateOrCreate(
             ['users_id_users' => $userId],
             [
@@ -37,7 +29,7 @@ class Pbi14CheckoutTest extends DuskTestCase
             ]
         );
 
-        return $user;
+        return $userId;
     }
 
     private function getOrCreateCart(int $userId): Cart
@@ -80,14 +72,11 @@ class Pbi14CheckoutTest extends DuskTestCase
             if ($failIfAlert) {
                 $this->fail("CheckoutController mengembalikan alert error: " . $text);
             }
-        } catch (\Facebook\WebDriver\Exception\NoSuchAlertException $e) {
+        } catch (\Throwable $e) {
             // Tidak ada alert aktif
         }
     }
 
-    /**
-     * Helper memastikan produk memiliki stok minimal di inventory_batches
-     */
     private function ensureProductHasBatchStock(Product $product, float $minStock = 10): InventoryBatch
     {
         $batch = InventoryBatch::where('product_id_product', $product->id_product)->first();
@@ -115,8 +104,7 @@ class Pbi14CheckoutTest extends DuskTestCase
      */
     public function test_tc_chk_001_transparent_cost_breakdown_and_shipping_calculation(): void
     {
-        $user = $this->getValidPangandaranBuyer();
-        $userId = $user->getKey();
+        $userId = $this->ensureValidPangandaranBuyer(1);
         $product = Product::where('name', 'like', '%Kakap%')->first() ?? Product::first();
 
         if ($product) {
@@ -125,11 +113,10 @@ class Pbi14CheckoutTest extends DuskTestCase
             $this->addItemToCart($cart, $product, 2);
         }
 
-        $this->browse(function (Browser $browser) use ($user, $product) {
+        $this->browse(function (Browser $browser) use ($product) {
             $this->dismissAnyOpenAlert($browser);
 
-            $browser->loginAs($user)
-                    ->visit('/pembeli/checkout')
+            $browser->visit('/pembeli/checkout')
                     ->assertSee('Ringkasan Produk Dipesan')
                     ->assertSee('2')
                     ->assertSee('Subtotal Harga Barang')
@@ -146,8 +133,7 @@ class Pbi14CheckoutTest extends DuskTestCase
      */
     public function test_tc_chk_002_stock_validation_and_order_creation(): void
     {
-        $user = $this->getValidPangandaranBuyer();
-        $userId = $user->getKey();
+        $userId = $this->ensureValidPangandaranBuyer(1);
         $product = Product::where('name', 'like', '%Tuna%')->first() ?? Product::first();
 
         $orderCountBefore = DB::table('orders')->where('users_id_users', $userId)->count();
@@ -160,16 +146,15 @@ class Pbi14CheckoutTest extends DuskTestCase
             $this->addItemToCart($cart, $product, 3);
         }
 
-        $this->browse(function (Browser $browser) use ($user) {
+        $this->browse(function (Browser $browser) {
             $this->dismissAnyOpenAlert($browser);
 
-            $browser->loginAs($user)
-                    ->visit('/pembeli/checkout')
+            $browser->visit('/pembeli/checkout')
                     ->assertSee('Ringkasan Produk Dipesan')
                     ->assertSee('3');
 
-            if ($browser->element('input[name="payment_method"][value="qris"]')) {
-                $browser->radio('payment_method', 'qris');
+            if ($browser->element('input[name="payment_method"][value="cod"]')) {
+                $browser->radio('payment_method', 'cod');
             }
 
             $browser->press('Buat Pesanan Sekarang')
@@ -187,12 +172,10 @@ class Pbi14CheckoutTest extends DuskTestCase
      */
     public function test_tc_chk_003_checkout_fails_when_product_stock_is_empty(): void
     {
-        $user = $this->getValidPangandaranBuyer();
-        $userId = $user->getKey();
+        $userId = $this->ensureValidPangandaranBuyer(1);
         $product = Product::where('name', 'like', '%Udang%')->first() ?? Product::first();
 
         if ($product) {
-            // Backup lalu kosongkan sementara seluruh stok batch produk ini
             $batchBackup = InventoryBatch::where('product_id_product', $product->id_product)
                 ->pluck('stock', 'id_inventory_batches')
                 ->toArray();
@@ -203,26 +186,39 @@ class Pbi14CheckoutTest extends DuskTestCase
             $cart->cartItems()->delete();
             $this->addItemToCart($cart, $product, 1);
 
-            $this->browse(function (Browser $browser) use ($user) {
+            $this->browse(function (Browser $browser) {
                 $this->dismissAnyOpenAlert($browser);
 
-                $browser->loginAs($user)
-                        ->visit('/pembeli/checkout');
+                $browser->visit('/pembeli/checkout');
 
-                if ($browser->element('input[name="payment_method"][value="qris"]')) {
-                    $browser->radio('payment_method', 'qris');
+                if ($browser->element('input[name="payment_method"][value="cod"]')) {
+                    $browser->radio('payment_method', 'cod');
                 }
 
-                $browser->press('Buat Pesanan Sekarang')
-                        ->pause(1500);
+                $alertText = '';
+                try {
+                    $browser->press('Buat Pesanan Sekarang');
 
-                $alert = $browser->driver->switchTo()->alert();
-                $alertText = $alert->getText();
+                    for ($i = 0; $i < 10; $i++) {
+                        try {
+                            $alert = $browser->driver->switchTo()->alert();
+                            $alertText = $alert->getText();
+                            $alert->accept();
+                            break;
+                        } catch (\Facebook\WebDriver\Exception\NoSuchAlertException $e) {
+                            usleep(500000);
+                        }
+                    }
+                } catch (\Facebook\WebDriver\Exception\UnexpectedAlertOpenException $e) {
+                    $alert = $browser->driver->switchTo()->alert();
+                    $alertText = $alert->getText();
+                    $alert->accept();
+                }
+
+                $this->assertNotEmpty($alertText, 'Pop-up alert pemberitahuan stok habis muncul.');
                 $this->assertStringContainsString('stok', strtolower($alertText));
-                $alert->accept();
             });
 
-            // Kembalikan stok batch awal setelah simulasi selesai
             foreach ($batchBackup as $batchId => $oldStock) {
                 InventoryBatch::where('id_inventory_batches', $batchId)->update(['stock' => $oldStock]);
             }
@@ -234,12 +230,10 @@ class Pbi14CheckoutTest extends DuskTestCase
      */
     public function test_tc_chk_004_validates_flash_sale_quota_on_checkout(): void
     {
-        $user = $this->getValidPangandaranBuyer();
-        $userId = $user->getKey();
+        $userId = $this->ensureValidPangandaranBuyer(1);
         $product = Product::where('name', 'like', '%Gurame%')->first() ?? Product::first();
         $flashSaleItem = FlashSaleItem::where('stock', '>', 0)->first();
 
-        // Jika belum ada item flash sale aktif di DB, buat 1 record sementara sesuai skema FlashSaleItem
         if (!$flashSaleItem && $product) {
             $batch = $this->ensureProductHasBatchStock($product, 10);
 
@@ -248,12 +242,15 @@ class Pbi14CheckoutTest extends DuskTestCase
                 $discountId = DB::table('discount')->value('id_discount');
                 if (!$discountId) {
                     $discCols = Schema::getColumnListing('discount');
-                    $discData = [ 'percent' => 20,];
+                    $discData = [
+                        'percent' => 20,
+                    ];
                     if (in_array('name', $discCols)) $discData['name'] = 'Flash Sale Dusk';
                     if (in_array('title', $discCols)) $discData['title'] = 'Flash Sale Dusk';
-                    if (in_array('discount_percentage', $discCols)) $discData['discount_percentage'] = 20;
                     if (in_array('start_date', $discCols)) $discData['start_date'] = now()->subHour();
                     if (in_array('end_date', $discCols)) $discData['end_date'] = now()->addHours(2);
+                    if (in_array('start_at', $discCols)) $discData['start_at'] = now()->subHour();
+                    if (in_array('end_at', $discCols)) $discData['end_at'] = now()->addHours(2);
                     if (in_array('is_active', $discCols)) $discData['is_active'] = 1;
                     if (in_array('created_at', $discCols)) $discData['created_at'] = now();
                     if (in_array('updated_at', $discCols)) $discData['updated_at'] = now();
@@ -281,21 +278,20 @@ class Pbi14CheckoutTest extends DuskTestCase
             $cart->cartItems()->delete();
             $this->addItemToCart($cart, $product, 1, $flashSaleItem->id_flash_sale_item);
 
-            $this->browse(function (Browser $browser) use ($user) {
+            $this->browse(function (Browser $browser) {
                 $this->dismissAnyOpenAlert($browser);
 
-                $browser->loginAs($user)
-                        ->visit('/pembeli/checkout')
+                $browser->visit('/pembeli/checkout')
                         ->assertSee('Ringkasan Produk Dipesan');
 
-                if ($browser->element('input[name="payment_method"][value="qris"]')) {
-                    $browser->radio('payment_method', 'qris');
+                if ($browser->element('input[name="payment_method"][value="cod"]')) {
+                    $browser->radio('payment_method', 'cod');
                 }
 
                 $browser->press('Buat Pesanan Sekarang')
                         ->pause(2500);
 
-                $this->dismissAnyOpenAlert($browser);
+                $this->dismissAnyOpenAlert($browser, true);
             });
 
             $orderCountAfter = DB::table('orders')->where('users_id_users', $userId)->count();

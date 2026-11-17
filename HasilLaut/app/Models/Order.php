@@ -23,7 +23,6 @@ class Order extends Model
         'shipping_cost',
         'total_amount',
         'users_id_users',
-        'status_pesanan',
     ];
 
     // ==========================================
