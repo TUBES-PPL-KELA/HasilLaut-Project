@@ -9,7 +9,22 @@ class PembeliDetail extends Model
 {
     use HasFactory;
 
-    protected $table = 'pembeli_detail'; // Menyesuaikan dengan nama tabel di database
+    protected $table = 'pembeli_detail';
     
-    // ... kode lainnya
+    protected $primaryKey = 'id_pembeli_detail'; 
+
+    protected $fillable = [
+        'name',
+        'phone_number',
+        'address',
+        'users_id_users',
+        'latitude',
+        'longitude',
+        'is_valid_geofencing',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'users_id_users', 'id_users');
+    }
 }

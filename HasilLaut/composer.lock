@@ -4,7 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
+<<<<<<< HEAD
     "content-hash": "321d487d67a70394247685829258f5a9",
+=======
+    "content-hash": "42dfbce0906188393f82801ff2ee87ef",
+>>>>>>> dbc6d6d9c279113ac30be2b74fba276b1ef07b22
     "packages": [
         {
             "name": "brick/math",
@@ -2027,6 +2031,67 @@
                 }
             ],
             "time": "2026-10-16T15:19:33+00:00"
+        },
+        {
+            "name": "midtrans/midtrans-php",
+            "version": "2.6.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Midtrans/midtrans-php.git",
+                "reference": "8ed7fc58ff1ababe675da17acf8233f4028eb3be"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Midtrans/midtrans-php/zipball/8ed7fc58ff1ababe675da17acf8233f4028eb3be",
+                "reference": "8ed7fc58ff1ababe675da17acf8233f4028eb3be",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-openssl": "*",
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "5.7.*",
+                "psy/psysh": "0.4.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "SnapBi\\": "SnapBi/",
+                    "Midtrans\\": "Midtrans/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Andri Setiawan",
+                    "email": "andri.setiawan@veritrans.co.id"
+                },
+                {
+                    "name": "Alvin Litani",
+                    "email": "alvin.litani@veritrans.co.id"
+                },
+                {
+                    "name": "Ismail Faruqi",
+                    "email": "ismail.faruqi@veritrans.co.id"
+                },
+                {
+                    "name": "Muhammad Fauzi Masykur",
+                    "email": "muhammad.masykur@gojek.com"
+                }
+            ],
+            "description": "PHP Wrapper for Midtrans Payment API.",
+            "homepage": "https://midtrans.com",
+            "support": {
+                "issues": "https://github.com/Midtrans/midtrans-php/issues",
+                "source": "https://github.com/Midtrans/midtrans-php/tree/v2.6.2"
+            },
+            "time": "2025-03-18T06:30:17+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -6372,8 +6437,12 @@
             "support": {
                 "source": "https://github.com/laravel/dusk/tree/v8.8.0"
             },
+<<<<<<< HEAD
             "time": "2026-11-09T14:41:34+00:00",
             "published-time": "2026-11-10T16:02:12+00:00"
+=======
+            "time": "2026-11-09T14:41:34+00:00"
+>>>>>>> dbc6d6d9c279113ac30be2b74fba276b1ef07b22
         },
         {
             "name": "laravel/pail",
@@ -7008,8 +7077,12 @@
                 "issues": "https://github.com/php-webdriver/php-webdriver/issues",
                 "source": "https://github.com/php-webdriver/php-webdriver/tree/1.16.0"
             },
+<<<<<<< HEAD
             "time": "2025-12-28T23:57:40+00:00",
             "published-time": "2025-12-28T23:58:24+00:00"
+=======
+            "time": "2025-12-28T23:57:40+00:00"
+>>>>>>> dbc6d6d9c279113ac30be2b74fba276b1ef07b22
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -8626,5 +8699,9 @@
         "php": "^8.2"
     },
     "platform-dev": {},
+<<<<<<< HEAD
     "plugin-api-version": "2.11.0"
+=======
+    "plugin-api-version": "2.9.0"
+>>>>>>> dbc6d6d9c279113ac30be2b74fba276b1ef07b22
 }
