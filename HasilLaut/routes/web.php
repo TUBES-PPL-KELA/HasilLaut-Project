@@ -33,12 +33,18 @@ Route::get('/pembeli/pencarian-ikan', [PencarianIkanController::class, 'index'])
 
 Route::prefix('pembeli')->name('pembeli.')->group(function () {
     Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog');
+    Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/process', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/profile/edit', [PembeliProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profile/update', [PembeliProfileController::class, 'update'])->name('profile.update');
     Route::get('/produk/{id}', [KatalogController::class, 'show'])->name('produk.detail');
 });
+
+// Route Keranjang Belanja (dipanggil oleh partials/flash-sale-section.blade.php)
+Route::post('/pembeli/cart', [CartController::class, 'store'])->name('cart.store');
+Route::patch('/pembeli/cart/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/pembeli/cart/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
 
 
 Route::prefix('admin/stok')->group(function () {
