@@ -191,4 +191,50 @@ class StockAdjustmentTest extends DuskTestCase
             'stock' => 5.00,
         ]);
     }
+
+    /**
+     * Test Case 4 (PBI-02): [Normal - Boundary] Pengurangan manual tepat sama dengan sisa stok batch (habis 0 kg)
+     */
+    public function test_normal_boundary_pengurangan_seluruh_sisa_stok_batch(): void
+    {
+        // Precondition: Batch tersisa 5 kg
+        [$product, $batch] = $this->createProductWithBatch(5.0);
+
+        $this->browse(function (Browser $browser) use ($product, $batch) {
+            $browser->maximize()
+                ->visit('/admin/stok/penyesuaian')
+                ->pause(1200)
+                ->select('#product_select', (string) $product->id_product)
+                ->waitUntilEnabled('#batch_select', 5)
+                ->pause(1200)
+                ->select('#batch_select', (string) $batch->id_inventory_batches)
+                ->pause(1200)
+                // Input jumlah pengurangan tepat sama dengan sisa stok (5 kg)
+                ->type('input[name="quantity"]', '5')
+                ->pause(1000)
+                ->select('select[name="reason"]', 'Busuk / Rusak')
+                ->pause(1000)
+                ->type('textarea[name="notes"]', 'Seluruh sisa batch busuk/rusak')
+                ->pause(1200)
+                ->press('Simpan & Kurangi Stok Gudang Otomatis')
+                ->waitForText('Penyesuaian stok defect berhasil disimpan.', 5)
+                ->assertSee('Penyesuaian stok defect berhasil disimpan.')
+                ->assertSee($product->name)
+                ->assertSee('-5.00 kg')
+                ->pause(2000);
+        });
+
+        // Verifikasi stok batch di database habis menjadi 0.00 kg
+        $this->assertDatabaseHas('inventory_batches', [
+            'id_inventory_batches' => $batch->id_inventory_batches,
+            'stock' => 0.00,
+        ]);
+
+        // Verifikasi log tersimpan di tabel stock_adjustments
+        $this->assertDatabaseHas('stock_adjustments', [
+            'inventory_batches_id_inventory_batches' => $batch->id_inventory_batches,
+            'adjusted_quantity' => 5.00,
+            'reason' => 'Busuk / Rusak',
+        ]);
+    }
 }
