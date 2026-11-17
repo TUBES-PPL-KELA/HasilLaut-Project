@@ -22,6 +22,10 @@ abstract class DuskTestCase extends BaseTestCase
             '--disable-search-engine-choice-screen',
         ])->unless($this->hasHeadlessDisabled(), function (Collection $items) {
             return $items->merge([
+<<<<<<< HEAD
+=======
+                '--disable-gpu',
+>>>>>>> 90c16db1c8faa845d88b53c4f070a441ad0ead67
                 '--headless=new',
             ]);
         })->all());

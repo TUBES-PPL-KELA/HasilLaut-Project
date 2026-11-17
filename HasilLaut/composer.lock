@@ -4,11 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-<<<<<<< HEAD
-    "content-hash": "321d487d67a70394247685829258f5a9",
-=======
     "content-hash": "42dfbce0906188393f82801ff2ee87ef",
->>>>>>> dbc6d6d9c279113ac30be2b74fba276b1ef07b22
     "packages": [
         {
             "name": "brick/math",
@@ -6437,12 +6433,7 @@
             "support": {
                 "source": "https://github.com/laravel/dusk/tree/v8.8.0"
             },
-<<<<<<< HEAD
-            "time": "2026-11-09T14:41:34+00:00",
-            "published-time": "2026-11-10T16:02:12+00:00"
-=======
             "time": "2026-11-09T14:41:34+00:00"
->>>>>>> dbc6d6d9c279113ac30be2b74fba276b1ef07b22
         },
         {
             "name": "laravel/pail",
@@ -7077,12 +7068,7 @@
                 "issues": "https://github.com/php-webdriver/php-webdriver/issues",
                 "source": "https://github.com/php-webdriver/php-webdriver/tree/1.16.0"
             },
-<<<<<<< HEAD
-            "time": "2025-12-28T23:57:40+00:00",
-            "published-time": "2025-12-28T23:58:24+00:00"
-=======
             "time": "2025-12-28T23:57:40+00:00"
->>>>>>> dbc6d6d9c279113ac30be2b74fba276b1ef07b22
         },
         {
             "name": "phpunit/php-code-coverage",
@@ -8699,9 +8685,5 @@
         "php": "^8.2"
     },
     "platform-dev": {},
-<<<<<<< HEAD
-    "plugin-api-version": "2.11.0"
-=======
-    "plugin-api-version": "2.9.0"
->>>>>>> dbc6d6d9c279113ac30be2b74fba276b1ef07b22
+    "plugin-api-version": "2.6.0"
 }

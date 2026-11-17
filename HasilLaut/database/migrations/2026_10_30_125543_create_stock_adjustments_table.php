@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('stock_adjustments', function (Blueprint $table) {
             $table->id('id_stock_adjustments');
             $table->decimal('adjusted_quantity', 8, 2);
-            $table->string('reason', 50); // Busuk/Rusak, Penyusutan Timbangan, Kesalahan Input
-            $table->text('notes')->nullable(); // Catatan Admin
+            $table->string('reason', 50); 
+            $table->text('notes')->nullable(); 
             $table->foreignId('inventory_batches_id_inventory_batches')
                   ->constrained('inventory_batches', 'id_inventory_batches')
                   ->onDelete('cascade');

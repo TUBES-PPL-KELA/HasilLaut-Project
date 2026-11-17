@@ -67,6 +67,7 @@
                                     @method('PUT')
                                     <input type="hidden" name="quantity" value="{{ $item->quantity - 1 }}">
                                     <button type="submit" 
+                                        dusk="btn-decrement"
                                         onclick="return {{ $item->quantity <= 1 ? "confirm('Apakah Anda ingin menghapus produk ini dari keranjang?')" : 'true' }}" 
                                         class="px-2.5 py-1.5 text-xs text-slate-600 hover:bg-slate-200 transition font-bold cursor-pointer">-</button>
                                 </form>
@@ -77,7 +78,7 @@
                                     @csrf
                                     @method('PUT')
                                     <input type="hidden" name="quantity" value="{{ $item->quantity + 1 }}">
-                                    <button type="submit" class="px-2.5 py-1.5 text-xs text-slate-600 hover:bg-slate-200 transition font-bold cursor-pointer">+</button>
+                                    <button type="submit" dusk="btn-increment" class="px-2.5 py-1.5 text-xs text-slate-600 hover:bg-slate-200 transition font-bold cursor-pointer">+</button>
                                 </form>
                             </div>
 
@@ -88,7 +89,7 @@
                             <form action="{{ route('cart.destroy', $item->id_cart_items) }}" method="POST" onsubmit="return confirm('Apakah kamu yakin ingin menghapus produk ini dari keranjang?');">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="text-slate-400 hover:text-red-500 transition p-1 text-base cursor-pointer" title="Hapus Item">
+                                <button type="submit" dusk="btn-delete" class="text-slate-400 hover:text-red-500 transition p-1 text-base cursor-pointer" title="Hapus Item">
                                     🗑️
                                 </button>
                             </form>

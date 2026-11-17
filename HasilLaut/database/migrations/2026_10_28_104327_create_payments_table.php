@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('payment_gateway_inv_id', 100);
             $table->string('payment_method', 50);
             $table->decimal('amount', 12, 2);
-            $table->enum('status', ['pending', 'paid', 'expired', 'failed']);
+            $table->enum('status', ['pending', 'paid', 'expired', 'failed'])->nullable();
             $table->foreignId('orders_id_orders')->constrained('orders', 'id_orders')->onDelete('cascade');
             $table->timestamps();
         });
