@@ -14,6 +14,13 @@ class Product extends Model
         'name', 'description', 'price', 'image', 'max_storage_days', 'categories_id_categories', 'hub_name', 'is_top_tren'
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'is_top_tren' => 'boolean',
+        ];
+    }
+
    
     public function category()
     {
@@ -24,5 +31,10 @@ class Product extends Model
     public function inventoryBatches()
     {
         return $this->hasMany(InventoryBatch::class, 'product_id_product', 'id_product');
+    }
+
+    public function getTotalStockAttribute()
+    {
+        return $this->inventoryBatches()->sum('stock');
     }
 }

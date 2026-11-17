@@ -147,6 +147,12 @@
                                 </select>
                             </div>
 
+                            <div>
+                                <label for="hub_name" class="block text-[13px] font-extrabold text-[#0f172a] mb-2">Nama Hub Pesisir</label>
+                                <input type="text" name="hub_name" id="hub_name" value="{{ old('hub_name') }}" placeholder="Contoh: Hub Pangandaran"
+                                    class="w-full px-5 py-3.5 bg-[#f8fafc] border border-gray-200 text-gray-900 text-sm rounded-[10px] focus:bg-white focus:ring-1 focus:ring-[#0f766e] focus:border-[#0f766e] outline-none font-medium transition">
+                            </div>
+
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div>
                                     <label for="purchase_price_view" class="block text-[13px] font-extrabold text-[#0f172a] mb-2">Harga Beli per Kg</label>
@@ -190,6 +196,15 @@
                                 <textarea name="description" id="description" rows="4" placeholder="Tuliskan deskripsi singkat kesegaran, asal nelayan, dan kualitas rantai dingin..." required
                                     class="w-full px-5 py-3.5 bg-[#f8fafc] border border-gray-200 text-gray-900 text-[13px] rounded-[10px] focus:bg-white focus:ring-1 focus:ring-[#0f766e] focus:border-[#0f766e] outline-none resize-none font-medium transition">{{ old('description') }}</textarea>
                             </div>
+
+                            <label for="is_top_tren" class="flex items-start gap-3 rounded-xl border border-gray-200 bg-[#f8fafc] p-4">
+                                <input type="checkbox" name="is_top_tren" id="is_top_tren" value="1" {{ old('is_top_tren') ? 'checked' : '' }}
+                                    class="mt-1 h-4 w-4 rounded border-gray-300 text-teal-700 focus:ring-teal-700">
+                                <span>
+                                    <span class="block text-[13px] font-extrabold text-[#0f172a]">Tampilkan sebagai produk Top Tren</span>
+                                    <span class="mt-1 block text-xs text-gray-500">Produk akan muncul di landing page jika stoknya tersedia.</span>
+                                </span>
+                            </label>
 
                             <!-- Tombol Aksi -->
                             <div class="flex justify-end space-x-4 pt-4 border-t border-gray-100 mt-6">

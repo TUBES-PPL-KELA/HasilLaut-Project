@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('kurir_detail', function (Blueprint $table) {
             $table->id('id_kurir_detail');
             $table->string('vehicle_number', 20);
-            $table->string('phone_number', 20);
-            $table->enum('status', ['available', 'busy', 'offline']);
+            $table->string('phone_number', 20)->nullable();
+            $table->enum('status', ['available', 'busy', 'offline'])->nullable();
             $table->foreignId('users_id_users')->constrained('users', 'id_users')->onDelete('cascade');
             $table->timestamps();
         });

@@ -82,10 +82,14 @@
                                         </div>
                                         <div>
                                             <h6 class="font-bold text-gray-900 text-sm mb-1">{{ $item->product->name ?? 'Produk Hasil Laut' }}</h6>
-                                            <p class="text-xs text-gray-500">{{ $item->quantity }} kg • Hub Pangandaran</p>
+                                            <p class="text-xs text-gray-500">
+                                                {{ $item->quantity }} kg × Rp {{ number_format($item->effective_price ?? 0, 0, ',', '.') }} • Hub Pangandaran
+                                            </p>
                                         </div>
                                     </div>
-                                    <span class="font-bold text-gray-900 text-sm">Rp {{ number_format($item->quantity * ($item->product->price ?? 0), 0, ',', '.') }}</span>
+                                    <span class="font-bold text-gray-900 text-sm">
+                                        Rp {{ number_format($item->quantity * ($item->effective_price ?? 0), 0, ',', '.') }}
+                                    </span>
                                 </div>
                             @endforeach
                         </div>
@@ -171,7 +175,7 @@
 
                     <div class="flex items-center justify-between mb-6">
                         <h5 class="font-bold text-gray-900 text-base mb-0">Total Pembayaran</h5>
-                        <h4 class="font-bold text-emerald-600 text-lg mb-0">Rp {{ number_format(($totalAmount ?? 0) + 2500, 0, ',', '.') }}</h4>
+                        <h4 class="font-bold text-emerald-600 text-lg mb-0">Rp {{ number_format($totalAmount ?? 0, 0, ',', '.') }}</h4>
                     </div>
 
                     <!-- Tombol Eksekusi -->
@@ -186,7 +190,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </form>
 </div>
@@ -226,6 +229,11 @@
 
             const data = await response.json();
 
+            if (response.ok && data.cod) {
+                alert('Pesanan COD berhasil dibuat. Bayar tunai ke kurir saat ikan tiba.');
+                window.location.href = data.redirect;
+                return;
+            }
             if (response.ok && data.snap_token) {
                 // Panggil pop-up Midtrans
                 window.snap.pay(data.snap_token, {
@@ -262,4 +270,4 @@
         }
     });
 </script>
-@endsection
+@endsection 

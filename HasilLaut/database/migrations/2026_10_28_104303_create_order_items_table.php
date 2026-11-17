@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('order_items', function (Blueprint $table) {
             $table->id('id_order_items');
-            $table->decimal('quantity', 8, 2);
-            $table->decimal('price', 12, 2);
+            $table->decimal('quantity', 8, 2)->nullable();
+            $table->decimal('price', 12, 2)->nullable();
             $table->foreignId('orders_id_orders')->constrained('orders', 'id_orders')->onDelete('cascade');
             $table->foreignId('product_id_product')->constrained('product', 'id_product')->onDelete('cascade');
             $table->timestamps();
