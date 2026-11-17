@@ -6,6 +6,8 @@ use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PembeliProfileController;
+use App\Http\Controllers\PencarianIkanController;
+use App\Http\Controllers\WelcomeController;
 
 Route::get('/admin/product', [ProductController::class, 'index'])->name('admin.product.index');
 Route::get('/admin/product/create', [ProductController::class, 'create'])->name('admin.product.create');
@@ -14,9 +16,10 @@ Route::post('/admin/product', [ProductController::class, 'store'])->name('admin.
 Route::get('/keranjang', [CartController::class, 'index'])->name('pembeli.cart');
 Route::put('/keranjang/update/{id}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/keranjang/hapus/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', WelcomeController::class)->name('welcome');
+
+Route::get('/pembeli/pencarian-ikan', [PencarianIkanController::class, 'index'])
+    ->name('pembeli.pencarian-ikan');
 
 // Pastikan dibungkus middleware auth jika memerlukan login pembeli
 Route::prefix('pembeli')->name('pembeli.')->group(function () {

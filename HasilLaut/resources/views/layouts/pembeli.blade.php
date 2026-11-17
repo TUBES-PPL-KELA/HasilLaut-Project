@@ -65,7 +65,15 @@
             <div class="flex items-center gap-2">
                 <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Area Pelanggan</span>
             </div>
-            <div class="flex items-center gap-6">
+            <form action="{{ route('pembeli.pencarian-ikan') }}" method="GET" class="relative ml-auto flex w-full max-w-xl items-center">
+                <label for="header-search" class="sr-only">Cari ikan</label>
+                <input id="header-search" type="search" name="q" value="{{ request('q') }}" placeholder="Cari nama ikan, hub, atau kategori..." class="w-full rounded-lg border border-gray-200 py-2 pl-4 pr-11 text-sm focus:border-emerald-700 focus:outline-none focus:ring-1 focus:ring-emerald-700">
+                <button type="submit" aria-label="Cari" class="absolute right-3 text-gray-500 hover:text-[#1b4d3e]">
+                    <i class="bi bi-search" aria-hidden="true"></i>
+                    <span class="sr-only">Cari</span>
+                </button>
+            </form>
+            <div class="ml-6 flex items-center gap-6">
                 <a href="#" class="text-sm font-medium text-gray-600 hover:text-[#1b4d3e]">Beranda</a>
                 <a href="#" class="text-sm font-medium text-gray-600 hover:text-[#1b4d3e]">Katalog</a>
                 <a href="{{ route('pembeli.cart') }}" class="relative text-gray-600 hover:text-[#1b4d3e]">
