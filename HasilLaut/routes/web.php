@@ -9,7 +9,6 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PembeliProfileController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\PencarianProdukController;
-use App\Http\Controllers\KatalogController;
 
 Route::get('/admin/product', [ProductController::class, 'index'])->name('admin.product.index');
 Route::get('/admin/product/create', [ProductController::class, 'create'])->name('admin.product.create');
