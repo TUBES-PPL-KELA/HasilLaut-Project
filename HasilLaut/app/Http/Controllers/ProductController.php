@@ -7,7 +7,9 @@ use App\Http\Requests\StoreProductRequest;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\InventoryBatch;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class ProductController extends Controller
@@ -46,13 +48,25 @@ class ProductController extends Controller
                 'is_top_tren'              => true,
             ]);
 
-            InventoryBatch::create([
+            $batchData = [
                 'product_id_product' => $product->id_product,
-                'users_id_users'     => 1,
+                'users_id_users'     => auth()->id() ?? 1,
                 'stock'              => $request->stock,
                 'purchase_price'     => $request->purchase_price,
                 'received_date'      => $request->received_date,
-            ]);
+            ];
+
+            $batchCols = Schema::getColumnListing('inventory_batches');
+            foreach (['expired_date', 'expiry_date', 'exp_date'] as $expCol) {
+                if (in_array($expCol, $batchCols)) {
+                    $batchData[$expCol] = Carbon::parse($request->received_date)
+                        ->addDays((int) ($request->max_storage_days ?? 7))
+                        ->format('Y-m-d');
+                    break;
+                }
+            }
+
+            InventoryBatch::forceCreate($batchData);
 
             DB::commit();
 
@@ -62,6 +76,55 @@ class ProductController extends Controller
             DB::rollBack();
             return back()->withInput()
                          ->withErrors(['error' => 'Gagal menyimpan: ' . $e->getMessage()]);
+        }
+    }
+
+    public function storeBatch(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
+
+        $request->validate([
+            'stock'          => 'required|numeric|min:1',
+            'purchase_price' => 'required|numeric|min:0',
+            'received_date'  => 'required|date',
+            'expired_date'   => 'nullable|date|after_or_equal:received_date',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+            $batchData = [
+                'product_id_product' => $product->id_product,
+                'users_id_users'     => auth()->id() ?? 1,
+                'stock'              => $request->stock,
+                'purchase_price'     => $request->purchase_price,
+                'received_date'      => $request->received_date,
+            ];
+
+            $batchCols = Schema::getColumnListing('inventory_batches');
+            $calculatedExp = $request->filled('expired_date')
+                ? $request->expired_date
+                : Carbon::parse($request->received_date)
+                    ->addDays((int) ($product->max_storage_days ?? 7))
+                    ->format('Y-m-d');
+
+            foreach (['expired_date', 'expiry_date', 'exp_date'] as $expCol) {
+                if (in_array($expCol, $batchCols)) {
+                    $batchData[$expCol] = $calculatedExp;
+                    break;
+                }
+            }
+
+            InventoryBatch::forceCreate($batchData);
+
+            DB::commit();
+
+            return redirect()->route('admin.product.index')
+                             ->with('success', 'Batch stok baru (+' . $request->stock . ' kg) berhasil ditambahkan untuk ' . $product->name . '!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('admin.product.index')
+                             ->with('error', 'Gagal menambahkan batch stok: ' . $e->getMessage());
         }
     }
 
