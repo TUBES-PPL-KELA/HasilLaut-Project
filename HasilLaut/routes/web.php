@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PembeliProfileController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\PencarianProdukController;
+use App\Http\Controllers\PaymentController;
 
 Route::get('/admin/product', [ProductController::class, 'index'])->name('admin.product.index');
 Route::get('/admin/product/create', [ProductController::class, 'create'])->name('admin.product.create');
@@ -52,6 +53,9 @@ Route::prefix('admin/flash-sale')->group(function () {
     Route::post('/discount', [App\Http\Controllers\FlashSaleController::class, 'updateGlobalDiscount'])->name('admin.flash_sale.discount.store');
     Route::delete('/hentikan/{id}', [App\Http\Controllers\FlashSaleController::class, 'destroy'])->name('admin.flash_sale.destroy');
 });
+
+// Route Halaman Status Pesanan setelah selesai bayar di Midtrans (Mockup No. 6)
+Route::get('/pesanan/status', [CheckoutController::class, 'status'])->name('pembeli.pesanan.status');
 
 // Route Webhook Midtrans (PBI-15 & PBI-02 FIFO)
 Route::post('/midtrans/webhook', [CheckoutController::class, 'webhook'])->name('midtrans.webhook');
