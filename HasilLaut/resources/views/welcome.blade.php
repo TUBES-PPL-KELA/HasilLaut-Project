@@ -346,52 +346,32 @@
                 </div>
                 <a class="text-link" href="#produk-unggulan">Lihat semua <i class="bi bi-arrow-right"></i></a>
             </div>
-            <div class="product-grid">
-                <article class="product-card">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1753537358141-a72fbfea529c?auto=format&fit=crop&w=900&q=85" alt="Olahan ikan kakap merah segar" loading="lazy">
-                        <span class="product-tag">Baru Masuk Hub</span>
-                    </div>
-                    <div class="product-body">
-                        <h3>Ikan Kakap Merah Segar</h3>
-                        <span class="product-origin"><i class="bi bi-geo-alt-fill"></i> Hub Pangandaran</span>
-                        <p class="product-price">Rp 85.000 / kg</p>
-                        <div class="product-bottom">
-                            <span class="seller">● Pak Rudi (Nelayan)</span>
-                            <a class="buy-link" href="{{ route('pembeli.cart') }}">Beli Sekarang</a>
+            <div class="product-grid" data-testid="top-trend-products">
+                @forelse($topTrendProducts as $product)
+                    <article class="product-card" data-testid="top-trend-product">
+                        <div class="product-image">
+                            @if($product->image)
+                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" loading="lazy">
+                            @else
+                                <img src="https://images.unsplash.com/photo-1753537358141-a72fbfea529c?auto=format&fit=crop&w=900&q=85" alt="{{ $product->name }}" loading="lazy">
+                            @endif
+                            <span class="product-tag">Top Tren</span>
                         </div>
-                    </div>
-                </article>
-                <article class="product-card">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1548587468-971ebe4c8c3b?auto=format&fit=crop&w=900&q=85" alt="Udang windu laut segar" loading="lazy">
-                        <span class="product-tag">Kualitas Super</span>
-                    </div>
-                    <div class="product-body">
-                        <h3>Udang Windu Laut</h3>
-                        <span class="product-origin"><i class="bi bi-geo-alt-fill"></i> Hub Jepara</span>
-                        <p class="product-price">Rp 115.000 / kg</p>
-                        <div class="product-bottom">
-                            <span class="seller">● Pak Rudi (Nelayan)</span>
-                            <a class="buy-link" href="{{ route('pembeli.cart') }}">Beli Sekarang</a>
+                        <div class="product-body">
+                            <h3>{{ $product->name }}</h3>
+                            <span class="product-origin"><i class="bi bi-geo-alt-fill"></i> {{ $product->hub_name ?: 'Hub belum tersedia' }}</span>
+                            <p class="product-price">Rp {{ number_format($product->price, 0, ',', '.') }} / kg</p>
+                            <div class="product-bottom">
+                                <span class="seller">Stok: {{ number_format($product->available_stock, 0, ',', '.') }} kg</span>
+                                <a class="buy-link" href="{{ route('pembeli.cart') }}">Beli Sekarang</a>
+                            </div>
                         </div>
-                    </div>
-                </article>
-                <article class="product-card">
-                    <div class="product-image">
-                        <img src="https://images.unsplash.com/photo-1682457569891-53e4f6ef9271?auto=format&fit=crop&w=900&q=85" alt="Hidangan tuna loin segar" loading="lazy">
-                        <span class="product-tag">Tangkapan Pagi</span>
-                    </div>
-                    <div class="product-body">
-                        <h3>Tuna Loin Segar</h3>
-                        <span class="product-origin"><i class="bi bi-geo-alt-fill"></i> Hub Makassar</span>
-                        <p class="product-price">Rp 95.000 / kg</p>
-                        <div class="product-bottom">
-                            <span class="seller">● Pak Anol</span>
-                            <a class="buy-link" href="{{ route('pembeli.cart') }}">Beli Sekarang</a>
-                        </div>
-                    </div>
-                </article>
+                    </article>
+                @empty
+                    <p class="col-span-full rounded-xl border border-slate-200 bg-white p-6 text-center text-sm text-slate-600" data-testid="top-trend-empty-state">
+                        Saat ini stok produk Top Tren sedang kosong. Silakan cek katalog kembali nanti.
+                    </p>
+                @endforelse
             </div>
         </section>
     </main>
