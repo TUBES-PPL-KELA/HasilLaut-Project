@@ -30,23 +30,30 @@
         </div>
     </aside>
 
-    <div class="min-h-screen lg:pl-56">
-        <header class="sticky top-0 z-20 flex h-16 items-center gap-4 border-b border-slate-100 bg-white/95 px-4 backdrop-blur sm:px-7">
-            <a href="/" class="flex h-10 shrink-0 items-center lg:hidden" aria-label="HasilLaut beranda">
-                <img src="{{ asset('images/logo.png') }}" alt="HasilLaut" class="h-10 w-auto max-w-[140px] object-contain">
-            </a>
-            <label class="relative ml-auto flex w-full max-w-xl items-center">
-                <span class="sr-only">Cari produk</span>
-                <svg class="absolute left-3 size-4 text-slate-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
-                <input type="search" placeholder="Cari ikan segar, udang, kepiting, atau lokasi hub pesisir..." class="h-10 w-full rounded-full border border-slate-200 bg-slate-50 pl-10 pr-4 text-xs outline-none transition placeholder:text-slate-400 focus:border-ocean-teal focus:bg-white focus:ring-2 focus:ring-ocean-teal/10">
-            </label>
-            <button type="button" class="relative grid size-9 shrink-0 place-items-center rounded-full border border-slate-200 text-midnight-teal" aria-label="Keranjang">
-                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 4h2l2.2 10.1a2 2 0 0 0 2 1.6h8.5a2 2 0 0 0 1.9-1.4L21 8H6"/><circle cx="10" cy="20" r="1"/><circle cx="18" cy="20" r="1"/></svg>
-                <span data-cart-count class="absolute -right-1 -top-1 grid size-4 place-items-center rounded-full bg-ocean-teal text-[9px] font-bold text-white">0</span>
-            </button>
-            <button type="button" class="hidden size-9 shrink-0 place-items-center rounded-full border border-slate-200 text-midnight-teal sm:grid" aria-label="Notifikasi">
-                <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg>
-            </button>
+    <!-- 2. KOLOM KANAN: Berisi Navbar Atas & Konten Utama -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden">
+        
+        <!-- Navbar Atas -->
+        <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between flex-shrink-0 z-10">
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">Area Pelanggan</span>
+            </div>
+            <form action="{{ route('pembeli.pencarian-ikan') }}" method="GET" class="relative ml-auto flex w-full max-w-xl items-center">
+                <label for="header-search" class="sr-only">Cari ikan</label>
+                <input id="header-search" type="search" name="q" value="{{ request('q') }}" placeholder="Cari nama ikan, hub, atau kategori..." class="w-full rounded-lg border border-gray-200 py-2 pl-4 pr-11 text-sm focus:border-emerald-700 focus:outline-none focus:ring-1 focus:ring-emerald-700">
+                <button type="submit" aria-label="Cari" class="absolute right-3 text-gray-500 hover:text-[#1b4d3e]">
+                    <i class="bi bi-search" aria-hidden="true"></i>
+                    <span class="sr-only">Cari</span>
+                </button>
+            </form>
+            <div class="ml-6 flex items-center gap-6">
+                <a href="#" class="text-sm font-medium text-gray-600 hover:text-[#1b4d3e]">Beranda</a>
+                <a href="#" class="text-sm font-medium text-gray-600 hover:text-[#1b4d3e]">Katalog</a>
+                <a href="{{ route('pembeli.cart') }}" class="relative text-gray-600 hover:text-[#1b4d3e]">
+                    <i class="bi bi-cart3 text-xl"></i>
+                    <span class="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">3</span>
+                </a>
+            </div>
         </header>
 
         <main class="mx-auto w-full max-w-[1440px] px-4 py-5 sm:px-7 lg:px-8">

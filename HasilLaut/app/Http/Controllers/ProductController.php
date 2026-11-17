@@ -43,8 +43,7 @@ class ProductController extends Controller
                 'description'              => $request->description,
                 'price'                    => $request->price,
                 'image'                    => $imagePath,
-                'is_top_tren'              => $request->boolean('is_top_tren'),
-                'hub_name'                 => $request->input('hub_name'),
+                'is_top_tren'              => true,
             ]);
 
             InventoryBatch::create([
