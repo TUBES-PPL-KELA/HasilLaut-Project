@@ -7,9 +7,24 @@ use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
 use Illuminate\Support\Collection;
 use Laravel\Dusk\TestCase as BaseTestCase;
+use PHPUnit\Framework\Attributes\BeforeClass;
 
 abstract class DuskTestCase extends BaseTestCase
 {
+    /**
+     * Menjalankan ChromeDriver secara otomatis sebelum Dusk berjalan
+     */
+    #[BeforeClass]
+    public static function prepare(): void
+    {
+        if (! static::runningInSail()) {
+            static::startChromeDriver(['--port=9515']);
+        }
+    }
+
+    /**
+     * Membuat instance RemoteWebDriver
+     */
     protected function driver(): RemoteWebDriver
     {
         $options = (new ChromeOptions)->addArguments(collect([
