@@ -28,4 +28,16 @@
             Pesanan Masuk
         </a>
     </nav>
+
+    <!-- Kartu Profil Dummy (Sesuai Figma) -->
+    <div class="p-5 border-t border-gray-100">
+        <div class="flex items-center gap-3 bg-slate-50 p-3 rounded-2xl border border-gray-200">
+            <!-- Gambar avatar dummy -->
+            <img src="https://ui-avatars.com/api/?name=Andi+M&background=0D8ABC&color=fff" alt="User" class="w-10 h-10 rounded-full shadow-sm">
+            <div>
+                <p class="text-sm font-bold text-gray-900 leading-tight">Andi M. (Admin)</p>
+                <p class="text-[11px] font-medium text-gray-500">Hub Pangandaran</p>
+            </div>
+        </div>
+    </div>
 </aside>

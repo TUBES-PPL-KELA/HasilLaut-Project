@@ -1,9 +1,15 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\KatalogController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\StockAdjustmentController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\PembeliProfileController;
+use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\PencarianProdukController;
+use App\Http\Controllers\KatalogController;
 
 Route::get('/admin/product', [ProductController::class, 'index'])->name('admin.product.index');
 Route::get('/admin/product/create', [ProductController::class, 'create'])->name('admin.product.create');
@@ -18,8 +24,12 @@ Route::get('/', function () {
 
 
 Route::prefix('pembeli')->name('pembeli.')->group(function () {
+    Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog');
     Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/checkout/process', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/profile/edit', [PembeliProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile/update', [PembeliProfileController::class, 'update'])->name('profile.update');
+    Route::get('/produk/{id}', [KatalogController::class, 'show'])->name('produk.detail');
 });
 
 
