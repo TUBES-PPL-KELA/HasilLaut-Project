@@ -58,24 +58,43 @@ class CheckoutController extends Controller
         }
 
         DB::beginTransaction();
-        try {
-            $subtotal = 0;
-            foreach ($cart->cartItems as $item) {
-                $subtotal += $item->quantity * $item->effective_price;
-            }
-            $shippingCost = 15000;
-            $serviceFee = 2500;
-            $totalAmount = $subtotal + $shippingCost + $serviceFee;
+            try {
+                // 1. Validasi stok & kuota Flash Sale terlebih dahulu sebelum membuat Order
+                foreach ($cart->cartItems as $item) {
+                    if (!is_null($item->flash_sale_item_id)) {
+                        $fsItem = FlashSaleItem::find($item->flash_sale_item_id);
+                        if (!$fsItem || $fsItem->stock < $item->quantity) {
+                            DB::rollBack();
+                            return response()->json(['error' => 'Kuota Flash Sale untuk produk ini sudah habis atau tidak mencukupi.'], 422);
+                        }
+                    } else {
+                        $availableStock = $item->product->total_stock ?? $item->product->stock ?? 0;
+                        if ($availableStock < $item->quantity) {
+                            DB::rollBack();
+                            return response()->json(['error' => 'Maaf, stok produk segar sudah habis atau tidak mencukupi.'], 422);
+                        }
+                    }
+                }
 
-            $order = Order::create([
-                'order_number' => 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(4)),
-                'is_pangandaran_area' => 1,
-                'subtotal_amount' => $subtotal,
-                'shipping_cost' => $shippingCost,
-                'total_amount' => $totalAmount,
-                'users_id_users' => $userId,
-                'status_pesanan' => 'Menunggu Pembayaran',
-            ]);
+                // 2. Hitung subtotal & total jika semua stok aman
+                $subtotal = 0;
+                foreach ($cart->cartItems as $item) {
+                    $subtotal += $item->quantity * $item->effective_price;
+                }
+                $shippingCost = 15000;
+                $serviceFee = 2500;
+                $totalAmount = $subtotal + $shippingCost + $serviceFee;
+
+                // 3. Baru buat header Order
+                $order = Order::create([
+                    'order_number'        => 'ORD-' . date('Ymd') . '-' . strtoupper(Str::random(4)),
+                    'is_pangandaran_area' => 1,
+                    'subtotal_amount'     => $subtotal,
+                    'shipping_cost'       => $shippingCost,
+                    'total_amount'        => $totalAmount,
+                    'users_id_users'      => $userId,
+                    'status_pesanan'      => 'Menunggu Pembayaran',
+                ]);
 
             foreach ($cart->cartItems as $item) {
                 OrderItem::create([

@@ -16,6 +16,7 @@ class PembeliDetail extends Model
 
     protected $fillable = [
         'users_id_users',
+        'name',
         'phone_number',
         'address',
         'latitude',
