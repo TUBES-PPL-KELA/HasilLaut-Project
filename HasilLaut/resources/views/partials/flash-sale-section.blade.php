@@ -17,11 +17,12 @@
                 $imgUrl = ($product && $product->image)
                     ? (\Illuminate\Support\Str::startsWith($product->image, 'http') ? $product->image : asset('storage/' . $product->image))
                     : 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=500&q=80';
+                $detailUrl = route('pembeli.produk.detail', ['id' => $product->id_product, 'flash_sale_item_id' => $item->id_flash_sale_item]);
             @endphp
             <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group">
                 <div>
                     <!-- Gambar & Badge (Klik ke Detail Flash Sale) -->
-                    <a href="" class="block relative h-44 bg-gray-100 overflow-hidden">
+                    <a href="{{ $detailUrl }}" class="block relative h-44 bg-gray-100 overflow-hidden">
                         <img src="{{ $imgUrl }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                         
                         <!-- Badge Diskon Kiri Atas -->
@@ -38,7 +39,7 @@
 
                     <!-- Info Produk -->
                     <div class="p-4">
-                        <a href="" class="block">
+                        <a href="{{ $detailUrl }}" class="block">
                             <h3 class="font-bold text-gray-900 text-base truncate group-hover:text-[#164E56] transition" title="{{ $product->name }}">
                                 {{ $product->name }}
                             </h3>

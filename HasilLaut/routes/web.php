@@ -23,6 +23,7 @@ Route::put('/admin/product/{id}', [ProductController::class, 'update'])->name('a
 Route::delete('/admin/product/{id}', [ProductController::class, 'destroy'])->name('admin.product.destroy');
 
 Route::get('/keranjang', [CartController::class, 'index'])->name('pembeli.cart');
+Route::post('/keranjang/tambah', [CartController::class, 'store'])->name('cart.store');
 Route::put('/keranjang/update/{id}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/keranjang/hapus/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
 Route::get('/', WelcomeController::class)->name('welcome');
