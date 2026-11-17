@@ -27,10 +27,14 @@ class PembeliProfileController extends Controller
     {
         $request->validate([
             'name'         => 'required|string|max:255',
-            'phone_number' => 'required|string|max:20',
+            'phone_number' => 'required|string|max:20|digits_between:10,15',
             'address'      => 'required|string',
             'latitude'     => 'required|numeric|between:-90,90',
             'longitude'    => 'required|numeric|between:-180,180',
+        ], 
+        [ 
+            'phone_number.digits_between' => 'Nomor telepon tidak valid, minimal harus terdiri dari 10 digit angka.',
+            'phone_number.numeric'        => 'Nomor telepon tidak valid, harus berupa angka.',
         ]);
 
         $userId = Auth::id() ?? 1;
