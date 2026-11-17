@@ -122,6 +122,7 @@
                             <input type="hidden" name="product_id" value="{{ $product->id_product }}">
                             <input type="hidden" name="quantity" value="1">
                             <button type="submit"
+                                dusk="btn-add-cart"
                                 {{ $product->available_stock <= 0 ? 'disabled' : '' }}
                                 class="w-full text-xs font-bold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-1.5 {{ $product->available_stock > 0 ? 'bg-[#164E56] hover:bg-[#0F393F] text-white cursor-pointer' : 'bg-gray-200 text-gray-400 cursor-not-allowed' }}">
                                 <i class="bi bi-plus-lg"></i> {{ $product->available_stock > 0 ? 'Tambah ke Keranjang' : 'Stok Habis' }}
