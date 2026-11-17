@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('flash_sale_item', function (Blueprint $table) {
             $table->id('id_flash_sale_item');
-            $table->decimal('flash_sale_price', 12, 2);
-            $table->integer('stock');
+            $table->decimal('flash_sale_price', 12, 2)->nullable();
+            $table->integer('stock')->nullable();
             $table->foreignId('inventory_batches_id_inventory_batches')->constrained('inventory_batches', 'id_inventory_batches')->onDelete('cascade');
             $table->foreignId('discount_id_discount')->constrained('discount', 'id_discount')->onDelete('cascade');
             $table->timestamps();
