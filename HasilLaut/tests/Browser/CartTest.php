@@ -16,9 +16,9 @@ class CartTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->visit('/pembeli/katalog')
                     ->assertPathIs('/pembeli/katalog')
+                    ->pause(1500)
                     ->click('@btn-add-cart')
-                    ->pause(1000);
-
+                    ->pause(2000);
         });
     }
 
@@ -28,8 +28,12 @@ class CartTest extends DuskTestCase
     public function test_tc_crt_002_direct_checkout_beli_sekarang()
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/pembeli/checkout')
-                    ->assertPathIs('/pembeli/checkout');
+            $browser->visit('/pembeli/katalog')
+                    ->assertPathIs('/pembeli/katalog')
+                    ->pause(1000)
+                    ->visit('/pembeli/checkout')
+                    ->assertPathIs('/pembeli/checkout')
+                    ->pause(2000);
         });
     }
 
@@ -39,11 +43,12 @@ class CartTest extends DuskTestCase
     public function test_tc_crt_003_menampilkan_daftar_item_keranjang()
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/keranjang')
-                    ->assertPathIs('/keranjang')
+            $browser->visit('/pembeli/keranjang')
+                    ->assertPathIs('/pembeli/keranjang')
                     ->assertSee('Keranjang Belanja')
                     ->assertPresent('img')
-                    ->assertPresent('#grand-total');
+                    ->assertPresent('#grand-total')
+                    ->pause(2000);
         });
     }
 
@@ -53,10 +58,11 @@ class CartTest extends DuskTestCase
     public function test_tc_crt_004_mengubah_kuantitas_produk_valid()
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/keranjang')
-                    ->assertPathIs('/keranjang')
+            $browser->visit('/pembeli/keranjang')
+                    ->assertPathIs('/pembeli/keranjang')
+                    ->pause(1000)
                     ->click('@btn-increment')
-                    ->pause(1000);
+                    ->pause(2000);
         });
     }
 
@@ -66,8 +72,18 @@ class CartTest extends DuskTestCase
     public function test_tc_crt_005_kuantitas_melebihi_stok()
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/keranjang')
-                    ->assertPathIs('/keranjang');
+            $browser->visit('/pembeli/keranjang')
+                    ->assertPathIs('/pembeli/keranjang')
+                    ->pause(1000)
+                    ->script("
+                        let input = document.querySelector('input[name=\"quantity\"]');
+                        if(input) {
+                            input.value = '999';
+                            input.form.submit();
+                        }
+                    ");
+            
+            $browser->pause(2000);
         });
     }
 
@@ -77,11 +93,12 @@ class CartTest extends DuskTestCase
     public function test_tc_crt_006_menghapus_item_keranjang()
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/keranjang')
-                    ->assertPathIs('/keranjang')
+            $browser->visit('/pembeli/keranjang')
+                    ->assertPathIs('/pembeli/keranjang')
+                    ->pause(1000)
                     ->click('@btn-delete')
                     ->acceptDialog()
-                    ->pause(1000);
+                    ->pause(2000);
         });
     }
 
@@ -91,8 +108,22 @@ class CartTest extends DuskTestCase
     public function test_tc_crt_007_mencegah_checkout_keranjang_kosong()
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/keranjang')
-                    ->assertPathIs('/keranjang');
+            $browser->visit('/pembeli/keranjang');
+            
+            // Bersihkan sisa item jika ada
+            while ($browser->element('@btn-delete')) {
+                try {
+                    $browser->click('@btn-delete')->acceptDialog()->pause(500);
+                } catch (\Exception $e) {
+                    break;
+                }
+            }
+
+            $browser->visit('/pembeli/keranjang')
+                    ->assertPathIs('/pembeli/keranjang')
+                    ->pause(1000)
+                    ->assertSee('Keranjang belanja kamu masih kosong')
+                    ->pause(2000);
         });
     }
 }

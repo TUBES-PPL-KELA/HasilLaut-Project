@@ -18,9 +18,16 @@ Route::get('/admin/product/{id}/edit', [ProductController::class, 'edit'])->name
 Route::put('/admin/product/{id}', [ProductController::class, 'update'])->name('admin.product.update');
 Route::delete('/admin/product/{id}', [ProductController::class, 'destroy'])->name('admin.product.destroy');
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/pembeli/pencarian-ikan', [PencarianIkanController::class, 'index'])
+    ->name('pembeli.pencarian-ikan');
+
+// Rute Keranjang Belanja (Dikeluarkan dari prefix pembeli agar namanya pas: cart, cart.store, dll)
+Route::get('/pembeli/keranjang', [CartController::class, 'index'])->name('pembeli.cart');
+Route::post('/keranjang/tambah', [CartController::class, 'store'])->name('cart.store');
+Route::put('/keranjang/update/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/keranjang/hapus/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+Route::get('/', WelcomeController::class)->name('welcome');
+
 
 // Pastikan dibungkus middleware auth jika memerlukan login pembeli
 Route::prefix('pembeli')->name('pembeli.')->group(function () {

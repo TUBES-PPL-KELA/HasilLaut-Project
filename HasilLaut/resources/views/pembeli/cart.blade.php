@@ -61,7 +61,9 @@
                         </div>
 
                         <div class="flex items-center justify-between sm:justify-end gap-4 sm:gap-6 w-full sm:w-auto">
+                            <!-- BAGIAN KUANTITAS YANG BISA DIKETIK & TOMBOL +/- -->
                             <div class="flex items-center border border-slate-200 rounded-lg overflow-hidden bg-slate-50">
+                                <!-- Tombol Kurang (-) -->
                                 <form action="{{ route('cart.update', $item->id_cart_items) }}" method="POST" class="inline">
                                     @csrf
                                     @method('PUT')
@@ -72,8 +74,17 @@
                                         class="px-2.5 py-1.5 text-xs text-slate-600 hover:bg-slate-200 transition font-bold cursor-pointer">-</button>
                                 </form>
 
-                                <span class="px-3 text-xs font-semibold text-slate-800 text-center min-w-[45px]">{{ $item->quantity }} kg</span>
+                                <!-- Input Kuantitas Bisa Diketik Langsung (Dilengkapi Atribut dusk="input-quantity") -->
+                                <form action="{{ route('cart.update', $item->id_cart_items) }}" method="POST" class="inline">
+                                    @csrf
+                                    @method('PUT')
+                                    <input type="number" name="quantity" value="{{ $item->quantity }}" min="1" 
+                                        dusk="input-quantity"
+                                        class="w-16 text-xs font-semibold text-slate-800 text-center bg-transparent border-none focus:outline-none focus:ring-0 py-1"
+                                        onchange="this.form.submit()">
+                                </form>
 
+                                <!-- Tombol Tambah (+) -->
                                 <form action="{{ route('cart.update', $item->id_cart_items) }}" method="POST" class="inline">
                                     @csrf
                                     @method('PUT')

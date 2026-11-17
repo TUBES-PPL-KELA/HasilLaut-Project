@@ -80,7 +80,7 @@ class CartController extends Controller
 
     public function update(Request $request, $id)
     {
-        $cartItem = CartItem::with('flashSaleItem')->findOrFail($id);
+        $cartItem = CartItem::with(['flashSaleItem', 'product.inventoryBatches'])->findOrFail($id);
 
         if ($request->quantity <= 0) {
             $cartItem->delete();
@@ -89,6 +89,13 @@ class CartController extends Controller
 
         if ($cartItem->flashSaleItem && $request->quantity > $cartItem->flashSaleItem->stock) {
             return redirect()->back()->with('error', 'Maksimal pembelian promo ini adalah ' . $cartItem->flashSaleItem->stock . ' kg.');
+        }
+
+        if (!$cartItem->flashSaleItem && $cartItem->product) {
+            $totalStock = $cartItem->product->inventoryBatches->sum('stock');
+            if ($request->quantity > $totalStock) {
+                return redirect()->back()->with('error', 'Kuantitas melebihi sisa stok gudang! Sisa stok: ' . $totalStock . ' kg.');
+            }
         }
 
         $cartItem->update([
