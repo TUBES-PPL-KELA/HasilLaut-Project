@@ -1,78 +1,56 @@
 @extends('layouts.pembeli')
 
-@section('title', 'Cari Produk | HasilLaut')
+@section('title', 'Pencarian Ikan | HasilLaut')
 
 @section('content')
-    <section class="rounded-2xl bg-midnight-teal px-6 py-8 text-white sm:px-8" aria-labelledby="search-title">
-        <p class="text-xs font-semibold uppercase tracking-wider text-pale-ice">Katalog Hasil Laut</p>
-        <h1 id="search-title" class="mt-2 text-2xl font-bold sm:text-3xl">Cari Produk Segar</h1>
-        <p class="mt-2 max-w-2xl text-sm leading-6 text-white/75">Temukan ikan favorit berdasarkan nama produk atau Hub Pesisir.</p>
-
-        <form id="product-search-form" action="{{ route('pembeli.pencarian-ikan') }}" method="GET" class="mt-6 flex flex-col gap-2 sm:flex-row">
-            <label class="sr-only" for="search-query">Nama ikan atau Hub Pesisir</label>
-            <input
-                id="search-query"
-                data-testid="product-search-input"
-                type="search"
-                name="q"
-                value="{{ $search }}"
-                placeholder="Contoh: Kakap Merah atau Pangandaran"
-                autocomplete="off"
-                class="min-h-12 flex-1 rounded-lg border border-white/30 bg-white px-4 text-sm text-slate-900 placeholder:text-slate-400 focus:border-pale-ice focus:outline-none focus:ring-2 focus:ring-pale-ice"
-            >
-            <button type="submit" class="min-h-12 rounded-lg bg-soft-seafoam px-6 text-sm font-bold text-white transition hover:bg-ocean-teal">
-                <i class="bi bi-search mr-2" aria-hidden="true"></i>Cari Produk
-            </button>
-        </form>
-    </section>
-
-    <section id="search-results" data-testid="search-results" class="mt-8" aria-labelledby="results-title">
-        <div class="mb-4 flex flex-wrap items-end justify-between gap-3">
-            <div>
-                <h2 id="results-title" class="text-xl font-bold text-midnight-teal">
-                    {{ $search === '' ? 'Semua Produk' : 'Hasil Pencarian' }}
-                </h2>
-                <p class="mt-1 text-sm text-slate-500">
-                    {{ $search === '' ? 'Jelajahi produk hasil laut yang tersedia.' : 'Kata kunci: ' . $search }}
-                </p>
-            </div>
-            @if($search !== '')
-                <a href="{{ route('pembeli.pencarian-ikan') }}" class="text-sm font-semibold text-ocean-teal hover:text-midnight-teal">
-                    Hapus pencarian
-                </a>
+    <section aria-labelledby="search-title" class="space-y-5">
+        <div>
+            <h1 id="search-title" class="text-2xl font-bold text-[#1b4d3e]">Pencarian Ikan</h1>
+            @if ($keyword !== '')
+                <p class="mt-1 text-sm text-gray-600">Hasil pencarian untuk "{{ $keyword }}"</p>
             @endif
         </div>
 
-        @if($products->isEmpty())
-            <div data-testid="search-empty-state" class="rounded-xl border border-slate-200 bg-white px-6 py-12 text-center">
-                <i class="bi bi-search text-3xl text-slate-300" aria-hidden="true"></i>
-                <p class="mt-3 font-semibold text-slate-700">Produk tidak ditemukan</p>
-                <p class="mt-1 text-sm text-slate-500">Coba kata kunci nama ikan atau Hub Pesisir lainnya.</p>
+        @forelse ($products as $product)
+            @if ($loop->first)
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            @endif
+            <article data-testid="search-result-card" class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+                <a href="#" aria-label="Lihat detail {{ $product->name }}" class="block h-48 bg-gray-100">
+                    @if ($product->image)
+                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="h-full w-full object-cover" loading="lazy">
+                    @else
+                        <div class="grid h-full place-items-center text-sm text-gray-500">Gambar tidak tersedia</div>
+                    @endif
+                </a>
+                <div class="space-y-2 p-4">
+                    <h2 class="truncate text-lg font-semibold text-[#1b4d3e]">
+                        <a href="#" class="hover:underline">{{ $product->name }}</a>
+                    </h2>
+                    <p class="text-sm text-gray-600">{{ $product->hub_name ?: 'Hub belum tersedia' }}</p>
+                    @if ($product->category)
+                        <p class="text-sm text-gray-600">{{ $product->category->name }}</p>
+                    @endif
+                    <p class="line-clamp-2 text-sm text-gray-600">{{ $product->description }}</p>
+                    <div class="flex items-center justify-between gap-3">
+                        <p class="font-bold text-[#1b4d3e]">Rp {{ number_format($product->price, 0, ',', '.') }}</p>
+                        <p class="text-sm text-gray-600">{{ number_format($product->available_stock ?? 0, 0, ',', '.') }} kg</p>
+                    </div>
+                    <a href="#" class="inline-flex rounded-lg bg-[#1b4d3e] px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-900">Lihat Detail</a>
+                </div>
+            </article>
+            @if ($loop->last)
+                </div>
+            @endif
+        @empty
+            <div data-testid="search-empty-state" class="rounded-xl border border-gray-200 bg-white px-6 py-10 text-center">
+                <p class="text-lg font-semibold text-gray-800">Maaf, ikan yang Anda cari belum tersedia</p>
+                <a href="{{ route('pembeli.pencarian-ikan') }}" class="mt-4 inline-flex rounded-lg bg-[#1b4d3e] px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-900">Tampilkan Semua Ikan</a>
             </div>
-        @else
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                @foreach($products as $product)
-                    <article data-testid="search-result-card" class="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
-                        <div class="h-44 overflow-hidden bg-slate-100">
-                            @if($product->image)
-                                <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" loading="lazy" class="h-full w-full object-cover">
-                            @else
-                                <div class="grid h-full place-items-center text-sm text-slate-400">Foto produk belum tersedia</div>
-                            @endif
-                        </div>
-                        <div class="p-4">
-                            <h3 data-testid="search-result-name" class="font-bold text-midnight-teal">{{ $product->name }}</h3>
-                            <p data-testid="search-result-hub" class="mt-2 text-sm text-slate-500">
-                                <i class="bi bi-geo-alt-fill mr-1 text-ocean-teal" aria-hidden="true"></i>{{ $product->hub_name ?: 'Hub belum ditentukan' }}
-                            </p>
-                            <div class="mt-4 flex items-center justify-between gap-3">
-                                <span class="font-extrabold text-ocean-teal">Rp {{ number_format($product->price, 0, ',', '.') }} / kg</span>
-                                <span class="text-xs text-slate-500">Stok {{ number_format($product->available_stock ?? 0, 0, ',', '.') }} kg</span>
-                            </div>
-                        </div>
-                    </article>
-                @endforeach
-            </div>
+        @endforelse
+
+        @if ($products->hasPages())
+            <div>{{ $products->links() }}</div>
         @endif
     </section>
 @endsection
