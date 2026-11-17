@@ -190,7 +190,6 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </form>
 </div>
@@ -230,6 +229,11 @@
 
             const data = await response.json();
 
+            if (response.ok && data.cod) {
+                alert('Pesanan COD berhasil dibuat. Bayar tunai ke kurir saat ikan tiba.');
+                window.location.href = data.redirect;
+                return;
+            }
             if (response.ok && data.snap_token) {
                 // Panggil pop-up Midtrans
                 window.snap.pay(data.snap_token, {

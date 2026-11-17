@@ -11,7 +11,6 @@ class PembeliDetail extends Model
 
     protected $table = 'pembeli_detail';
     
-    // Sesuaikan dengan nama kolom primary key asli di tabel pembeli_detail
     protected $primaryKey = 'id_pembeli_detail'; 
 
     protected $fillable = [
@@ -19,8 +18,14 @@ class PembeliDetail extends Model
         'name',
         'phone_number',
         'address',
+        'users_id_users',
         'latitude',
         'longitude',
         'is_valid_geofencing',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'users_id_users', 'id_users');
+    }
 }

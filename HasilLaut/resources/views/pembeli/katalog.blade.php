@@ -77,6 +77,7 @@
                     $imgUrl = $product->image
                         ? (\Illuminate\Support\Str::startsWith($product->image, 'http') ? $product->image : asset('storage/' . $product->image))
                         : 'https://images.unsplash.com/photo-1534482498418-fef13c323f46?auto=format&fit=crop&w=500&q=80';
+                    
                 @endphp
                 <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group">
                     <div>
@@ -121,6 +122,7 @@
                             <input type="hidden" name="product_id" value="{{ $product->id_product }}">
                             <input type="hidden" name="quantity" value="1">
                             <button type="submit"
+                                dusk="btn-add-cart"
                                 {{ $product->available_stock <= 0 ? 'disabled' : '' }}
                                 class="w-full text-xs font-bold py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-1.5 {{ $product->available_stock > 0 ? 'bg-[#164E56] hover:bg-[#0F393F] text-white cursor-pointer' : 'bg-gray-200 text-gray-400 cursor-not-allowed' }}">
                                 <i class="bi bi-plus-lg"></i> {{ $product->available_stock > 0 ? 'Tambah ke Keranjang' : 'Stok Habis' }}
