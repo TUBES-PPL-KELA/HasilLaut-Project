@@ -51,6 +51,7 @@ class ProductController extends Controller
                 'description'              => $request->description,
                 'price'                    => $request->price,
                 'image'                    => $imagePath,
+                'is_top_tren'              => true,
             ]);
 
             

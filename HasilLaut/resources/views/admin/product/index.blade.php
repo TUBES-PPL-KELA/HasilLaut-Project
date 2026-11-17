@@ -91,12 +91,17 @@
                 <input type="text" placeholder="Cari nama produk ikan, udang, atau etalase pesisir..." 
                     class="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-full text-[13px] font-medium text-gray-600 focus:outline-none focus:ring-1 focus:ring-teal-700">
             </div>
-            <a href="{{ route('admin.product.create') }}" class="px-5 py-2.5 bg-btnprimary hover:bg-btnhover text-white text-[13px] font-bold rounded-lg shadow-md transition flex items-center">
-                <div class="bg-white/20 rounded-full p-0.5 mr-2">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                </div>
-                Tambah Hasil Laut Baru
-            </a>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('admin.category.index') }}" class="px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-[13px] font-bold rounded-lg shadow-sm transition flex items-center">
+                    Kelola Kategori
+                </a>
+                <a href="{{ route('admin.product.create') }}" class="px-5 py-2.5 bg-btnprimary hover:bg-btnhover text-white text-[13px] font-bold rounded-lg shadow-md transition flex items-center">
+                    <div class="bg-white/20 rounded-full p-0.5 mr-2">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    </div>
+                    Tambah Hasil Laut Baru
+                </a>
+            </div>
         </div>
 
         <!-- Konten Scroll -->

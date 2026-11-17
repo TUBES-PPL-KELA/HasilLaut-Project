@@ -8,6 +8,11 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\PembeliProfileController;
 use App\Http\Controllers\PencarianIkanController;
 use App\Http\Controllers\WelcomeController;
+use App\Http\Controllers\CategoryController;
+
+Route::get('/admin/kategori', [CategoryController::class, 'index'])->name('admin.category.index');
+Route::get('/admin/kategori/create', [CategoryController::class, 'create'])->name('admin.category.create');
+Route::post('/admin/kategori', [CategoryController::class, 'store'])->name('admin.category.store');
 
 Route::get('/admin/product', [ProductController::class, 'index'])->name('admin.product.index');
 Route::get('/admin/product/create', [ProductController::class, 'create'])->name('admin.product.create');
