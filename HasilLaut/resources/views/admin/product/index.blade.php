@@ -119,6 +119,16 @@
                 </div>
             @endif
 
+            @if($errors->any())
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm font-semibold shadow-sm">
+                    <ul class="list-disc pl-5">
+                        @foreach($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <!-- Tabs Kategori dengan ID dan data-category -->
             <div class="flex space-x-3 mb-8 overflow-x-auto pb-2 scrollbar-hide" id="category-filters">
                 <button data-category="all" class="filter-btn px-4 py-2 bg-darkgreen text-white text-[13px] font-bold rounded-lg shadow-sm whitespace-nowrap flex items-center transition-colors">
@@ -197,7 +207,9 @@
                             <!-- Tombol Aksi -->
                             <div class="mt-auto space-y-2.5">
                                 <!-- Tombol Tambah Batch -->
-                                <button class="w-full py-2 bg-batchbtn hover:bg-[#d4ecee] text-teal-800 text-[12px] font-bold rounded-lg transition flex items-center justify-center">
+                                <button type="button"
+                                    onclick='openBatchModal(@json($item->name), {{ (int) ($item->max_storage_days ?? 7) }}, @json(route("admin.product.batch.store", $item->id_product)), @json($item->inventoryBatches))'
+                                    class="w-full py-2 bg-batchbtn hover:bg-[#d4ecee] text-teal-800 text-[12px] font-bold rounded-lg transition flex items-center justify-center">
                                     <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
                                     Tambah Batch Baru
                                 </button>
@@ -239,8 +251,158 @@
         </div>
     </main>
 
-    <!-- SCRIPT FILTER KATEGORI -->
+    <!-- MODAL TAMBAH BATCH STOK BARU -->
+    <div id="batch-modal" class="hidden fixed inset-0 z-50 bg-black/50 backdrop-blur-[1px] flex items-center justify-center p-4" onclick="if(event.target === this) closeBatchModal()">
+        <div class="bg-white w-full max-w-lg rounded-[20px] shadow-xl border border-gray-200 overflow-hidden">
+            <div class="px-7 py-5 border-b border-gray-100 flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-extrabold text-gray-900">Tambah Batch Stok Baru</h3>
+                    <p class="text-xs text-gray-500 font-medium mt-0.5">
+                        Produk: <span id="batch-modal-product-name" class="font-bold text-teal-700"></span>
+                        • Masa Segar: <span id="batch-modal-max-days" class="font-bold text-gray-700"></span> hari
+                    </p>
+                </div>
+                <button type="button" onclick="closeBatchModal()" class="text-gray-400 hover:text-gray-600 p-1 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <form id="batch-form" method="POST" action="" class="p-7 space-y-5">
+                @csrf
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="batch_stock" class="block text-[13px] font-extrabold text-[#0f172a] mb-2">Stok Masuk (Kg)</label>
+                        <input type="number" name="stock" id="batch_stock" min="1" required placeholder="Contoh: 25"
+                            class="w-full px-4 py-3 bg-[#f8fafc] border border-gray-200 text-gray-900 text-sm rounded-[10px] focus:bg-white focus:ring-1 focus:ring-[#0f766e] focus:border-[#0f766e] outline-none font-medium transition">
+                    </div>
+
+                    <div>
+                        <label for="batch_purchase_price_view" class="block text-[13px] font-extrabold text-[#0f172a] mb-2">Harga Beli per Kg</label>
+                        <input type="text" id="batch_purchase_price_view" required placeholder="Contoh: 60000"
+                            oninput="formatBatchRupiah(this)"
+                            class="w-full px-4 py-3 bg-[#f8fafc] border border-gray-200 text-gray-900 text-sm rounded-[10px] focus:bg-white focus:ring-1 focus:ring-[#0f766e] focus:border-[#0f766e] outline-none font-medium transition">
+                        <input type="hidden" name="purchase_price" id="batch_purchase_price" required>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="batch_received_date" class="block text-[13px] font-extrabold text-[#0f172a] mb-2">Tanggal Masuk</label>
+                        <input type="date" name="received_date" id="batch_received_date" value="{{ date('Y-m-d') }}" required
+                            onchange="calculateBatchExpiry()"
+                            class="w-full px-4 py-3 bg-[#f8fafc] border border-gray-200 text-gray-700 text-sm rounded-[10px] focus:bg-white focus:ring-1 focus:ring-[#0f766e] focus:border-[#0f766e] outline-none font-medium transition">
+                    </div>
+
+                    <div>
+                        <label for="batch_expired_date" class="block text-[13px] font-extrabold text-[#0f172a] mb-2">Tanggal Kedaluwarsa (Exp)</label>
+                        <input type="date" name="expired_date" id="batch_expired_date" required
+                            class="w-full px-4 py-3 bg-[#f8fafc] border border-gray-200 text-gray-700 text-sm rounded-[10px] focus:bg-white focus:ring-1 focus:ring-[#0f766e] focus:border-[#0f766e] outline-none font-medium transition">
+                    </div>
+                </div>
+
+                <!-- Daftar Batch yang Sudah Tercatat untuk Produk Ini -->
+                <div class="pt-2">
+                    <p class="text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">Batch Tersimpan Saat Ini</p>
+                    <div id="batch-history-list" class="max-h-32 overflow-y-auto space-y-1.5 bg-[#f8fafc] border border-gray-200 rounded-[10px] p-3 text-xs text-gray-600">
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-3 border-t border-gray-100">
+                    <button type="button" onclick="closeBatchModal()" class="px-6 py-2.5 bg-white border border-gray-200 text-gray-600 font-extrabold rounded-lg hover:bg-gray-50 transition text-[13px]">
+                        Batal
+                    </button>
+                    <button type="submit" id="batch-submit-btn" class="px-6 py-2.5 bg-btnprimary hover:bg-btnhover text-white font-extrabold rounded-lg shadow-md transition text-[13px] flex items-center">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                        <span id="batch-btn-text">Simpan Batch Baru</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- SCRIPT FILTER KATEGORI & MODAL BATCH -->
     <script>
+        let currentMaxStorageDays = 7;
+
+        function openBatchModal(productName, maxStorageDays, actionUrl, batches) {
+            currentMaxStorageDays = maxStorageDays || 7;
+
+            document.getElementById('batch-modal-product-name').innerText = productName;
+            document.getElementById('batch-modal-max-days').innerText = currentMaxStorageDays;
+            document.getElementById('batch-form').action = actionUrl;
+
+            document.getElementById('batch_stock').value = '';
+            document.getElementById('batch_purchase_price_view').value = '';
+            document.getElementById('batch_purchase_price').value = '';
+
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('batch_received_date').value = today;
+            calculateBatchExpiry();
+
+            const historyContainer = document.getElementById('batch-history-list');
+            if (Array.isArray(batches) && batches.length > 0) {
+                historyContainer.innerHTML = batches.map((b, idx) => {
+                    const exp = b.expired_date || b.expiry_date || b.exp_date || addDaysToDate(b.received_date, currentMaxStorageDays);
+                    return `
+                        <div class="flex items-center justify-between py-1 border-b border-gray-200/70 last:border-0">
+                            <span class="font-bold text-gray-800">Batch #${idx + 1} (${b.stock} kg)</span>
+                            <span class="text-gray-500">Masuk: ${b.received_date ?? '-'} • Exp: <strong class="text-teal-700">${exp ?? '-'}</strong></span>
+                        </div>
+                    `;
+                }).join('');
+            } else {
+                historyContainer.innerHTML = '<p class="text-gray-400 italic">Belum ada batch stok tercatat.</p>';
+            }
+
+            document.getElementById('batch-modal').classList.remove('hidden');
+        }
+
+        function closeBatchModal() {
+            document.getElementById('batch-modal').classList.add('hidden');
+        }
+
+        function addDaysToDate(dateStr, days) {
+            if (!dateStr) return '';
+            const parts = dateStr.split('-');
+            if (parts.length !== 3) return '';
+            const date = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10));
+            date.setDate(date.getDate() + parseInt(days, 10));
+            const yyyy = date.getFullYear();
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const dd = String(date.getDate()).padStart(2, '0');
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        function calculateBatchExpiry() {
+            const receivedVal = document.getElementById('batch_received_date').value;
+            if (receivedVal) {
+                document.getElementById('batch_expired_date').value = addDaysToDate(receivedVal, currentMaxStorageDays);
+            }
+        }
+
+        function formatBatchRupiah(element) {
+            let rawValue = element.value.replace(/[^0-9]/g, '');
+            document.getElementById('batch_purchase_price').value = rawValue;
+            element.value = rawValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        document.getElementById('batch-form').addEventListener('submit', function() {
+            const btn = document.getElementById('batch-submit-btn');
+            const btnText = document.getElementById('batch-btn-text');
+            btn.disabled = true;
+            btn.classList.add('opacity-70', 'cursor-wait');
+            if (btnText) {
+                btnText.innerText = 'Menyimpan...';
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeBatchModal();
+            }
+        });
+
         document.addEventListener('DOMContentLoaded', function() {
             const filterBtns = document.querySelectorAll('.filter-btn');
             const productCards = document.querySelectorAll('.product-card');
