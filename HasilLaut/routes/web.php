@@ -14,13 +14,14 @@ use App\Http\Controllers\PencarianProdukController;
 Route::get('/admin/product', [ProductController::class, 'index'])->name('admin.product.index');
 Route::get('/admin/product/create', [ProductController::class, 'create'])->name('admin.product.create');
 Route::post('/admin/product', [ProductController::class, 'store'])->name('admin.product.store');
+Route::get('/admin/product/{id}/edit', [ProductController::class, 'edit'])->name('admin.product.edit');
+Route::put('/admin/product/{id}', [ProductController::class, 'update'])->name('admin.product.update');
+Route::delete('/admin/product/{id}', [ProductController::class, 'destroy'])->name('admin.product.destroy');
 
-Route::get('/keranjang', [CartController::class, 'index'])->name('pembeli.cart');
-Route::post('/keranjang/tambah', [CartController::class, 'store'])->name('cart.store');
-Route::put('/keranjang/update/{id}', [CartController::class, 'update'])->name('cart.update');
-Route::delete('/keranjang/hapus/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
-Route::get('/', WelcomeController::class)->name('welcome');
-Route::get('/pembeli/pencarian-ikan', PencarianProdukController::class)->name('pembeli.pencarian-ikan');
+Route::get('/', function () {
+    return view('welcome');
+});
+
 
 Route::prefix('pembeli')->name('pembeli.')->group(function () {
     Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog');
@@ -31,7 +32,7 @@ Route::prefix('pembeli')->name('pembeli.')->group(function () {
     Route::get('/produk/{id}', [KatalogController::class, 'show'])->name('produk.detail');
 });
 
-// Route Modul PBI-02: Penyesuaian Stok Defect / Rusak
+
 Route::prefix('admin/stok')->group(function () {
     Route::get('/penyesuaian', [StockAdjustmentController::class, 'index'])->name('admin.stok.penyesuaian');
     Route::get('/get-batches/{productId}', [StockAdjustmentController::class, 'getBatchesByProduct'])->name('admin.stok.get-batches');

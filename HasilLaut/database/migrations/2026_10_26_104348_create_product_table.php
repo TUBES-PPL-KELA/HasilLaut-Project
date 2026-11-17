@@ -15,9 +15,10 @@ return new class extends Migration
         $table->id();
         $table->string('name', 255);
         $table->text('description')->nullable();
-        $table->decimal('price', 12, 2);
+        $table->decimal('price', 12, 2)->nullable();
         $table->string('image', 255)->nullable();
         $table->integer('max_storage_days')->nullable();
+        $table->foreignId('categories_id_categories')->constrained('categories', 'id_categories')->onDelete('cascade');
         $table->timestamps();
     });
 }

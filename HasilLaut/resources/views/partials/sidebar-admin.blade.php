@@ -46,6 +46,11 @@
             </svg>
         </button>
     </div>
+    <nav class="flex-1 px-4 py-6 space-y-2">
+        <a href="{{ Route::has('admin.dashboard') ? route('admin.dashboard') : url('/admin/product') }}"
+           class="block px-4 py-3 rounded-lg font-medium transition {{ request()->routeIs('admin.dashboard') ? 'bg-ocean-teal text-white shadow-sm' : 'text-pale-ice hover:bg-dusty-turq hover:text-white' }}">
+            Dashboard
+        </a>
 
     <!-- Navigasi -->
     <nav class="flex-1 overflow-y-auto overflow-x-hidden px-3 py-6 space-y-7">

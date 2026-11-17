@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id('id_reviews');
-            $table->tinyInteger('rating');
+            $table->tinyInteger('rating')->nullable();
             $table->text('comment')->nullable();
 
             $table->foreignId('orders_id_orders')->constrained('orders', 'id_orders')->onDelete('cascade');
