@@ -22,6 +22,12 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Rute Keranjang Belanja (Dikeluarkan dari prefix pembeli agar namanya pas: cart, cart.store, dll)
+Route::get('/pembeli/keranjang', [CartController::class, 'index'])->name('pembeli.cart');
+Route::post('/keranjang/tambah', [CartController::class, 'store'])->name('cart.store');
+Route::put('/keranjang/update/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/keranjang/hapus/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
+
 
 Route::prefix('pembeli')->name('pembeli.')->group(function () {
     Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog');
