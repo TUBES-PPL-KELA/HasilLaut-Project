@@ -195,6 +195,7 @@
         .text-link:hover { color: var(--midnight-teal); }
 
         .product-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+        .product-grid [data-testid="top-trend-empty-state"] { grid-column: 1 / -1; }
 
         .product-card {
             overflow: hidden;
@@ -297,6 +298,7 @@
                 <span>HASILLAUT</span>
             </a>
             <nav class="header-actions" aria-label="Navigasi utama">
+                <a class="buyer-link" href="{{ route('pembeli.pencarian-ikan') }}"><i class="bi bi-search"></i> Cari Produk</a>
                 <a class="icon-link" href="#produk-unggulan" aria-label="Lihat produk unggulan"><i class="bi bi-bell"></i></a>
                 <a class="icon-link" href="#tentang" aria-label="Tentang HasilLaut"><i class="bi bi-gear"></i></a>
                 <a class="buyer-link" href="{{ route('pembeli.cart') }}"><i class="bi bi-person"></i> Pembeli</a>
@@ -305,14 +307,19 @@
     </header>
 
     <main class="page-content">
+        <aside class="mb-4 flex items-start gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-amber-950" role="alert" data-testid="pangandaran-service-alert">
+            <i class="bi bi-exclamation-triangle-fill mt-0.5" aria-hidden="true"></i>
+            <p class="m-0 text-xs leading-5"><strong>Informasi wilayah layanan:</strong> Saat ini layanan HasilLaut tersedia untuk wilayah Pangandaran.</p>
+        </aside>
+
         <section class="hero" aria-labelledby="hero-title">
             <div class="hero-content">
                 <span class="eyebrow"><span class="eyebrow-dot"></span> Hasil laut segar pilihan</span>
                 <h1 id="hero-title">Ikan Segar Langsung dari Nelayan, Pesisir ke Dapur Anda</h1>
                 <p>Dapatkan produk laut berkualitas tanpa perantara. Setiap pembelian Anda membantu mewujudkan kesejahteraan dan harga yang adil bagi nelayan tradisional Indonesia.</p>
                 <div class="hero-buttons">
-                    <a class="button button-primary" href="#produk-unggulan">Beli Ikan Segar <i class="bi bi-arrow-right"></i></a>
-                    <a class="button button-outline" href="#produk-unggulan">Jelajahi Katalog</a>
+                    <a class="button button-primary" href="#produk-unggulan" data-testid="landing-primary-cta">Beli Ikan Segar <i class="bi bi-arrow-right"></i></a>
+                    <a class="button button-outline" href="#produk-unggulan" data-testid="landing-catalog-cta">Jelajahi Katalog</a>
                 </div>
             </div>
         </section>
@@ -359,7 +366,7 @@
                         </div>
                         <div class="product-body">
                             <h3>{{ $product->name }}</h3>
-                            <span class="product-origin"><i class="bi bi-geo-alt-fill"></i> {{ $product->hub_name ?: 'Hub belum tersedia' }}</span>
+                            <span class="product-origin"><i class="bi bi-geo-alt-fill"></i> Hub Pangandaran</span>
                             <p class="product-price">Rp {{ number_format($product->price, 0, ',', '.') }} / kg</p>
                             <div class="product-bottom">
                                 <span class="seller">Stok: {{ number_format($product->available_stock, 0, ',', '.') }} kg</span>

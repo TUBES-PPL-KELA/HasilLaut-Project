@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('discount', function (Blueprint $table) {
             $table->id('id_discount');
-            $table->float('percent');
+            $table->float('percent')->nullable();
             $table->timestamps();
         });
     }

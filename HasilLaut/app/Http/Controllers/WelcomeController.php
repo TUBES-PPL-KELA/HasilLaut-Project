@@ -17,7 +17,7 @@ class WelcomeController extends Controller
                 'stock'
             )
             ->latest('id_product')
-            ->limit(6)
+            ->limit(3)
             ->get();
 
         return view('welcome', compact('topTrendProducts'));

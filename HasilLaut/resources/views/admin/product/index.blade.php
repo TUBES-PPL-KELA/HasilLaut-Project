@@ -91,12 +91,17 @@
                 <input type="text" placeholder="Cari nama produk ikan, udang, atau etalase pesisir..." 
                     class="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-full text-[13px] font-medium text-gray-600 focus:outline-none focus:ring-1 focus:ring-teal-700">
             </div>
-            <a href="{{ route('admin.product.create') }}" class="px-5 py-2.5 bg-btnprimary hover:bg-btnhover text-white text-[13px] font-bold rounded-lg shadow-md transition flex items-center">
-                <div class="bg-white/20 rounded-full p-0.5 mr-2">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                </div>
-                Tambah Hasil Laut Baru
-            </a>
+            <div class="flex items-center gap-3">
+                <a href="{{ route('admin.category.index') }}" class="px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-[13px] font-bold rounded-lg shadow-sm transition flex items-center">
+                    Kelola Kategori
+                </a>
+                <a href="{{ route('admin.product.create') }}" class="px-5 py-2.5 bg-btnprimary hover:bg-btnhover text-white text-[13px] font-bold rounded-lg shadow-md transition flex items-center">
+                    <div class="bg-white/20 rounded-full p-0.5 mr-2">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                    </div>
+                    Tambah Hasil Laut Baru
+                </a>
+            </div>
         </div>
 
         <!-- Konten Scroll -->
@@ -110,6 +115,12 @@
             @if(session('success'))
                 <div class="mb-6 p-4 bg-teal-50 border border-teal-100 text-teal-800 rounded-xl text-sm font-semibold flex items-center shadow-sm">
                     {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session('error'))
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm font-semibold flex items-center shadow-sm">
+                    {{ session('error') }}
                 </div>
             @endif
 
@@ -198,14 +209,18 @@
                                 
                                 <!-- Tombol Edit & Hapus -->
                                 <div class="flex space-x-2.5">
-                                    <button class="flex-1 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-[12px] font-bold rounded-lg transition flex items-center justify-center">
+                                    <a href="{{ route('admin.product.edit', $item->id_product) }}" class="flex-1 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 text-[12px] font-bold rounded-lg transition flex items-center justify-center">
                                         <svg class="w-3.5 h-3.5 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
                                         Edit
-                                    </button>
-                                    <button class="flex-1 py-2 bg-white border border-[#fecdd3] hover:bg-[#fff1f2] text-[#e11d48] text-[12px] font-bold rounded-lg transition flex items-center justify-center">
-                                        <svg class="w-3.5 h-3.5 mr-1.5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                        Hapus
-                                    </button>
+                                    </a>
+                                    <form action="{{ route('admin.product.destroy', $item->id_product) }}" method="POST" class="flex-1" onsubmit="return confirm('Apakah Anda yakin ingin menghapus produk {{ addslashes($item->name) }}?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-full py-2 bg-white border border-[#fecdd3] hover:bg-[#fff1f2] text-[#e11d48] text-[12px] font-bold rounded-lg transition flex items-center justify-center">
+                                            <svg class="w-3.5 h-3.5 mr-1.5 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                            Hapus
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
 

@@ -130,7 +130,12 @@
                             </div>
 
                             <div>
-                                <label for="categories_id_categories" class="block text-[13px] font-extrabold text-[#0f172a] mb-2">Kategori</label>
+                                <div class="mb-2 flex items-center justify-between gap-3">
+                                    <label for="categories_id_categories" class="block text-[13px] font-extrabold text-[#0f172a]">Kategori</label>
+                                    <a href="{{ route('admin.category.create') }}" class="text-[11px] font-bold text-teal-700 hover:text-teal-900">
+                                        + Tambah kategori
+                                    </a>
+                                </div>
                                 <select name="categories_id_categories" id="categories_id_categories" required 
                                     class="w-full px-5 py-3.5 bg-[#f8fafc] border border-gray-200 text-gray-600 text-sm rounded-[10px] focus:bg-white focus:ring-1 focus:ring-[#0f766e] focus:border-[#0f766e] outline-none font-medium transition appearance-none bg-no-repeat bg-[right_1rem_center] bg-[length:1em]" style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2224%22%20height%3D%2224%22%20fill%3D%22none%22%20stroke%3D%22currentColor%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M6%209l6%206%206-6%22%2F%3E%3C%2Fsvg%3E');">
                                     <option value="">Pilih Kategori Produk</option>
@@ -140,6 +145,12 @@
                                         </option>
                                     @endforeach
                                 </select>
+                            </div>
+
+                            <div>
+                                <label for="hub_name" class="block text-[13px] font-extrabold text-[#0f172a] mb-2">Nama Hub Pesisir</label>
+                                <input type="text" name="hub_name" id="hub_name" value="{{ old('hub_name') }}" placeholder="Contoh: Hub Pangandaran"
+                                    class="w-full px-5 py-3.5 bg-[#f8fafc] border border-gray-200 text-gray-900 text-sm rounded-[10px] focus:bg-white focus:ring-1 focus:ring-[#0f766e] focus:border-[#0f766e] outline-none font-medium transition">
                             </div>
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -185,6 +196,15 @@
                                 <textarea name="description" id="description" rows="4" placeholder="Tuliskan deskripsi singkat kesegaran, asal nelayan, dan kualitas rantai dingin..." required
                                     class="w-full px-5 py-3.5 bg-[#f8fafc] border border-gray-200 text-gray-900 text-[13px] rounded-[10px] focus:bg-white focus:ring-1 focus:ring-[#0f766e] focus:border-[#0f766e] outline-none resize-none font-medium transition">{{ old('description') }}</textarea>
                             </div>
+
+                            <label for="is_top_tren" class="flex items-start gap-3 rounded-xl border border-gray-200 bg-[#f8fafc] p-4">
+                                <input type="checkbox" name="is_top_tren" id="is_top_tren" value="1" {{ old('is_top_tren') ? 'checked' : '' }}
+                                    class="mt-1 h-4 w-4 rounded border-gray-300 text-teal-700 focus:ring-teal-700">
+                                <span>
+                                    <span class="block text-[13px] font-extrabold text-[#0f172a]">Tampilkan sebagai produk Top Tren</span>
+                                    <span class="mt-1 block text-xs text-gray-500">Produk akan muncul di landing page jika stoknya tersedia.</span>
+                                </span>
+                            </label>
 
                             <!-- Tombol Aksi -->
                             <div class="flex justify-end space-x-4 pt-4 border-t border-gray-100 mt-6">
