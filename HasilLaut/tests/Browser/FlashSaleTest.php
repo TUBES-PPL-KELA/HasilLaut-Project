@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Artisan;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
+//ini berarti jalan
 class FlashSaleTest extends DuskTestCase
 {
     protected function setUp(): void
