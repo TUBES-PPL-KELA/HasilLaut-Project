@@ -2,7 +2,6 @@
 
 namespace Tests\Browser;
 
-use App\Models\User;
 use App\Models\PembeliDetail;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
@@ -14,16 +13,10 @@ class Pbi13ProfileGeofencingTest extends DuskTestCase
      */
     public function test_tc_shp_001_input_valid_address_and_pangandaran_coordinates(): void
     {
-        $user = User::first() ?? User::factory()->create([
-            'name'  => 'Budi Santoso',
-            'email' => 'budi.pangandaran@example.com',
-        ]);
+        $userId = 1;
 
-        $userId = $user->getKey();
-
-        $this->browse(function (Browser $browser) use ($user) {
-            $browser->loginAs($user)
-                    ->visit('/pembeli/profile/edit')
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/pembeli/profile/edit')
                     ->assertSee('Informasi Data Diri Pembeli')
                     ->clear('name')->type('name', 'Budi Santoso')
                     ->clear('phone_number')->type('phone_number', '081234567890')
@@ -39,7 +32,7 @@ class Pbi13ProfileGeofencingTest extends DuskTestCase
         });
 
         $this->assertDatabaseHas('pembeli_detail', [
-            'users_id_users' => $user->getKey(),
+            'users_id_users' => $userId,
             'phone_number'   => '081234567890',
             'address'        => 'Jl. Merdeka No. 10, Kec. Pangandaran, Kab. Pangandaran 46396',
             'latitude'       => -7.684520,
@@ -52,10 +45,10 @@ class Pbi13ProfileGeofencingTest extends DuskTestCase
      */
     public function test_tc_shp_002_valid_pangandaran_area_allows_checkout(): void
     {
-        $user = User::find(1) ?? User::factory()->create();
+        $userId = 1;
 
         PembeliDetail::updateOrCreate(
-            ['users_id_users' => $user->getKey()],
+            ['users_id_users' => $userId],
             [
                 'name'                => 'Budi Santoso',
                 'phone_number'        => '081234567890',
@@ -66,9 +59,8 @@ class Pbi13ProfileGeofencingTest extends DuskTestCase
             ]
         );
 
-        $this->browse(function (Browser $browser) use ($user) {
-            $browser->loginAs($user)
-                    ->visit('/pembeli/checkout')
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/pembeli/checkout')
                     ->assertPathIs('/pembeli/checkout')
                     ->assertSee('Kecamatan Pangandaran, Kab. Pangandaran 46396');
         });
@@ -79,15 +71,11 @@ class Pbi13ProfileGeofencingTest extends DuskTestCase
      */
     public function test_tc_shp_003_blocks_location_outside_pangandaran(): void
     {
-        $user = User::find(1) ?? User::factory()->create();
-
-        $this->browse(function (Browser $browser) use ($user) {
-            $browser->loginAs($user)
-                    ->visit('/pembeli/profile/edit')
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/pembeli/profile/edit')
                     ->clear('name')->type('name', 'Budi Santoso')
                     ->clear('phone_number')->type('phone_number', '081234567890')
                     ->clear('address')->type('address', 'Kec. Coblong, Kota Bandung 40132')
-                    // Koordinat Kota Bandung / Coblong (-6.891480, 107.610659)
                     ->script([
                         "document.querySelector('input[name=\"latitude\"]').value = '-6.891480';",
                         "document.querySelector('input[name=\"longitude\"]').value = '107.610659';"
@@ -104,11 +92,8 @@ class Pbi13ProfileGeofencingTest extends DuskTestCase
      */
     public function test_tc_shp_004_rejects_invalid_phone_number_less_than_10_digits(): void
     {
-        $user = User::find(1) ?? User::factory()->create();
-
-        $this->browse(function (Browser $browser) use ($user) {
-            $browser->loginAs($user)
-                    ->visit('/pembeli/profile/edit')
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/pembeli/profile/edit')
                     ->clear('name')->type('name', 'Budi Santoso')
                     ->clear('phone_number')->type('phone_number', '08123')
                     ->clear('address')->type('address', 'Jl. Merdeka No. 10, Kab. Pangandaran')
