@@ -9,7 +9,7 @@ use App\Models\Product;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
 
-class TinjauanDetailProdukTest extends DuskTestCase
+class Pbi10TinjauanDetailProdukTest extends DuskTestCase
 {
     /**
      * TC-TDP-001: [Normal] Menampilkan halaman detail produk reguler yang aktif dan tersedia stoknya
@@ -24,7 +24,8 @@ class TinjauanDetailProdukTest extends DuskTestCase
                     ->assertSee('Rp ' . number_format($product->price, 0, ',', '.'))
                     ->assertSee('Stok Tersedia:')
                     ->assertSee('Asal Hub Pesisir: HasilLaut Hub Pangandaran')
-                    ->assertSee('Standar Rantai Dingin:');
+                    ->assertSee('Standar Rantai Dingin:')
+                    ->pause(3500);
         });
     }
 
@@ -48,7 +49,8 @@ class TinjauanDetailProdukTest extends DuskTestCase
             $browser->visit('/pembeli/produk/' . $batch->product_id_product . '?flash_sale_item_id=' . $flashSale->id_flash_sale_item)
                     ->assertSee('FLASH SALE')
                     ->assertSee('Harga Promo Stok Terbatas')
-                    ->assertSee('Rp ' . number_format($flashSale->flash_sale_price, 0, ',', '.'));
+                    ->assertSee('Rp ' . number_format($flashSale->flash_sale_price, 0, ',', '.'))
+                    ->pause(3500);
         });
     }
 
@@ -64,12 +66,14 @@ class TinjauanDetailProdukTest extends DuskTestCase
             // 1. Akses mode Flash Sale
             $browser->visit('/pembeli/produk/' . $product->id_product . '?flash_sale_item_id=' . $flashSale->id_flash_sale_item)
                     ->assertSee('Harga Promo Stok Terbatas')
-                    ->assertSee('Rp ' . number_format($flashSale->flash_sale_price, 0, ',', '.'));
+                    ->assertSee('Rp ' . number_format($flashSale->flash_sale_price, 0, ',', '.'))
+                    ->pause(2500);
 
             // 2. Beralih ke mode Stok Segar Normal
             $browser->visit('/pembeli/produk/' . $product->id_product)
                     ->assertDontSee('Harga Promo Stok Terbatas')
-                    ->assertSee('Rp ' . number_format($product->price, 0, ',', '.'));
+                    ->assertSee('Rp ' . number_format($product->price, 0, ',', '.'))
+                    ->pause(2500);
         });
     }
 
@@ -86,7 +90,8 @@ class TinjauanDetailProdukTest extends DuskTestCase
                     ->type('#quantity', '3')
                     ->assertInputValue('#quantity', '3')
                     ->assertSee('Masukkan Keranjang')
-                    ->assertSee('Beli Sekarang');
+                    ->assertSee('Beli Sekarang')
+                    ->pause(3500);
         });
     }
 
@@ -99,8 +104,10 @@ class TinjauanDetailProdukTest extends DuskTestCase
 
         $this->browse(function (Browser $browser) use ($product) {
             $browser->visit('/pembeli/produk/' . $product->id_product)
+                    ->scrollIntoView('section')
                     ->assertSee('Ulasan & Penilaian Pembeli')
-                    ->assertSee('Pilihan Produk Lainnya');
+                    ->assertSee('Pilihan Produk Lainnya')
+                    ->pause(4000);
         });
     }
 
@@ -122,7 +129,8 @@ class TinjauanDetailProdukTest extends DuskTestCase
         $this->browse(function (Browser $browser) use ($emptyProduct) {
             $browser->visit('/pembeli/produk/' . $emptyProduct->id_product)
                     ->assertSee('Stok Tersedia: 0 kg')
-                    ->assertDisabled('button[type="submit"]');
+                    ->assertDisabled('form[action*="keranjang"] button[type="submit"]')
+                    ->pause(3500);
         });
     }
 
@@ -138,7 +146,8 @@ class TinjauanDetailProdukTest extends DuskTestCase
                     ->clear('#quantity')
                     ->type('#quantity', '9999')
                     ->press('Masukkan Keranjang')
-                    ->assertDontSee('Server Error');
+                    ->assertDontSee('Server Error')
+                    ->pause(3500);
         });
     }
 
@@ -154,7 +163,8 @@ class TinjauanDetailProdukTest extends DuskTestCase
                     ->clear('#quantity')
                     ->type('#quantity', '-2')
                     ->press('Masukkan Keranjang')
-                    ->assertDontSee('Server Error');
+                    ->assertDontSee('Server Error')
+                    ->pause(3500);
         });
     }
 
@@ -165,7 +175,8 @@ class TinjauanDetailProdukTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/pembeli/produk/99999')
-                    ->assertSee('404');
+                    ->assertSee('404')
+                    ->pause(4000);
         });
     }
 }
