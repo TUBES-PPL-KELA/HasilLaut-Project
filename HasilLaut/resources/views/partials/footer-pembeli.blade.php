@@ -8,35 +8,35 @@
         <div>
             <h4 class="font-bold text-slate-700 mb-3">Navigasi</h4>
             <ul class="space-y-2">
-                <li><a href="#" class="hover:underline text-slate-500">Tentang Kami</a></li>
-                <li><a href="#" class="hover:underline text-slate-500">Katalog Ikan</a></li>
-                <li><a href="#" class="hover:underline text-slate-500">Lokasi Hub</a></li>
-                <li><a href="#" class="hover:underline text-slate-500">Kemitraan Nelayan</a></li>
+                <li><a href="{{ url('/') }}#tentang" class="hover:underline text-slate-500">Tentang Kami</a></li>
+                <li><a href="{{ route('pembeli.katalog') }}" class="hover:underline text-slate-500">Katalog Ikan</a></li>
+                <li><a href="{{ url('/') }}#tentang" class="hover:underline text-slate-500">Lokasi Hub</a></li>
+                <li><a href="{{ url('/') }}#tentang" class="hover:underline text-slate-500">Kemitraan Nelayan</a></li>
             </ul>
         </div>
 
         <div>
             <h4 class="font-bold text-slate-700 mb-3">Layanan</h4>
             <ul class="space-y-2">
-                <li><a href="#" class="hover:underline text-slate-500">Lacak Pengiriman</a></li>
-                <li><a href="#" class="hover:underline text-slate-500">Metode Pembayaran & COD</a></li>
-                <li><a href="#" class="hover:underline text-slate-500">Garansi Kesegaran</a></li>
-                <li><a href="#" class="hover:underline text-slate-500">Bantuan & FAQ</a></li>
+                <li><a href="{{ route('pembeli.checkout.index') }}" class="hover:underline text-slate-500">Lacak Pengiriman</a></li>
+                <li><a href="{{ route('pembeli.checkout.index') }}" class="hover:underline text-slate-500">Metode Pembayaran & COD</a></li>
+                <li><a href="{{ url('/') }}#tentang" class="hover:underline text-slate-500">Garansi Kesegaran</a></li>
+                <li><a href="{{ route('pembeli.profile.edit') }}#faq-section" class="hover:underline text-slate-500">Bantuan & FAQ</a></li>
             </ul>
         </div>
 
         <div>
             <h4 class="font-bold text-slate-700 mb-3">Legal</h4>
             <ul class="space-y-2">
-                <li><a href="#" class="hover:underline text-slate-500">Kebijakan Privasi</a></li>
-                <li><a href="#" class="hover:underline text-slate-500">Syarat & Ketentuan</a></li>
-                <li><a href="#" class="hover:underline text-slate-500">Kontak Kami</a></li>
+                <li><a href="{{ url('/') }}#tentang" class="hover:underline text-slate-500">Kebijakan Privasi</a></li>
+                <li><a href="{{ url('/') }}#tentang" class="hover:underline text-slate-500">Syarat & Ketentuan</a></li>
+                <li><a href="mailto:info@hasillaut.id" class="hover:underline text-slate-500">Kontak Kami</a></li>
             </ul>
         </div>
     </div>
 
     <div class="max-w-7xl mx-auto border-t border-slate-100 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center text-slate-400">
-        <p>&copy; 2026 HASILLAUT. Seluruh hak cipta dilindungi.</p>
+        <p>&copy; {{ date('Y') }} HASILLAUT. Seluruh hak cipta dilindungi.</p>
         <div class="flex gap-6 mt-4 md:mt-0">
             <span>📧 info@hasillaut.id</span>
             <span>📞 +62 812-3456-7890</span>

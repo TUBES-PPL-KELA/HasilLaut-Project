@@ -10,7 +10,7 @@ class WelcomeController extends Controller
     public function __invoke(): View
     {
         $topTrendProducts = Product::query()
-            ->where('is_top_tren', true)
+            
             ->whereHas('inventoryBatches', fn ($query) => $query->where('stock', '>', 0))
             ->withSum(
                 ['inventoryBatches as available_stock' => fn ($query) => $query->where('stock', '>', 0)],

@@ -82,7 +82,7 @@
                 <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition flex flex-col justify-between group">
                     <div>
                         <!-- Gambar & Badge Kategori (Klik ke Detail Reguler) -->
-                        <a href="{{ $detailUrl }}" class="block relative h-44 bg-gray-100 overflow-hidden">
+                        <a href="{{ route('pembeli.produk.detail', $product->id_product) }}" class="block relative h-44 bg-gray-100 overflow-hidden">
                            <img src="{{ $imgUrl }}" onerror="this.onerror=null;this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22500%22 height=%22350%22 viewBox=%220 0 500 350%22%3E%3Crect width=%22500%22 height=%22350%22 fill=%22%23e2e8f0%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2222%22 font-weight=%22bold%22 fill=%22%23475569%22%3EProduk Hasil Laut%3C/text%3E%3C/svg%3E';" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
                             
                             <span class="absolute bottom-3 left-3 bg-black/65 backdrop-blur-sm text-white text-[11px] font-medium px-2.5 py-1 rounded-full flex items-center gap-1">
@@ -93,7 +93,7 @@
 
                         <!-- Info Produk -->
                         <div class="p-4">
-                            <a href="{{ $detailUrl }}" class="block">
+                            <a href="{{ route('pembeli.produk.detail', $product->id_product) }}" class="block">
                                 <h3 class="font-bold text-gray-900 text-base truncate group-hover:text-[#164E56] transition" title="{{ $product->name }}">
                                     {{ $product->name }}
                                 </h3>

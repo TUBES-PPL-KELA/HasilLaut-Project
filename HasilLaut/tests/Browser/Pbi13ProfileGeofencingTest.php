@@ -17,24 +17,31 @@ class Pbi13ProfileGeofencingTest extends DuskTestCase
 
         $this->browse(function (Browser $browser) {
             $browser->visit('/pembeli/profile/edit')
+                    ->pause(2000)
                     ->assertSee('Informasi Data Diri Pembeli')
+                    ->pause(2000)
                     ->clear('name')->type('name', 'Budi Santoso')
+                    ->pause(2000)
                     ->clear('phone_number')->type('phone_number', '081234567890')
-                    ->clear('address')->type('address', 'Jl. Merdeka No. 10, Kec. Pangandaran, Kab. Pangandaran 46396')
+                    ->pause(2000)
+                    ->clear('address')->type('address', 'Jl. Telekomunikasi. 10, Kec. Bojongsoang, Kab. Pangandaran 46396')
+                    ->pause(2000)
                     ->script([
                         "document.querySelector('input[name=\"latitude\"]').value = '-7.684520';",
                         "document.querySelector('input[name=\"longitude\"]').value = '108.653810';"
                     ]);
 
-            $browser->press('Simpan Profil & Alamat')
+            $browser->pause(2000)
+                    ->press('Simpan Profil & Alamat')
                     ->waitForText('Profil berhasil diperbarui!')
+                    ->pause(2000)
                     ->assertSee('Status Geofencing Valid: Titik koordinat berada dalam jangkauan operasional HasilLaut Hub Pangandaran');
         });
 
         $this->assertDatabaseHas('pembeli_detail', [
             'users_id_users' => $userId,
             'phone_number'   => '081234567890',
-            'address'        => 'Jl. Merdeka No. 10, Kec. Pangandaran, Kab. Pangandaran 46396',
+            'address'        => 'Jl. Telekomunikasi. 10, Kec. Bojongsoang, Kab. Pangandaran 46396',
             'latitude'       => -7.684520,
             'longitude'      => 108.653810,
         ]);
@@ -61,7 +68,9 @@ class Pbi13ProfileGeofencingTest extends DuskTestCase
 
         $this->browse(function (Browser $browser) {
             $browser->visit('/pembeli/checkout')
+                    ->pause(2000)
                     ->assertPathIs('/pembeli/checkout')
+                    ->pause(2000)
                     ->assertSee('Kecamatan Pangandaran, Kab. Pangandaran 46396');
         });
     }
@@ -73,16 +82,22 @@ class Pbi13ProfileGeofencingTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/pembeli/profile/edit')
+                    ->pause(2000)
                     ->clear('name')->type('name', 'Budi Santoso')
+                    ->pause(2000)
                     ->clear('phone_number')->type('phone_number', '081234567890')
+                    ->pause(2000)
                     ->clear('address')->type('address', 'Kec. Coblong, Kota Bandung 40132')
+                    ->pause(2000)
                     ->script([
                         "document.querySelector('input[name=\"latitude\"]').value = '-6.891480';",
                         "document.querySelector('input[name=\"longitude\"]').value = '107.610659';"
                     ]);
 
-            $browser->press('Simpan Profil & Alamat')
+            $browser->pause(2000)
+                    ->press('Simpan Profil & Alamat')
                     ->waitForText('Status Geofencing Gagal')
+                    ->pause(2000)
                     ->assertSee('Titik koordinat berada di luar jangkauan operasional HasilLaut Hub Pangandaran');
         });
     }
@@ -94,16 +109,21 @@ class Pbi13ProfileGeofencingTest extends DuskTestCase
     {
         $this->browse(function (Browser $browser) {
             $browser->visit('/pembeli/profile/edit')
+                    ->pause(2000)
                     ->clear('name')->type('name', 'Budi Santoso')
+                    ->pause(2000)
                     ->clear('phone_number')->type('phone_number', '08123')
+                    ->pause(2000)
                     ->clear('address')->type('address', 'Jl. Merdeka No. 10, Kab. Pangandaran')
+                    ->pause(2000)
                     ->script([
                         "document.querySelector('input[name=\"latitude\"]').value = '-7.684520';",
                         "document.querySelector('input[name=\"longitude\"]').value = '108.653810';"
                     ]);
 
-            $browser->press('Simpan Profil & Alamat')
-                    ->pause(1000)
+            $browser->pause(2000)
+                    ->press('Simpan Profil & Alamat')
+                    ->pause(2000)
                     ->assertPathIs('/pembeli/profile/edit')
                     ->assertSee('Nomor telepon tidak valid');
         });
