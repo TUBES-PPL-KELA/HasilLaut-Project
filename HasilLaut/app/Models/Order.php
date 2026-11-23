@@ -44,6 +44,6 @@ class Order extends Model
     // Relasi ke Data Pembayaran Midtrans (Payment)
     public function payment()
     {
-        return $this->hasOne(Payment::class, 'id_pesanan', 'id_orders');
+        return $this->hasOne(Payment::class, 'orders_id_orders', 'id_orders');
     }
 }

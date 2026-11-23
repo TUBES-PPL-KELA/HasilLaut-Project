@@ -13,7 +13,7 @@ class Payment extends Model
     protected $table = 'payments';
 
     // 2. Sesuaikan nama Primary Key
-    protected $primaryKey = 'id_payment';
+    protected $primaryKey = 'id_payments';
 
     // 3. Daftarkan kolom agar tidak kena Mass Assignment Error
     protected $fillable = [
