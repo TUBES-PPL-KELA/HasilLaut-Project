@@ -14,28 +14,16 @@ class CartTest extends DuskTestCase
     public function test_tc_crt_001_menambahkan_produk_valid_ke_keranjang()
     {
         $this->browse(function (Browser $browser) {
-            $browser->visit('/pembeli/katalog')
-                    ->assertPathIs('/pembeli/katalog')
+            $browser->visit('/pembeli/produk/1')
+                    ->assertPathIs('/pembeli/produk/1')
                     ->pause(1500)
                     ->click('@btn-add-cart')
-                    ->pause(2000);
+                    ->pause(3000)
+                    ->assertSee('berhasil ditambahkan ke keranjang')
+                    ->pause(8000);
         });
     }
 
-    /**
-     * TC-CRT-002: Menggunakan fitur Beli Sekarang untuk direct checkout ekspres.
-     */
-    public function test_tc_crt_002_direct_checkout_beli_sekarang()
-    {
-        $this->browse(function (Browser $browser) {
-            $browser->visit('/pembeli/katalog')
-                    ->assertPathIs('/pembeli/katalog')
-                    ->pause(1000)
-                    ->visit('/pembeli/checkout')
-                    ->assertPathIs('/pembeli/checkout')
-                    ->pause(2000);
-        });
-    }
 
     /**
      * TC-CRT-003: Menampilkan daftar item, kuantitas, dan total harga di halaman keranjang.
@@ -48,7 +36,7 @@ class CartTest extends DuskTestCase
                     ->assertSee('Keranjang Belanja')
                     ->assertPresent('img')
                     ->assertPresent('#grand-total')
-                    ->pause(2000);
+                    ->pause(8000);
         });
     }
 
@@ -62,7 +50,7 @@ class CartTest extends DuskTestCase
                     ->assertPathIs('/pembeli/keranjang')
                     ->pause(1000)
                     ->click('@btn-increment')
-                    ->pause(2000);
+                    ->pause(8000);
         });
     }
 
@@ -83,7 +71,7 @@ class CartTest extends DuskTestCase
                         }
                     ");
             
-            $browser->pause(2000);
+            $browser->pause(8000);
         });
     }
 
@@ -98,7 +86,7 @@ class CartTest extends DuskTestCase
                     ->pause(1000)
                     ->click('@btn-delete')
                     ->acceptDialog()
-                    ->pause(2000);
+                    ->pause(8000);
         });
     }
 
@@ -110,7 +98,6 @@ class CartTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->visit('/pembeli/keranjang');
             
-            // Bersihkan sisa item jika ada
             while ($browser->element('@btn-delete')) {
                 try {
                     $browser->click('@btn-delete')->acceptDialog()->pause(500);
@@ -123,7 +110,23 @@ class CartTest extends DuskTestCase
                     ->assertPathIs('/pembeli/keranjang')
                     ->pause(1000)
                     ->assertSee('Keranjang belanja kamu masih kosong')
-                    ->pause(2000);
+                    ->pause(8000);
+        });
+    }
+    
+    /**
+    * TC-CRT-002: Menggunakan fitur Beli Sekarang untuk direct checkout ekspres.
+    */
+    public function test_tc_crt_002_direct_checkout_beli_sekarang()
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/pembeli/produk/2')
+                    ->assertPathIs('/pembeli/produk/2')
+                    ->pause(1500)
+                    ->click('@btn-buy-now')
+                    ->pause(2500)
+                    ->assertPathIs('/pembeli/checkout')
+                    ->pause(8000);
         });
     }
 }

@@ -159,16 +159,18 @@
                     {{-- 2 Tombol Sejajar --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <button type="submit"
+                                dusk="btn-add-cart"
                                 {{ $availableStock <= 0 ? 'disabled' : '' }}
                                 class="w-full border border-[#013137] text-[#013137] font-semibold py-3 px-4 rounded-xl text-xs lg:text-sm hover:bg-teal-50 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                             🛒 Masukkan Keranjang
                         </button>
 
                         <button type="submit"
+                                dusk="btn-buy-now"
                                 name="redirect_to"
                                 value="checkout"
                                 {{ $availableStock <= 0 ? 'disabled' : '' }}
-                                class="w-full bg-[#013137] text-white font-semibold py-3 px-4 rounded-xl text-xs lg:text-sm hover:bg-teal-900 transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                class="...">
                             ⚡ Beli Sekarang
                         </button>
                     </div>

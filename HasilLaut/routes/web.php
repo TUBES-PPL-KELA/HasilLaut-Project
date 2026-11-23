@@ -28,6 +28,7 @@ Route::post('/keranjang/tambah', [CartController::class, 'store'])->name('cart.s
 Route::put('/keranjang/update/{id}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/keranjang/hapus/{id}', [CartController::class, 'destroy'])->name('cart.destroy');
 
+Route::get('/pembeli/pencarian-ikan', [PencarianIkanController::class, 'index'])->name('pembeli.pencarian-ikan');
 
 Route::prefix('pembeli')->name('pembeli.')->group(function () {
     Route::get('/katalog', [KatalogController::class, 'index'])->name('katalog');
