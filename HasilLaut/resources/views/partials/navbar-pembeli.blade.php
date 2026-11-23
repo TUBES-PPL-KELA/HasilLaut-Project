@@ -1,9 +1,15 @@
-<nav class="bg-white shadow-sm sticky top-0 z-50">
+@php
+    $navUserId = auth()->id() ?? 1;
+    $navCart = \App\Models\Cart::where('users_id_users', $navUserId)->first();
+    $cartBadgeCount = $navCart ? $navCart->cartItems()->sum('quantity') : 0;
+@endphp
+
+<nav class="bg-white shadow-sm sticky top-0 z-20 border-b border-gray-100">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16 items-center">
-            <div class="text-2xl font-black text-midnight-teal">
+            <a href="{{ url('/') }}" class="text-2xl font-black text-midnight-teal">
                 HASILLAUT
-            </div>
+            </a>
             <div class="flex items-center space-x-6 text-dusty-turq font-semibold">
                 <a href="{{ url('/') }}" class="hover:text-midnight-teal transition">Beranda</a>
                 <a href="{{ url('/pembeli/katalog') }}" class="hover:text-midnight-teal transition">Katalog</a>
