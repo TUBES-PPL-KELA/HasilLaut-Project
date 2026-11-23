@@ -1,21 +1,37 @@
 @extends('layouts.pembeli')
 
 @section('content')
+@php
+    $isCartEmpty = empty($cartItems) || (method_exists($cartItems, 'isEmpty') ? $cartItems->isEmpty() : count($cartItems) === 0);
+@endphp
+
 <div class="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto w-full">
     <h1 class="text-2xl font-bold text-slate-800 mb-6">Keranjang Belanja</h1>
+
+    @if(session('success'))
+        <div class="mb-4 px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-medium">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div id="cart-error-alert" class="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-medium">
+            {{ session('error') }}
+        </div>
+    @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
         
         <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-4 sm:p-6 shadow-sm overflow-x-auto">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center pb-4 border-b border-slate-100 text-sm gap-2">
                 <label class="flex items-center gap-2 cursor-pointer font-medium text-slate-700">
-                    <input type="checkbox" id="select-all" checked class="rounded border-slate-300 text-[#013137] focus:ring-[#013137] w-4 h-4">
+                    <input type="checkbox" id="select-all" {{ $isCartEmpty ? 'disabled' : 'checked' }} class="rounded border-slate-300 text-[#013137] focus:ring-[#013137] w-4 h-4 disabled:opacity-50">
                     Pilih Semua (<span id="selected-count">{{ count($cartItems ?? []) }}</span>)
                 </label>
                 <form action="#" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus item terpilih?');">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="text-xs text-red-500 hover:text-red-700 font-medium cursor-pointer">Hapus Terpilih</button>
+                    <button type="submit" {{ $isCartEmpty ? 'disabled' : '' }} class="text-xs text-red-500 hover:text-red-700 font-medium cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed">Hapus Terpilih</button>
                 </form>
             </div>
 
@@ -24,13 +40,16 @@
                     @php
                         $itemPrice = $item->effective_price ?? $item->product->price ?? 0;
                         $subtotalItem = $itemPrice * $item->quantity;
+                        $beratPerItem = $item->product->weight ?? $item->product->berat ?? 1;
+                        $subtotalWeight = $beratPerItem * $item->quantity;
                     @endphp
                     <div class="py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div class="flex items-center gap-4 w-full sm:w-auto">
                             <input type="checkbox" checked 
                                    class="item-checkbox rounded border-slate-300 text-[#013137] focus:ring-[#013137] w-4 h-4 shrink-0"
                                    data-subtotal="{{ $subtotalItem }}"
-                                   data-quantity="{{ $item->quantity }}">
+                                   data-quantity="{{ $item->quantity }}"
+                                   data-weight="{{ $subtotalWeight }}">
                             
                             <img src="{{ $item->product->image ?? 'https://images.unsplash.com/photo-1534482498418-fef13c323f46?auto=format&fit=crop&w=150&q=80' }}" 
                                  alt="{{ $item->product->name ?? 'Produk Ikan' }}" 
@@ -107,8 +126,9 @@
                         </div>
                     </div>
                 @empty
-                    <div class="text-center py-12 text-slate-400">
-                        <p>Keranjang belanja kamu masih kosong.</p>
+                    <div id="empty-cart-message" class="text-center py-12 text-slate-500">
+                        <p class="font-semibold text-slate-700">Keranjang belanja kamu masih kosong.</p>
+                        <p class="text-xs text-slate-400 mt-1">Silakan tambahkan produk terlebih dahulu sebelum melanjutkan ke checkout.</p>
                     </div>
                 @endforelse
             </div>
@@ -139,9 +159,29 @@
                 <span id="grand-total" class="font-bold text-lg text-[#013137]">Rp 0</span>
             </div>
 
-            <a href="{{ route('pembeli.checkout.index') }}" class="w-full bg-[#013137] text-white font-medium py-3 rounded-xl text-center block hover:bg-[#215E68] transition shadow-sm">
-                Pesan Sekarang &rarr;
-            </a>
+            @if($isCartEmpty)
+                <button type="button"
+                        id="btn-checkout"
+                        dusk="btn-checkout"
+                        disabled
+                        aria-disabled="true"
+                        class="w-full bg-slate-300 text-slate-500 font-medium py-3 rounded-xl text-center block cursor-not-allowed">
+                    Pesan Sekarang
+                </button>
+                <p id="checkout-disabled-hint" class="text-xs text-red-500 mt-2 text-center">
+                    Keranjang kosong. Tidak dapat melakukan checkout.
+                </p>
+            @else
+                <a href="{{ route('pembeli.checkout.index') }}"
+                   id="btn-checkout"
+                   dusk="btn-checkout"
+                   class="w-full bg-[#013137] text-white font-medium py-3 rounded-xl text-center block hover:bg-[#215E68] transition shadow-sm">
+                    Pesan Sekarang
+                </a>
+                <p id="checkout-disabled-hint" class="text-xs text-red-500 mt-2 text-center hidden">
+                    Pilih minimal satu produk untuk melanjutkan checkout.
+                </p>
+            @endif
         </div>
 
     </div>
@@ -149,6 +189,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const isCartEmpty = @json($isCartEmpty);
         const selectAllCheckbox = document.getElementById('select-all');
         const itemCheckboxes = document.querySelectorAll('.item-checkbox');
         const selectedCountEl = document.getElementById('selected-count');
@@ -157,6 +198,31 @@
         const priceItemCountEl = document.getElementById('price-item-count');
         const shippingCostEl = document.getElementById('shipping-cost');
         const grandTotalEl = document.getElementById('grand-total');
+        const checkoutBtn = document.getElementById('btn-checkout');
+        const checkoutHintEl = document.getElementById('checkout-disabled-hint');
+
+        function setCheckoutEnabled(enabled) {
+            if (!checkoutBtn) return;
+
+            if (enabled) {
+                checkoutBtn.removeAttribute('disabled');
+                checkoutBtn.setAttribute('aria-disabled', 'false');
+                checkoutBtn.classList.remove('bg-slate-300', 'text-slate-500', 'cursor-not-allowed', 'pointer-events-none', 'opacity-50');
+                checkoutBtn.classList.add('bg-[#013137]', 'text-white', 'hover:bg-[#215E68]');
+                if (checkoutHintEl) checkoutHintEl.classList.add('hidden');
+            } else {
+                checkoutBtn.setAttribute('disabled', 'disabled');
+                checkoutBtn.setAttribute('aria-disabled', 'true');
+                checkoutBtn.classList.remove('bg-[#013137]', 'text-white', 'hover:bg-[#215E68]');
+                checkoutBtn.classList.add('bg-slate-300', 'text-slate-500', 'cursor-not-allowed', 'pointer-events-none', 'opacity-60');
+                if (checkoutHintEl) {
+                    checkoutHintEl.classList.remove('hidden');
+                    checkoutHintEl.textContent = isCartEmpty
+                        ? 'Keranjang kosong. Tidak dapat melakukan checkout.'
+                        : 'Pilih minimal satu produk untuk melanjutkan checkout.';
+                }
+            }
+        }
 
         function updateSummary() {
             let totalWeight = 0;
@@ -166,7 +232,7 @@
             itemCheckboxes.forEach(cb => {
                 if (cb.checked) {
                     checkedCount++;
-                    totalWeight += parseFloat(cb.dataset.quantity || 0);
+                    totalWeight += parseFloat(cb.dataset.weight || cb.dataset.quantity || 0);
                     totalPrice += parseFloat(cb.dataset.subtotal || 0);
                 }
             });
@@ -175,7 +241,7 @@
             if (priceItemCountEl) priceItemCountEl.textContent = checkedCount;
             if (totalWeightEl) totalWeightEl.textContent = totalWeight.toFixed(1).replace('.', ',') + ' kg';
             if (totalPriceEl) totalPriceEl.textContent = 'Rp ' + totalPrice.toLocaleString('id-ID');
-            
+
             let ongkir = checkedCount > 0 ? 15000 : 0;
             if (shippingCostEl) shippingCostEl.textContent = 'Rp ' + ongkir.toLocaleString('id-ID');
 
@@ -185,6 +251,16 @@
             if (selectAllCheckbox) {
                 selectAllCheckbox.checked = checkedCount === itemCheckboxes.length && itemCheckboxes.length > 0;
             }
+
+            setCheckoutEnabled(!isCartEmpty && checkedCount > 0);
+        }
+
+        if (checkoutBtn && checkoutBtn.tagName === 'A') {
+            checkoutBtn.addEventListener('click', function (e) {
+                if (checkoutBtn.getAttribute('aria-disabled') === 'true') {
+                    e.preventDefault();
+                }
+            });
         }
 
         if (selectAllCheckbox) {

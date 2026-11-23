@@ -27,7 +27,7 @@
             <div class="lg:col-span-6 space-y-4">
                 @php
                     $mainImage = $product->image
-                        ? asset('storage/' . $product->image)
+                        ? (\Illuminate\Support\Str::startsWith($product->image, 'http') ? $product->image : asset('storage/' . $product->image))
                         : 'https://images.unsplash.com/photo-1534482421-64566f976cfa?auto=format&fit=crop&w=800&q=80';
                 @endphp
 
@@ -140,35 +140,37 @@
                     <div class="flex items-center gap-4">
                         <label for="quantity" class="text-xs lg:text-sm font-semibold text-slate-700">Jumlah (kg):</label>
                         <div class="inline-flex items-center border border-slate-300 rounded-xl overflow-hidden bg-white">
-                            <button type="button"
-                                    onclick="let q=document.getElementById('quantity'); if(q.value>1) q.value=parseInt(q.value)-1;"
-                                    class="px-3 py-1.5 text-slate-600 hover:bg-slate-100 font-bold">-</button>
-                            <input type="number"
-                                   id="quantity"
-                                   name="quantity"
-                                   value="1"
-                                   min="1"
-                                   max="{{ max(1, floor($availableStock)) }}"
-                                   class="w-14 text-center text-sm font-bold text-slate-800 border-x border-slate-200 py-1.5 focus:outline-none">
-                            <button type="button"
-                                    onclick="let q=document.getElementById('quantity'); let max=parseInt(q.max); if(parseInt(q.value)<max) q.value=parseInt(q.value)+1;"
-                                    class="px-3 py-1.5 text-slate-600 hover:bg-slate-100 font-bold">+</button>
+                        <button type="button"
+                                onclick="updateQty(-1)"
+                                class="px-3 py-1.5 text-slate-600 hover:bg-slate-100 font-bold">-</button>
+                        <input type="number"
+                            id="quantity"
+                            name="quantity"
+                            value="1"
+                            min="1"
+                            max="{{ max(1, floor($availableStock)) }}"
+                            class="w-14 text-center text-sm font-bold text-slate-800 border-x border-slate-200 py-1.5 focus:outline-none">
+                        <button type="button"
+                                onclick="updateQty(1)"
+                                class="px-3 py-1.5 text-slate-600 hover:bg-slate-100 font-bold">+</button>
                         </div>
                     </div>
 
                     {{-- 2 Tombol Sejajar --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <button type="submit"
+                                dusk="btn-add-cart"
                                 {{ $availableStock <= 0 ? 'disabled' : '' }}
                                 class="w-full border border-[#013137] text-[#013137] font-semibold py-3 px-4 rounded-xl text-xs lg:text-sm hover:bg-teal-50 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                             🛒 Masukkan Keranjang
                         </button>
 
                         <button type="submit"
+                                dusk="btn-buy-now"
                                 name="redirect_to"
                                 value="checkout"
                                 {{ $availableStock <= 0 ? 'disabled' : '' }}
-                                class="w-full bg-[#013137] text-white font-semibold py-3 px-4 rounded-xl text-xs lg:text-sm hover:bg-teal-900 transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                                class="...">
                             ⚡ Beli Sekarang
                         </button>
                     </div>
@@ -214,7 +216,7 @@
             @foreach($relatedProducts as $rel)
                 @php
                     $relImage = $rel->image
-                        ? asset('storage/' . $rel->image)
+                        ? (\Illuminate\Support\Str::startsWith($rel->image, 'http') ? $rel->image : asset('storage/' . $rel->image))
                         : 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=400&q=80';
                 @endphp
                 <div class="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-sm flex flex-col justify-between hover:shadow-md transition">
@@ -250,4 +252,15 @@
     </section>
 
 </div>
+
+<script>
+    function updateQty(delta) {
+        const q = document.getElementById('quantity');
+        const max = parseInt(q.max) || 1;
+        const next = parseInt(q.value || 1) + delta;
+        if (next >= 1 && next <= max) {
+            q.value = next;
+        }
+    }
+</script>
 @endsection

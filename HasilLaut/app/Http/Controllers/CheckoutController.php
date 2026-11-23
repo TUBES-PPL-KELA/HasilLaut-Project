@@ -11,6 +11,7 @@ use App\Models\Payment;
 use App\Models\FlashSaleItem;
 use App\Models\InventoryBatch;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema; // === [PERBAIKAN #1 - BARIS 14]: Tambah import Schema ===
 use Illuminate\Support\Str;
 use Midtrans\Config;
 use Midtrans\Snap;
@@ -145,7 +146,8 @@ class CheckoutController extends Controller
 
             $params = [
                 'transaction_details' => [
-                    'order_id'     => $order->order_number . '-' . time(),
+                    // === [PERBAIKAN #2 - BARIS 127]: Hapus . '-' . time() agar order_id cocok saat webhook masuk ===
+                    'order_id'     => $order->order_number,
                     'gross_amount' => (int) round($totalAmount),
                 ],
                 'item_details' => [
@@ -173,7 +175,7 @@ class CheckoutController extends Controller
                 Config::$curlOptions = [
                     CURLOPT_SSL_VERIFYPEER => false,
                     CURLOPT_SSL_VERIFYHOST => 0,
-                    CURLOPT_HTTPHEADER     => [],
+                    CURLOPT_HTTPHEADER     => ['Accept: application/json'],
                 ];
             }
 
@@ -182,7 +184,8 @@ class CheckoutController extends Controller
                 $snapToken = Snap::getSnapToken($params);
                 \Log::info('SESUDAH snap', ['token' => $snapToken]);
             } catch (\Exception $snapEx) {
-                if (app()->environment('local', 'testing')) {
+                // === [PERBAIKAN #3 - BARIS 164]: Hanya pakai dummy token di 'testing', jangan di 'local' ===
+                if (app()->environment('testing')) {
                     $snapToken = 'DUSK-TEST-SNAP-' . Str::random(16);
                 } else {
                     throw $snapEx;
@@ -231,7 +234,12 @@ class CheckoutController extends Controller
 
         DB::beginTransaction();
         try {
-            $order = Order::where('order_number', $orderId)->first();
+            // === [PERBAIKAN #4 - BARIS 205]: Bersihkan suffix timestamp jika ada agar Order selalu ditemukan ===
+            $cleanOrderId = preg_replace('/-\d+$/', '', $orderId);
+            $order = Order::where('order_number', $orderId)
+                ->orWhere('order_number', $cleanOrderId)
+                ->first();
+
             if (!$order) {
                 return response()->json(['message' => 'Order not found'], 404);
             }
@@ -248,6 +256,13 @@ class CheckoutController extends Controller
                     if ($payment->status !== 'Lunas') {
                         $payment->status = 'Lunas';
                         $payment->payment_gateway_inv_id = $notification->transaction_id;
+
+                        // === [PERBAIKAN #5A - BARIS 221]: Update status di tabel orders menjadi 'lunas' (AC 2) ===
+                        if (Schema::hasColumn('orders', 'status')) {
+                            DB::table('orders')
+                                ->where('id_orders', $order->id_orders)
+                                ->update(['status' => 'lunas']);
+                        }
 
                         $orderItems = OrderItem::where('orders_id_orders', $order->id_orders)->get();
 
@@ -267,6 +282,13 @@ class CheckoutController extends Controller
                 }
             } else if ($transactionStatus == 'cancel' || $transactionStatus == 'deny' || $transactionStatus == 'expire') {
                 $payment->status = 'Gagal';
+
+                // === [PERBAIKAN #5B - BARIS 240]: Update status di tabel orders menjadi 'dibatalkan' saat expire/cancel (AC 4) ===
+                if (Schema::hasColumn('orders', 'status')) {
+                    DB::table('orders')
+                        ->where('id_orders', $order->id_orders)
+                        ->update(['status' => 'dibatalkan']);
+                }
             } else if ($transactionStatus == 'pending') {
                 $payment->status = 'Pending';
             }
@@ -280,5 +302,24 @@ class CheckoutController extends Controller
             DB::rollBack();
             return response()->json(['message' => 'Error processing webhook: ' . $e->getMessage()], 500);
         }
+    }
+
+    // === [PERBAIKAN #6 - BARIS 253]: Tambah method status() untuk menangani redirect ke /pesanan/status ===
+    public function status()
+    {
+        $user = auth()->user();
+        $userId = $user ? $user->id_users : 1;
+
+        $order = Order::with(['payment'])
+            ->where('users_id_users', $userId)
+            ->latest('id_orders')
+            ->first();
+
+        if (view()->exists('pembeli.pesanan.status')) {
+            return view('pembeli.pesanan.status', compact('order'));
+        }
+
+        return redirect()->route('pembeli.katalog')
+            ->with('success', 'Pesanan ' . ($order->order_number ?? '') . ' berhasil dibuat!');
     }
 }
