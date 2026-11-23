@@ -21,6 +21,17 @@ class Product extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::updated(function (Product $product) {
+            if ($product->wasChanged('max_storage_days')) {
+                $product->inventoryBatches()
+                    ->where('stock', '>', 0)
+                    ->update(['is_flash_sale_excluded' => false]);
+            }
+        });
+    }
+
    
     public function category()
     {
