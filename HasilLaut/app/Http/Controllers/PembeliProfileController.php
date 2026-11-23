@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use Illuminate\Http\Request;
 use App\Models\PembeliDetail;
 use App\Models\User;
@@ -9,9 +8,7 @@ use Illuminate\Support\Facades\Auth;
 
 class PembeliProfileController extends Controller
 {
-    /**
-     * Menampilkan halaman edit profil & alamat GPS.
-     */
+    /* Menampilkan halaman edit profil & alamat GPS.*/
     public function edit()
     {
         $userId = Auth::id() ?? 1;
@@ -20,9 +17,7 @@ class PembeliProfileController extends Controller
         return view('pembeli.profile.edit', compact('pembeliDetail'));
     }
 
-    /**
-     * Memperbarui data profil, alamat, dan validasi geofencing GPS.
-     */
+    /* Memperbarui data profil, alamat, dan validasi geofencing GPS.*/
     public function update(Request $request)
     {
         $request->validate([

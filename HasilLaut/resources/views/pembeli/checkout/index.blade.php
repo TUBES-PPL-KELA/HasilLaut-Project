@@ -75,15 +75,27 @@
                     @if($cart && $cart->cartItems && count($cart->cartItems) > 0)
                         <div class="space-y-4">
                             @foreach($cart->cartItems as $item)
+                                @php
+                                    $productImage = $item->product->image ?? null;
+                                    $imgUrl = $productImage
+                                        ? (\Illuminate\Support\Str::startsWith($productImage, 'http') ? $productImage : asset('storage/' . $productImage))
+                                        : null;
+                                @endphp
                                 <div class="flex items-center justify-between pb-4 border-b border-gray-100 last:border-0 last:pb-0">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 flex-shrink-0">
-                                            <i class="bi bi-image text-xl"></i>
-                                        </div>
+                                        @if($imgUrl)
+                                            <img src="{{ $imgUrl }}"
+                                                 alt="{{ $item->product->name ?? 'Produk Hasil Laut' }}"
+                                                 class="w-14 h-14 rounded-xl object-cover border border-gray-100 flex-shrink-0">
+                                        @else
+                                            <div class="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center text-gray-400 flex-shrink-0">
+                                                <i class="bi bi-image text-xl"></i>
+                                            </div>
+                                        @endif
                                         <div>
                                             <h6 class="font-bold text-gray-900 text-sm mb-1">{{ $item->product->name ?? 'Produk Hasil Laut' }}</h6>
                                             <p class="text-xs text-gray-500">
-                                                {{ $item->quantity }} kg × Rp {{ number_format($item->effective_price ?? 0, 0, ',', '.') }} • Hub Pangandaran
+                                                {{ (int) $item->quantity }} kg × Rp {{ number_format($item->effective_price ?? 0, 0, ',', '.') }} • Hub Pangandaran
                                             </p>
                                         </div>
                                     </div>

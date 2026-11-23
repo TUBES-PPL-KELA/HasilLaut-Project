@@ -31,11 +31,11 @@ class CartController extends Controller
         $request->validate([
             'product_id' => 'required|exists:product,id_product',
             'flash_sale_item_id' => 'nullable|exists:flash_sale_item,id_flash_sale_item',
-            'quantity' => 'nullable|numeric|min:1',
+            'quantity' => 'nullable|integer|min:1',
         ]);
 
         $userId = auth()->id() ?? 1;
-        $qty = $request->input('quantity', 1);
+        $qty = (int) $request->input('quantity', 1);
         $flashSaleId = $request->input('flash_sale_item_id');
 
         // Validasi stok sebelum masuk keranjang
@@ -73,6 +73,11 @@ class CartController extends Controller
                 'flash_sale_item_id' => $flashSaleId,
                 'quantity' => $qty,
             ]);
+        }
+
+        // Langsung arahkan ke checkout jika tombol "Beli Sekarang" ditekan
+        if ($request->input('redirect_to') === 'checkout') {
+            return redirect()->route('pembeli.checkout.index');
         }
 
         return back()->with('success', 'Produk berhasil ditambahkan ke keranjang!');
