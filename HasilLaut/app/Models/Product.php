@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Models\InventoryBatch;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -36,5 +37,18 @@ class Product extends Model
     public function getTotalStockAttribute()
     {
         return $this->inventoryBatches()->sum('stock');
+    }
+
+    protected static function booted(): void
+    {
+        static::updated(function (Product $product) {
+            // Jika admin mengubah batas masa simpan (max_storage_days)
+            if ($product->wasChanged('max_storage_days')) {
+                InventoryBatch::where('product_id_product', $product->id_product)
+                    ->where('stock', '>', 0)
+                    ->where('is_flash_sale_excluded', true)
+                    ->update(['is_flash_sale_excluded' => false]);
+            }
+        });
     }
 }
