@@ -298,10 +298,10 @@
                 <span>HASILLAUT</span>
             </a>
             <nav class="header-actions" aria-label="Navigasi utama">
-                <a class="buyer-link" href="{{ route('pembeli.pencarian-ikan') }}"><i class="bi bi-search"></i> Cari Produk</a>
-                <a class="icon-link" href="#produk-unggulan" aria-label="Lihat produk unggulan"><i class="bi bi-bell"></i></a>
-                <a class="icon-link" href="#tentang" aria-label="Tentang HasilLaut"><i class="bi bi-gear"></i></a>
-                <a class="buyer-link" href="{{ route('pembeli.cart') }}"><i class="bi bi-person"></i> Pembeli</a>
+                <a class="buyer-link" href="{{ route('pembeli.katalog') }}"><i class="bi bi-search"></i> Katalog ikan</a>
+                <a class="icon-link" href="{{ route('pembeli.cart') }}" aria-label="Keranjang Belanja"><i class="bi bi-cart3"></i></a>
+                <a class="icon-link" href="{{ route('pembeli.profile.edit') }}" aria-label="Pengaturan Profil & Alamat"><i class="bi bi-gear"></i></a>
+                <a class="buyer-link" href="{{ route('pembeli.profile.edit') }}"><i class="bi bi-person"></i> Pembeli</a>
             </nav>
         </div>
     </header>
@@ -318,8 +318,8 @@
                 <h1 id="hero-title">Ikan Segar Langsung dari Nelayan, Pesisir ke Dapur Anda</h1>
                 <p>Dapatkan produk laut berkualitas tanpa perantara. Setiap pembelian Anda membantu mewujudkan kesejahteraan dan harga yang adil bagi nelayan tradisional Indonesia.</p>
                 <div class="hero-buttons">
-                    <a class="button button-primary" href="#produk-unggulan" data-testid="landing-primary-cta">Beli Ikan Segar <i class="bi bi-arrow-right"></i></a>
-                    <a class="button button-outline" href="#produk-unggulan" data-testid="landing-catalog-cta">Jelajahi Katalog</a>
+                    <a class="button button-primary" href="{{ route('pembeli.katalog') }}" data-testid="landing-primary-cta">Beli Ikan Segar <i class="bi bi-arrow-right"></i></a>
+                    <a class="button button-outline" href="{{ route('pembeli.katalog') }}" data-testid="landing-catalog-cta">Jelajahi Katalog</a>
                 </div>
             </div>
         </section>
@@ -351,7 +351,7 @@
                     <h2 id="products-title">Produk Unggulan Hari Ini</h2>
                     <p>Tangkapan segar terbaik yang masuk melalui HasilLaut Hub pesisir.</p>
                 </div>
-                <a class="text-link" href="#produk-unggulan">Lihat semua <i class="bi bi-arrow-right"></i></a>
+                <a class="text-link" href="{{ route('pembeli.katalog') }}">Lihat semua <i class="bi bi-arrow-right"></i></a>
             </div>
             <div class="product-grid" data-testid="top-trend-products">
                 @forelse($topTrendProducts as $product)
@@ -370,7 +370,7 @@
                             <p class="product-price">Rp {{ number_format($product->price, 0, ',', '.') }} / kg</p>
                             <div class="product-bottom">
                                 <span class="seller">Stok: {{ number_format($product->available_stock, 0, ',', '.') }} kg</span>
-                                <a class="buy-link" href="{{ route('pembeli.cart') }}">Beli Sekarang</a>
+                                <a class="buy-link" href="{{ route('pembeli.produk.detail', $product->id_product) }}">Beli Sekarang</a>
                             </div>
                         </div>
                     </article>

@@ -21,6 +21,7 @@ class FlashSaleController extends Controller
             ->whereHas('inventoryBatch', function ($query) {
                 $query->where('stock', '>', 0);
             })
+            ->latest()
             ->paginate(5);
 
         // Ambil batch yang H-1 Kadaluarsa (abaikan yang ditandai salah input)
