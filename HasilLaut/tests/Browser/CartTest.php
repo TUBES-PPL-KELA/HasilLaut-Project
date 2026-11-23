@@ -115,7 +115,7 @@ class CartTest extends DuskTestCase
     }
     
     /**
-    * TC-CRT-002: Menggunakan fitur Beli Sekarang untuk direct checkout ekspres.
+    * TC-CRT-002: Menggunakan fitur Beli Sekarang untuk direct checkout.
     */
     public function test_tc_crt_002_direct_checkout_beli_sekarang()
     {
