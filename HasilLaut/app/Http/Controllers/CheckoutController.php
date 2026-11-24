@@ -122,7 +122,7 @@ class CheckoutController extends Controller
                     default => 'Midtrans Snap',
                 },
                 'amount'                 => $totalAmount,
-                'status'                 => 'Pending',
+                'status'                 => 'pending',
                 'payment_gateway_inv_id' => '-',
             ]);
 
@@ -214,54 +214,94 @@ class CheckoutController extends Controller
         $payload = $request->getContent();
         $notification = json_decode($payload);
 
-        if (!$notification) {
+        if (
+            !$notification ||
+            empty($notification->order_id) ||
+            empty($notification->status_code) ||
+            !isset($notification->gross_amount) ||
+            empty($notification->signature_key)
+        ) {
+            \Log::warning('Midtrans webhook invalid payload', ['payload' => $payload]);
             return response()->json(['message' => 'Invalid payload'], 400);
         }
 
-        $orderId = $notification->order_id;
-        $statusCode = $notification->status_code;
-        $grossAmount = $notification->gross_amount;
-        $reqSignature = $notification->signature_key;
-        $serverKey = config('midtrans.server_key');
-        $mySignature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
+        $orderId = (string) $notification->order_id;
+        $statusCode = (string) $notification->status_code;
+        $grossAmount = (string) $notification->gross_amount;
+        $reqSignature = (string) $notification->signature_key;
 
-        if ($mySignature !== $reqSignature) {
+        $candidateKeys = array_values(array_unique(array_filter([
+            config('midtrans.signature_secret_key'),
+            config('midtrans.server_key'),
+        ])));
+
+        $signatureValid = false;
+        foreach ($candidateKeys as $key) {
+            $expectedSignature = hash('sha512', $orderId . $statusCode . $grossAmount . $key);
+            if (hash_equals($expectedSignature, $reqSignature)) {
+                $signatureValid = true;
+                break;
+            }
+        }
+
+        if (!$signatureValid) {
+            \Log::warning('Midtrans webhook invalid signature', [
+                'order_id'               => $orderId,
+                'status_code'            => $statusCode,
+                'gross_amount'           => $grossAmount,
+                'using_separate_sig_key' => config('midtrans.signature_secret_key') !== config('midtrans.server_key'),
+            ]);
             return response()->json(['message' => 'Invalid signature'], 403);
         }
 
-        $transactionStatus = $notification->transaction_status;
+        $transactionStatus = $notification->transaction_status ?? '';
         $fraudStatus = $notification->fraud_status ?? '';
+
+        \Log::info('Midtrans webhook received', [
+            'order_id'           => $orderId,
+            'transaction_status' => $transactionStatus,
+            'fraud_status'       => $fraudStatus,
+        ]);
 
         DB::beginTransaction();
         try {
-            // === [PERBAIKAN #4 - BARIS 205]: Bersihkan suffix timestamp jika ada agar Order selalu ditemukan ===
             $cleanOrderId = preg_replace('/-\d+$/', '', $orderId);
             $order = Order::where('order_number', $orderId)
                 ->orWhere('order_number', $cleanOrderId)
                 ->first();
 
             if (!$order) {
+                DB::rollBack();
+                \Log::warning('Midtrans webhook order not found', ['order_id' => $orderId]);
                 return response()->json(['message' => 'Order not found'], 404);
             }
 
             $payment = Payment::where('orders_id_orders', $order->id_orders)->first();
             if (!$payment) {
+                DB::rollBack();
+                \Log::warning('Midtrans webhook payment not found', ['order_id' => $orderId]);
                 return response()->json(['message' => 'Payment not found'], 404);
             }
 
             if ($transactionStatus == 'capture' || $transactionStatus == 'settlement') {
                 if ($transactionStatus == 'capture' && $fraudStatus == 'challenge') {
-                    $payment->status = 'Challenge';
+                    $payment->status = 'pending';
                 } else {
-                    if ($payment->status !== 'Lunas') {
-                        $payment->status = 'Lunas';
-                        $payment->payment_gateway_inv_id = $notification->transaction_id;
+                    if ($payment->status !== 'paid') {
+                        $payment->status = 'paid';
+                        $payment->payment_gateway_inv_id = $notification->transaction_id ?? $orderId;
 
-                        // === [PERBAIKAN #5A - BARIS 221]: Update status di tabel orders menjadi 'lunas' (AC 2) ===
+                        $orderUpdates = [];
+                        if (Schema::hasColumn('orders', 'status_pesanan')) {
+                            $orderUpdates['status_pesanan'] = 'Lunas';
+                        }
                         if (Schema::hasColumn('orders', 'status')) {
+                            $orderUpdates['status'] = 'lunas';
+                        }
+                        if (!empty($orderUpdates)) {
                             DB::table('orders')
                                 ->where('id_orders', $order->id_orders)
-                                ->update(['status' => 'lunas']);
+                                ->update($orderUpdates);
                         }
 
                         $orderItems = OrderItem::where('orders_id_orders', $order->id_orders)->get();
@@ -280,26 +320,55 @@ class CheckoutController extends Controller
                         }
                     }
                 }
-            } else if ($transactionStatus == 'cancel' || $transactionStatus == 'deny' || $transactionStatus == 'expire') {
-                $payment->status = 'Gagal';
+            } else if ($transactionStatus == 'expire') {
+                $payment->status = 'expired';
 
-                // === [PERBAIKAN #5B - BARIS 240]: Update status di tabel orders menjadi 'dibatalkan' saat expire/cancel (AC 4) ===
+                $orderUpdates = [];
+                if (Schema::hasColumn('orders', 'status_pesanan')) {
+                    $orderUpdates['status_pesanan'] = 'Dibatalkan';
+                }
                 if (Schema::hasColumn('orders', 'status')) {
+                    $orderUpdates['status'] = 'dibatalkan';
+                }
+                if (!empty($orderUpdates)) {
                     DB::table('orders')
                         ->where('id_orders', $order->id_orders)
-                        ->update(['status' => 'dibatalkan']);
+                        ->update($orderUpdates);
+                }
+            } else if ($transactionStatus == 'cancel' || $transactionStatus == 'deny') {
+                $payment->status = 'failed';
+
+                $orderUpdates = [];
+                if (Schema::hasColumn('orders', 'status_pesanan')) {
+                    $orderUpdates['status_pesanan'] = 'Dibatalkan';
+                }
+                if (Schema::hasColumn('orders', 'status')) {
+                    $orderUpdates['status'] = 'dibatalkan';
+                }
+                if (!empty($orderUpdates)) {
+                    DB::table('orders')
+                        ->where('id_orders', $order->id_orders)
+                        ->update($orderUpdates);
                 }
             } else if ($transactionStatus == 'pending') {
-                $payment->status = 'Pending';
+                $payment->status = 'pending';
             }
 
             $payment->save();
 
             DB::commit();
+            \Log::info('Midtrans webhook processed successfully', [
+                'order_id'       => $orderId,
+                'payment_status' => $payment->status,
+            ]);
             return response()->json(['message' => 'Webhook successfully processed']);
 
         } catch (\Exception $e) {
             DB::rollBack();
+            \Log::error('Midtrans webhook processing error', [
+                'order_id' => $orderId,
+                'error'    => $e->getMessage(),
+            ]);
             return response()->json(['message' => 'Error processing webhook: ' . $e->getMessage()], 500);
         }
     }
