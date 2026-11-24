@@ -13,6 +13,7 @@ use App\Http\Controllers\PencarianIkanController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\FlashSaleController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\OrderController;
 
 // Route Modul PBI-01: Manajemen Produk & Stok Gudang
 Route::get('/admin/product', [ProductController::class, 'index'])->name('admin.product.index');
@@ -73,3 +74,9 @@ Route::get('/pesanan/status', [CheckoutController::class, 'status'])->name('pemb
 
 // Route Webhook Midtrans (PBI-15 & PBI-02 FIFO)
 Route::post('/midtrans/webhook', [CheckoutController::class, 'webhook'])->name('midtrans.webhook');
+
+// Route Modul Manajemen Pesanan Masuk & Operasional Hub (Admin) PBI 4
+Route::get('/admin/pesanan-masuk', [OrderController::class, 'index'])->name('admin.orders.index');
+Route::match(['put', 'patch'], '/admin/pesanan-masuk/{id}/operasional', [OrderController::class, 'updateOperational'])
+    ->whereNumber('id')
+    ->name('admin.orders.update-operational');

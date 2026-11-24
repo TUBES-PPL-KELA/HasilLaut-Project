@@ -9,41 +9,66 @@ class Order extends Model
 {
     use HasFactory;
 
-    // 1. Tentukan nama tabel di database
     protected $table = 'orders';
-
-    // 2. Tentukan Primary Key yang digunakan (karena bukan 'id' bawaan Laravel)
     protected $primaryKey = 'id_orders';
 
-    // 3. Kolom yang diizinkan untuk diisi secara otomatis (Mengatasi Error Mass Assignment)
     protected $fillable = [
         'order_number',
         'is_pangandaran_area',
         'subtotal_amount',
         'shipping_cost',
         'total_amount',
+        'kurir_latitude',
+        'kurir_longitude',
         'users_id_users',
     ];
 
-    // ==========================================
-    // 4. RELASI ANTAR TABEL (Untuk Riwayat Pesanan)
-    // ==========================================
+    protected $casts = [
+        'is_pangandaran_area' => 'boolean',
+        'subtotal_amount' => 'decimal:2',
+        'shipping_cost' => 'decimal:2',
+        'total_amount' => 'decimal:2',
+        'kurir_latitude' => 'decimal:8',
+        'kurir_longitude' => 'decimal:8',
+    ];
 
-    // Relasi ke Pembeli (User)
     public function user()
     {
         return $this->belongsTo(User::class, 'users_id_users', 'id_users');
     }
 
-    // Relasi ke Detail Produk yang dibeli (Order Items)
+    public function pembeliDetail()
+    {
+        return $this->belongsTo(PembeliDetail::class, 'users_id_users', 'users_id_users');
+    }
+
     public function orderItems()
     {
         return $this->hasMany(OrderItem::class, 'orders_id_orders', 'id_orders');
     }
 
-    // Relasi ke Data Pembayaran Midtrans (Payment)
     public function payment()
     {
         return $this->hasOne(Payment::class, 'orders_id_orders', 'id_orders');
+    }
+
+    public function shipment()
+    {
+        return $this->hasOne(Shipment::class, 'orders_id_orders', 'id_orders');
+    }
+
+    public function getTotalWeightAttribute(): float
+    {
+        if (!$this->relationLoaded('orderItems')) {
+            return 0;
+        }
+
+        return (float) $this->orderItems->sum(function ($item) {
+            $weightPerUnit = $item->product->weight
+                ?? $item->product->berat
+                ?? 1;
+
+            return (float) $item->quantity * (float) $weightPerUnit;
+        });
     }
 }
