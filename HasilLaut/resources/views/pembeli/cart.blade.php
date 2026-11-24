@@ -42,6 +42,20 @@
                         $subtotalItem = $itemPrice * $item->quantity;
                         $beratPerItem = $item->product->weight ?? $item->product->berat ?? 1;
                         $subtotalWeight = $beratPerItem * $item->quantity;
+
+                        // [DIEDIT] Resolusi path gambar agar mendukung URL penuh, storage, maupun path di public/
+                        $rawImage = $item->product->image ?? null;
+                        if (!$rawImage) {
+                            $imgSrc = asset('images/default-ikan.jpg');
+                        } elseif (\Illuminate\Support\Str::startsWith($rawImage, ['http://', 'https://'])) {
+                            $imgSrc = $rawImage;
+                        } elseif (\Illuminate\Support\Str::startsWith($rawImage, ['storage/', '/storage/'])) {
+                            $imgSrc = asset(ltrim($rawImage, '/'));
+                        } elseif (\Illuminate\Support\Str::startsWith($rawImage, 'products/')) {
+                            $imgSrc = asset('storage/' . $rawImage);
+                        } else {
+                            $imgSrc = asset(ltrim($rawImage, '/'));
+                        }
                     @endphp
                     <div class="py-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div class="flex items-center gap-4 w-full sm:w-auto">
@@ -51,7 +65,8 @@
                                    data-quantity="{{ $item->quantity }}"
                                    data-weight="{{ $subtotalWeight }}">
                             
-                            <img src="{{ $item->product->image ?? 'https://images.unsplash.com/photo-1534482498418-fef13c323f46?auto=format&fit=crop&w=150&q=80' }}" 
+                            {{-- [DIEDIT] Menggunakan $imgSrc hasil normalisasi path/URL --}}
+                            <img src="{{ $imgSrc }}" 
                                  alt="{{ $item->product->name ?? 'Produk Ikan' }}" 
                                  class="w-16 h-16 min-w-[4rem] min-h-[4rem] object-cover rounded-xl border border-slate-100 shrink-0">
                             
