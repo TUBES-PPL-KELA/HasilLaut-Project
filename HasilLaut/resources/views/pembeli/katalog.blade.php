@@ -130,9 +130,19 @@
                         </form>
                     </div>
                 </div>
-            @empty
-                <div class="col-span-full bg-white border border-dashed border-gray-300 rounded-2xl p-10 text-center text-gray-500 text-sm">
-                    Tidak ada produk hasil laut yang ditemukan.
+                @empty
+                <div data-testid="search-empty-state" class="col-span-full bg-white border border-dashed border-gray-300 rounded-2xl p-10 text-center">
+                    <p class="text-base font-bold text-gray-800">
+                        {{ $search ? 'Maaf, ikan yang Anda cari belum tersedia' : 'Tidak ada produk hasil laut yang ditemukan.' }}
+                    </p>
+                    <p class="text-xs text-gray-500 mt-1">
+                        {{ $search ? 'Coba gunakan kata kunci lain atau lihat seluruh komoditas segar kami.' : 'Silakan pilih kategori lain atau cek kembali nanti.' }}
+                    </p>
+                    @if($search || $categoryId)
+                        <a href="{{ route('pembeli.katalog') }}" class="mt-4 inline-flex items-center gap-1.5 rounded-xl bg-[#164E56] hover:bg-[#0F393F] px-5 py-2.5 text-xs font-bold text-white transition">
+                            Tampilkan Semua Ikan
+                        </a>
+                    @endif
                 </div>
             @endforelse
         </div>

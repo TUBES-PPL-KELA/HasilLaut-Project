@@ -35,8 +35,6 @@ Route::get('/admin/category/{id}/edit', [CategoryController::class, 'edit'])->na
 Route::put('/admin/category/{id}', [CategoryController::class, 'update'])->name('admin.category.update');
 Route::delete('/admin/category/{id}', [CategoryController::class, 'destroy'])->name('admin.category.destroy');
 
-Route::get('/pembeli/pencarian-ikan', [PencarianIkanController::class, 'index'])
-    ->name('pembeli.pencarian-ikan');
 
 // Rute Keranjang Belanja (Dikeluarkan dari prefix pembeli agar namanya pas: cart, cart.store, dll)
 Route::get('/pembeli/keranjang', [CartController::class, 'index'])->name('pembeli.cart');
