@@ -7,11 +7,11 @@ use App\Models\Category;
 use App\Models\FlashSaleItem;
 use App\Models\Product;
 
+
 class KatalogController extends Controller
 {
-    public function index(Request $request)
+public function index(Request $request, PencarianIkanController $pencarianController)
     {
-        $search = $request->query('search');
         $categoryId = $request->query('category');
 
         $categories = Category::all();
@@ -23,9 +23,9 @@ class KatalogController extends Controller
                 $q->where('stock', '>', 0);
             });
 
-        if ($search) {
-            $flashSaleQuery->whereHas('inventoryBatch.product', function ($q) use ($search) {
-                $q->where('name', 'like', '%' . $search . '%');
+        if ($request->filled('search') || $request->filled('q')) {
+            $flashSaleQuery->whereHas('inventoryBatch.product', function ($q) use ($pencarianController, $request) {
+                $pencarianController->index($request, $q);
             });
         }
 
@@ -48,9 +48,8 @@ class KatalogController extends Controller
             $productQuery->where('categories_id_categories', $categoryId);
         }
 
-        if ($search) {
-            $productQuery->where('name', 'like', '%' . $search . '%');
-        }
+        // Suntikkan logika filter pencarian dari PencarianIkanController
+        $search = $pencarianController->index($request, $productQuery);
 
         $activeFlashSaleStockByBatch = FlashSaleItem::where('stock', '>', 0)
             ->pluck('stock', 'inventory_batches_id_inventory_batches');

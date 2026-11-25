@@ -13,35 +13,29 @@ class OrderItem extends Model
     protected $primaryKey = 'id_order_items';
 
     protected $fillable = [
-        'orders_id_orders',
-        'product_id_product',
-        'flash_sale_item_id',
         'quantity',
         'price',
-        'subtotal',
+        'orders_id_orders',
+        'product_id_product',
     ];
 
-    /**
-     * Relasi ke tabel orders
-     */
+    protected $casts = [
+        'quantity' => 'decimal:2',
+        'price' => 'decimal:2',
+    ];
+
     public function order()
     {
-        return $this->belongsTo(Order::class, 'order_id', 'id_order'); // Sesuaikan 'id_order' jika PK tabel orders berbeda (misal 'id')
+        return $this->belongsTo(Order::class, 'orders_id_orders', 'id_orders');
     }
 
-    /**
-     * Relasi ke tabel products
-     */
     public function product()
     {
-        return $this->belongsTo(Product::class, 'product_id', 'id_product'); // Sesuaikan 'id_product' jika PK tabel products berbeda
+        return $this->belongsTo(Product::class, 'product_id_product', 'id_product');
     }
 
-    /**
-     * Relasi ke tabel flash_sale_items
-     */
-    public function flashSaleItem()
+    public function getSubtotalAttribute(): float
     {
-        return $this->belongsTo(FlashSaleItem::class, 'flash_sale_item_id', 'id_flash_sale_item'); // Sesuaikan PK jika berbeda
+        return (float) ($this->quantity ?? 0) * (float) ($this->price ?? 0);
     }
 }
