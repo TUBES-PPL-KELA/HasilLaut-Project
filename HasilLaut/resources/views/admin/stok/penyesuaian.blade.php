@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
 @section('content')
-<div class="space-y-6">
+<div class="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto space-y-6">
     
     <!-- Header Halaman -->
     <div>
@@ -56,7 +56,7 @@
                 </div>
             </div>
 
-            <!-- Box Detail Ringkasan Batch (Sesuai Desain Figma: bg biru/teal keputihan) -->
+            <!-- Box Detail Ringkasan Batch  -->
             <div class="bg-[#EAF3F5] border border-[#D1E5E9] rounded-xl p-5 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <span class="block text-teal-700/60 font-bold uppercase text-[10px] tracking-wider mb-1">ID BATCH SISTEM</span>
@@ -113,7 +113,7 @@
                 <svg class="w-5 h-5 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                 Riwayat Pencatatan Produk Defect / Rusak
             </h2>
-            <span class="text-xs text-gray-500 font-semibold">Total {{ $adjustments->count() }} Kasus Bulan Ini</span>
+            <span class="text-xs text-gray-500 font-semibold">Total {{ $adjustments->count() }}</span>
         </div>
 
         <!-- Search Bar History -->
@@ -129,7 +129,7 @@
         <!-- Grid Cards History -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
             @forelse ($adjustments as $adj)
-                <!-- Kartu History (Mirip Figma) -->
+                <!-- Kartu History  -->
                 <div class="bg-white rounded-2xl p-5 border border-gray-200 flex flex-col justify-between">
                     <div>
                         <div class="flex justify-between items-start mb-4">

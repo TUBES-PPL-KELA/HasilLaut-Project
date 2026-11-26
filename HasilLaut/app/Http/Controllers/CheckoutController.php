@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\PembeliDetail;
@@ -21,8 +22,7 @@ class CheckoutController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
-        $userId = $user ? $user->id_users : 1;
+        $userId = Auth::id();
 
         $cart = Cart::with(['cartItems.product', 'cartItems.flashSaleItem'])->where('users_id_users', $userId)->first();
         $pembeliDetail = PembeliDetail::where('users_id_users', $userId)->first();
@@ -45,8 +45,8 @@ class CheckoutController extends Controller
 
     public function store(Request $request)
     {
-        $user = auth()->user();
-        $userId = $user ? $user->id_users : 1;
+        $user = Auth::user();
+        $userId = $user->id_users;
 
         $method = $request->input('payment_method', 'qris');
 
@@ -376,8 +376,7 @@ class CheckoutController extends Controller
     // === [PERBAIKAN #6 - BARIS 253]: Tambah method status() untuk menangani redirect ke /pesanan/status ===
     public function status()
     {
-        $user = auth()->user();
-        $userId = $user ? $user->id_users : 1;
+        $userId = Auth::id();
 
         $order = Order::with(['payment'])
             ->where('users_id_users', $userId)

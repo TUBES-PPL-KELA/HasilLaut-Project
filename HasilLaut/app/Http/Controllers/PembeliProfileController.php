@@ -11,7 +11,7 @@ class PembeliProfileController extends Controller
     /* Menampilkan halaman edit profil & alamat GPS.*/
     public function edit()
     {
-        $userId = Auth::id() ?? 1;
+        $userId = Auth::id();
         $pembeliDetail = PembeliDetail::where('users_id_users', $userId)->first();
 
         return view('pembeli.profile.edit', compact('pembeliDetail'));
@@ -32,35 +32,31 @@ class PembeliProfileController extends Controller
             'phone_number.numeric'        => 'Nomor telepon tidak valid, harus berupa angka.',
         ]);
 
-        $userId = Auth::id() ?? 1;
+       // Di dalam method update() (sekitar baris 31 & 48)
+        $userId = Auth::id();
         $lat = (float) $request->latitude;
         $lng = (float) $request->longitude;
 
         // Validasi Geofencing Wilayah Kabupaten Pangandaran terpusat di Controller
         $isPangandaran = ($lat >= -7.85 && $lat <= -7.45 && $lng >= 108.30 && $lng <= 108.80);
 
-        // Jika di luar Pangandaran: tolak simpan & kirim pesan error geofencing
         if (!$isPangandaran) {
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Status Geofencing Gagal: Titik koordinat berada di luar jangkauan operasional HasilLaut Hub Pangandaran. Data tidak dapat disimpan.');
         }
 
-        // Update nama pengguna di tabel users
-        $user = User::find($userId);
-        if ($user) {
-            $user->update(['name' => $request->name]);
-        }
+        $user = User::findOrFail($userId);
+        $user->update(['name' => $request->name]);
 
-        // Simpan detail pembeli
         PembeliDetail::updateOrCreate(
             ['users_id_users' => $userId],
             [
-                'phone_number'        => $request->phone_number,
-                'address'             => $request->address,
-                'latitude'            => $lat,
-                'longitude'           => $lng,
-                'is_pangandaran_area' => 1,
+                'name'         => $request->name,
+                'phone_number' => $request->phone_number,
+                'address'      => $request->address,
+                'latitude'     => $lat,
+                'longitude'    => $lng,
             ]
         );
 
