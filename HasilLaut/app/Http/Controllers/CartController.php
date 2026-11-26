@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Cart;
 use App\Models\CartItem;
@@ -12,7 +13,7 @@ class CartController extends Controller
 {
     public function index()
     {
-        $userId = auth()->id() ?? 1;
+        $userId = Auth::id();
         $cart = Cart::where('users_id_users', $userId)->first();
 
         $cartItems = $cart
@@ -46,7 +47,7 @@ class CartController extends Controller
 
     public function checkout(Request $request)
     {
-        $userId = auth()->id() ?? 1;
+        $userId = Auth::id();
         $cart = Cart::where('users_id_users', $userId)->first();
 
         $hasCartItems = $cart
@@ -184,7 +185,7 @@ class CartController extends Controller
             'quantity' => 'nullable|integer|min:1',
         ]);
 
-        $userId = auth()->id() ?? 1;
+        $userId = Auth::id();
         $qty = (int) $request->input('quantity', 1);
         $flashSaleId = $request->input('flash_sale_item_id');
 
@@ -276,7 +277,9 @@ class CartController extends Controller
 
     public function update(Request $request, $id)
     {
-        $cartItem = CartItem::with(['flashSaleItem', 'product.inventoryBatches'])->findOrFail($id);
+        $cartItem = CartItem::with(['flashSaleItem', 'product.inventoryBatches'])
+            ->whereHas('cart', fn ($q) => $q->where('users_id_users', Auth::id()))
+            ->findOrFail($id);
 
         if ($request->quantity <= 0) {
             $cartItem->delete();
@@ -303,7 +306,8 @@ class CartController extends Controller
 
     public function destroy($id)
     {
-        $cartItem = CartItem::findOrFail($id);
+        $cartItem = CartItem::whereHas('cart', fn ($q) => $q->where('users_id_users', Auth::id()))
+            ->findOrFail($id);
         $cartItem->delete();
 
         return redirect()->back()->with('success', 'Item berhasil dihapus dari keranjang!');

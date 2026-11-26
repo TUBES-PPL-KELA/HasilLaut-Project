@@ -21,18 +21,18 @@
 
 <!-- Sidebar Utama -->
 <aside id="adminSidebar" data-collapsed="false"
-    class="fixed inset-y-0 left-0 z-50 w-[280px] -translate-x-full lg:static lg:translate-x-0 bg-white border-r border-gray-200 flex flex-col h-screen flex-shrink-0 transition-all duration-300 ease-in-out group/sidebar">
+    class="fixed inset-y-0 left-0 z-50 w-[280px] -translate-x-full lg:sticky lg:top-0 lg:self-start lg:translate-x-0 bg-white border-r border-gray-200 flex flex-col h-screen flex-shrink-0 transition-all duration-300 ease-in-out group/sidebar">
 
     <!-- Header Logo & Tombol Tutup/Buka -->
-    <div class="h-20 px-5 flex items-center justify-between border-b border-gray-100 flex-shrink-0">
+    <div class="relative h-24 px-5 flex items-center justify-center border-b border-gray-100 flex-shrink-0">
         <a href="{{ \Illuminate\Support\Facades\Route::has('admin.product.index') ? route('admin.product.index') : '#' }}"
-            class="flex items-center gap-2 overflow-hidden sidebar-logo-wrap">
-            <img src="{{ asset('images/hasillaut-logo.png') }}" alt="HasilLaut" class="h-10 object-contain transition-all duration-300">
+            class="flex items-center justify-center overflow-hidden sidebar-logo-wrap">
+            <img src="{{ asset('images/hasillaut-logo.png') }}" alt="HasilLaut" class="h-16 w-auto object-contain transition-all duration-300">
         </a>
 
         <!-- Tombol Collapse Desktop -->
         <button type="button" id="desktopSidebarToggleBtn" title="Tutup / Buka Sidebar"
-            class="hidden lg:flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:text-teal-800 hover:bg-teal-50 border border-transparent hover:border-teal-100 transition">
+            class="hidden lg:flex absolute right-4 items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:text-teal-800 hover:bg-teal-50 border border-transparent hover:border-teal-100 transition cursor-pointer">
             <svg id="desktopToggleIcon" class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
             </svg>
@@ -40,20 +40,15 @@
 
         <!-- Tombol Close Mobile Drawer -->
         <button type="button" id="mobileSidebarCloseBtn" aria-label="Tutup Menu"
-            class="lg:hidden flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition">
+            class="lg:hidden absolute right-4 flex items-center justify-center w-8 h-8 rounded-lg text-gray-500 hover:text-red-600 hover:bg-red-50 transition cursor-pointer">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
         </button>
     </div>
-    <nav class="flex-1 px-4 py-6 space-y-2">
-        <a href="{{ Route::has('admin.dashboard') ? route('admin.dashboard') : url('/admin/product') }}"
-           class="block px-4 py-3 rounded-lg font-medium transition {{ request()->routeIs('admin.dashboard') ? 'bg-ocean-teal text-white shadow-sm' : 'text-pale-ice hover:bg-dusty-turq hover:text-white' }}">
-            Dashboard
-        </a>
 
     <!-- Navigasi -->
-    <nav class="flex-1 overflow-y-auto overflow-x-hidden px-3 py-6 space-y-7">
+    <nav class="flex-1 overflow-y-auto overflow-x-hidden px-3 py-6 space-y-6">
 
         <!-- Grup: Beranda -->
         <div class="space-y-1">
@@ -80,6 +75,8 @@
                 $isProductActive = request()->routeIs('admin.product.*');
                 $isFlashSaleActive = request()->routeIs('admin.flash_sale.*');
                 $isDefectActive = request()->routeIs('admin.stok.*');
+                $isOrderActive = request()->routeIs('admin.orders.*');
+                $isUserActive = request()->routeIs('admin.users.*');
             @endphp
 
             <!-- Stok Gudang -->
@@ -118,26 +115,58 @@
             <h3 class="sidebar-group-title px-3 text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2.5 whitespace-nowrap">
                 Transaksi & Armada
             </h3>
-            <a href="#" title="Pesanan Masuk"
-                class="sidebar-link flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-gray-600 rounded-xl hover:bg-gray-50 transition">
-                <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <a href="{{ \Illuminate\Support\Facades\Route::has('admin.orders.index') ? route('admin.orders.index') : '#' }}"
+                title="Pesanan Masuk"
+                class="sidebar-link flex items-center gap-3 px-3 py-2.5 text-sm rounded-xl transition {{ $isOrderActive ? 'font-bold text-teal-800 bg-teal-50 border border-teal-100' : 'font-medium text-gray-600 hover:bg-gray-50' }}">
+                <svg class="w-5 h-5 flex-shrink-0 {{ $isOrderActive ? 'text-teal-600' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                 </svg>
                 <span class="sidebar-label truncate">Pesanan Masuk</span>
             </a>
         </div>
+
+        <!-- Grup: Sistem & Pengguna -->
+        <div class="space-y-1">
+            <h3 class="sidebar-group-title px-3 text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-2.5 whitespace-nowrap">
+                Sistem & Pengguna
+            </h3>
+            <a href="{{ \Illuminate\Support\Facades\Route::has('admin.users.index') ? route('admin.users.index') : '#' }}"
+                title="Manajemen Pengguna"
+                class="sidebar-link flex items-center gap-3 px-3 py-2.5 text-sm rounded-xl transition {{ $isUserActive ? 'font-bold text-teal-800 bg-teal-50 border border-teal-100' : 'font-medium text-gray-600 hover:bg-gray-50' }}">
+                <svg class="w-5 h-5 flex-shrink-0 {{ $isUserActive ? 'text-teal-600' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <span class="sidebar-label truncate">Manajemen Pengguna</span>
+            </a>
+        </div>
     </nav>
 
-    <!-- Kartu Profil Admin -->
-    <div class="p-3 border-t border-gray-100 flex-shrink-0">
+    <!-- Kartu Profil Admin & Tombol Logout -->
+    @php
+        $adminUser = Auth::user();
+        $adminName = $adminUser->name ?? 'Admin HasilLaut';
+        $adminUsername = $adminUser->username ?? 'admin';
+    @endphp
+    <div class="p-3 border-t border-gray-100 flex-shrink-0 space-y-2">
         <div id="sidebarProfileCard" class="flex items-center gap-3 bg-slate-50 p-2.5 rounded-2xl border border-gray-200 transition-all">
-            <img src="https://ui-avatars.com/api/?name=Andi+M&background=0D8ABC&color=fff" alt="User"
+            <img src="https://ui-avatars.com/api/?name={{ urlencode($adminName) }}&background=013137&color=fff&bold=true" alt="{{ $adminName }}"
                 class="w-10 h-10 rounded-full shadow-sm flex-shrink-0">
             <div class="sidebar-label min-w-0">
-                <p class="text-sm font-bold text-gray-900 leading-tight truncate">Andi M. (Admin)</p>
-                <p class="text-[11px] font-medium text-gray-500 truncate">Hub Pangandaran</p>
+                <p class="text-sm font-bold text-gray-900 leading-tight truncate">{{ $adminName }}</p>
+                <p class="text-[11px] font-medium text-gray-500 truncate">&#64;{{ $adminUsername }} &bull; Hub Pangandaran</p>
             </div>
         </div>
+
+        <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" title="Keluar"
+                class="sidebar-link w-full flex items-center justify-center gap-2 px-3 py-2.5 text-xs font-bold text-red-600 bg-white hover:bg-red-50 border border-red-200 rounded-xl transition cursor-pointer">
+                <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                </svg>
+                <span class="sidebar-label truncate">Keluar</span>
+            </button>
+        </form>
     </div>
 </aside>
 
@@ -156,7 +185,6 @@
         const logoWrap = sidebar.querySelector('.sidebar-logo-wrap');
         const profileCard = document.getElementById('sidebarProfileCard');
 
-        // 1. Fungsi Collapse / Expand di Desktop (>= 1024px)
         function applyDesktopState(collapsed) {
             sidebar.dataset.collapsed = collapsed ? 'true' : 'false';
 
@@ -181,7 +209,6 @@
             }
         }
 
-        // Pulihkan status terakhir dari localStorage
         const savedState = localStorage.getItem('hasillaut_admin_sidebar_collapsed') === 'true';
         applyDesktopState(savedState);
 
@@ -191,7 +218,6 @@
             localStorage.setItem('hasillaut_admin_sidebar_collapsed', nextState);
         });
 
-        // 2. Fungsi Drawer Buka / Tutup di Mobile (< 1024px)
         function openMobileSidebar() {
             sidebar.classList.remove('-translate-x-full');
             backdrop.classList.remove('hidden');

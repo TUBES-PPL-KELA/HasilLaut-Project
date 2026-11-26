@@ -298,10 +298,30 @@
                 <span>HASILLAUT</span>
             </a>
             <nav class="header-actions" aria-label="Navigasi utama">
-                <a class="buyer-link" href="{{ route('pembeli.katalog') }}"><i class="bi bi-search"></i> Katalog ikan</a>
-                <a class="icon-link" href="{{ route('pembeli.cart') }}" aria-label="Keranjang Belanja"><i class="bi bi-cart3"></i></a>
-                <a class="icon-link" href="{{ route('pembeli.profile.edit') }}" aria-label="Pengaturan Profil & Alamat"><i class="bi bi-gear"></i></a>
-                <a class="buyer-link" href="{{ route('pembeli.profile.edit') }}"><i class="bi bi-person"></i> Pembeli</a>
+                @guest
+                    <a class="buyer-link" href="{{ route('login') }}"><i class="bi bi-box-arrow-in-right"></i> Masuk</a>
+                    <a class="buyer-link" href="{{ route('register') }}" style="background: var(--midnight-teal); color: #fff; border-color: var(--midnight-teal);"><i class="bi bi-person-plus"></i> Daftar</a>
+                @endguest
+
+                @auth
+                    @if(Auth::user()->role === 'pembeli')
+                        <a class="buyer-link" href="{{ route('pembeli.katalog') }}"><i class="bi bi-search"></i> Katalog ikan</a>
+                        <a class="icon-link" href="{{ route('pembeli.cart') }}" aria-label="Keranjang Belanja"><i class="bi bi-cart3"></i></a>
+                        <a class="icon-link" href="{{ route('pembeli.profile.edit') }}" aria-label="Pengaturan Profil & Alamat"><i class="bi bi-gear"></i></a>
+                        <a class="buyer-link" href="{{ route('pembeli.profile.edit') }}"><i class="bi bi-person"></i> {{ Auth::user()->name }}</a>
+                    @elseif(Auth::user()->role === 'admin')
+                        <a class="buyer-link" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2"></i> Dashboard Admin</a>
+                    @elseif(Auth::user()->role === 'kurir')
+                        <a class="buyer-link" href="{{ route('kurir.tugas') }}"><i class="bi bi-truck"></i> Tugas Kurir</a>
+                    @endif
+
+                    <form action="{{ route('logout') }}" method="POST" style="margin:0;">
+                        @csrf
+                        <button type="submit" class="buyer-link" style="cursor:pointer; color:#b91c1c; border-color:#fecaca;">
+                            <i class="bi bi-box-arrow-right"></i> Keluar
+                        </button>
+                    </form>
+                @endauth
             </nav>
         </div>
     </header>

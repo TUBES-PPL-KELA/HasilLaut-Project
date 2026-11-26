@@ -9,6 +9,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\Models\Product;
 use App\Models\InventoryBatch;
 use App\Models\StockAdjustment;
@@ -48,7 +49,7 @@ class StockAdjustmentController extends Controller
         ]);
 
         try {
-            $userId = auth()->id() ?? 1; // ID User Admin login (fallback ke 1 jika belum set auth)
+            $userId = Auth::id();
 
             StockService::deductManualBatch(
                 $request->inventory_batches_id_inventory_batches,

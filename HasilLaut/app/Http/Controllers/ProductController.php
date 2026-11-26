@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreProductRequest;
 use App\Models\Category;
@@ -50,7 +51,7 @@ class ProductController extends Controller
 
             $batchData = [
                 'product_id_product' => $product->id_product,
-                'users_id_users'     => auth()->id() ?? 1,
+                'users_id_users'     => Auth::id(),
                 'stock'              => $request->stock,
                 'purchase_price'     => $request->purchase_price,
                 'received_date'      => $request->received_date,
@@ -93,9 +94,10 @@ class ProductController extends Controller
         DB::beginTransaction();
 
         try {
+            
             $batchData = [
                 'product_id_product' => $product->id_product,
-                'users_id_users'     => auth()->id() ?? 1,
+                'users_id_users'     => Auth::id(),
                 'stock'              => $request->stock,
                 'purchase_price'     => $request->purchase_price,
                 'received_date'      => $request->received_date,
@@ -188,4 +190,4 @@ class ProductController extends Controller
                              ->with('error', 'Produk tidak dapat dihapus karena masih terkait dengan data transaksi atau flash sale.');
         }
     }
-}
+} 
